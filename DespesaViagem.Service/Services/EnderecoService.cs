@@ -19,14 +19,18 @@ namespace DespesaViagem.Services.Services
             IEnumerable<Endereco> enderecos = await _enderecoRepository.ObterTodos();
             return Result.FailureIf(enderecos is null, enderecos, "Não foram encontrados endereços.");
         }
-        public async Task<Result<Endereco>> ObterEnderecoPorId(string id)
+        public async Task<Result<Endereco>> ObterEnderecoPorId(int idEndereco)
         {
-            _ = int.TryParse(id, out int idEndereco);
+            //_ = int.TryParse(id, out int idEndereco);
 
             if (idEndereco > 0)
             {
                 Endereco endereco = await _enderecoRepository.ObterPorId(idEndereco);
-                return Result.FailureIf(endereco is null, endereco, "Endereço não encontrado.");
+
+                if (endereco is null)
+                    return Result.Failure<Endereco>("Endereço não encontrado.");
+
+                return Result.Success(endereco);
             }
 
             return Result.Failure<Endereco>("Especifique um id válido!!");
@@ -34,22 +38,28 @@ namespace DespesaViagem.Services.Services
 
         public async Task<Result<IEnumerable<Endereco>>> ObterEnderecoPorFiltro(string filtro)
         {
-            IEnumerable<Endereco> enderecos = (await _enderecoRepository.ObterPorFiltro(filtro));
-            return Result.FailureIf(enderecos is null, enderecos, "Esses endereços não foram encontrados!");
+            IEnumerable<Endereco> enderecos = await _enderecoRepository.ObterPorFiltro(filtro);
+
+            if (!enderecos.Any())
+                return Result.Failure<IEnumerable<Endereco>>("Esses endereços não foram encontrados!");
+
+            return Result.Success(enderecos);
         }
 
         public async Task<Result<Endereco>> ObterEnderecoPorFiltro(Endereco endereco)
         {
             IEnumerable<Endereco> enderecos = await _enderecoRepository.ObterPorFiltro(endereco.Logradouro);
 
-            var a = enderecos.Select(enderecoTemp =>
+            Endereco? verificacao = enderecos.FirstOrDefault(enderecoTemp =>
             (enderecoTemp.CEP == endereco.CEP) &&
             (enderecoTemp.NumeroCasa == endereco.NumeroCasa) &&
             (enderecoTemp.Cidade == endereco.Cidade) &&
             (enderecoTemp.Estado == endereco.Estado));
 
+            if (!enderecos.Any() && verificacao is not null)
+                return Result.Failure<Endereco>("Esse endereço não foi encontrado!");
 
-            return Result.FailureIf(enderecos is null, enderecos.First(), "Esses endereços não foram encontrados!");
+            return Result.Success(enderecos.First());
         }
 
         public async Task<Result<Endereco>> AdicionarEndereco(Endereco endereco)
@@ -81,12 +91,15 @@ namespace DespesaViagem.Services.Services
 
         private async Task<bool> EnderecoJaExiste(Endereco endereco)
         {
-            if (await _enderecoRepository.ObterPorId(endereco.Id) is not null)
-            {
-                return true;
-            }
+            endereco = await _enderecoRepository.ObterPorId(endereco.Id);
 
-            IEnumerable<Endereco> enderecos = (await ObterEnderecoPorFiltro(endereco.Logradouro)).Value.ToList();
+            if (endereco is not null)
+                return true;
+
+            IEnumerable<Endereco> enderecos = await _enderecoRepository.ObterPorFiltro(endereco.Logradouro);                            
+
+            if (!enderecos.Any())
+                enderecos = await _enderecoRepository.ObterPorFiltro(endereco.CEP);
 
             return enderecos.Any(enderecoTemp =>
             (enderecoTemp.CEP == endereco.CEP) &&

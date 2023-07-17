@@ -1,4 +1,5 @@
 ﻿using DespesaViagem.Infra.Database.EntityConfiguration.DespesasEntityTypeConfiguration;
+using DespesaViagem.Infra.Database.EntityConfiguration.ViagensEntityTypeConfiguration;
 using DespesaViagem.Shared.Models.Core.Helpers;
 using DespesaViagem.Shared.Models.Despesas;
 using DespesaViagem.Shared.Models.Viagens;
@@ -25,12 +26,20 @@ namespace DespesaViagem.Infra.Database
                 .HasBaseType<Despesa>();
 
             modelBuilder.Entity<Endereco>().HasKey(k => k.Id);
-            
+
             modelBuilder.Entity<Funcionario>().HasKey(k => k.Id);
-            
-            modelBuilder.Entity<Viagem>().HasKey(k => k.Id);
+
+            modelBuilder.Entity<Funcionario>().HasData(new Funcionario
+            {
+                Id = 1,
+                Nome = "Gustavo",
+                Sobrenome = "Rueda dos Reis",
+                CPF = "321.123.321-12",
+                Matricula = "A65SD1ASD"
+            });
 
             modelBuilder.ApplyConfiguration(new DespesaHospedagemEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ViagemEntityTypeConfiguration());
 
 
             base.OnModelCreating(modelBuilder);

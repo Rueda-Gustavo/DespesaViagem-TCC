@@ -11,7 +11,8 @@ namespace DespesaViagem.Infra
     public static class DespesaViagemInfraExtensions
     {
         public static IServiceCollection AddDespesaViagemInfra(this IServiceCollection service, IConfiguration configuration)
-        {            
+        {
+            var a = configuration.GetConnectionString("SqlServer");
             service.AddDbContext<DespesaViagemContext>(options => options.UseSqlServer(configuration.GetConnectionString("SqlServer")));
             service.AddScoped<IEnderecoRepository, EnderecoRepository>();
             service.AddScoped<IFuncionarioRepository, FuncionarioRepository>();

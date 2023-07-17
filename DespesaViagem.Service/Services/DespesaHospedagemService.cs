@@ -18,7 +18,7 @@ namespace DespesaViagem.Services.Services
         
         public async Task<Result<IEnumerable<DespesaHospedagem>>> ObterTodasDespesas(int idViagem)
         {            
-            Task<Result<Viagem>> viagem = _viagemService.ObterViagemPorId(idViagem.ToString());
+            Task<Result<Viagem>> viagem = _viagemService.ObterViagemPorId(idViagem);
             viagem.Wait();
             idViagem = viagem.Result.Value.Id;
             IEnumerable<DespesaHospedagem> despesa = await _despesaRepository.ObterTodos(idViagem);

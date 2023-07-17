@@ -30,12 +30,12 @@ namespace DespesaViagem.Infra.Repositories
             //    .ToListAsync();
         }
 
-        public async Task<Viagem?> ObterViagemAbertaOuEmAndamento()
-        {
+        public async Task<IEnumerable<Viagem?>> ObterViagemPorStatus(StatusViagem statusViagem)
+        {            
             return await _context.Viagens
                 .Include(f => f.Funcionario)
-                .FirstOrDefaultAsync(viagem => viagem.StatusViagem == StatusViagem.EmAndamento ||
-                                               viagem.StatusViagem == StatusViagem.Aberta);
+                .Where(viagem => viagem.StatusViagem == statusViagem)                
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Viagem>> ObterPorFiltro(string filtro)

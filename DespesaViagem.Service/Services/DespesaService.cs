@@ -19,7 +19,7 @@ namespace DespesaViagem.Services.Services
 
         public async Task<Result<IEnumerable<Despesa>>> ObterTodasDespesas(int idViagem)
         {
-            Task<Result<Viagem>> viagem = _viagemService.ObterViagemPorId(idViagem.ToString());
+            Task<Result<Viagem>> viagem = _viagemService.ObterViagemPorId(idViagem);
             viagem.Wait();
             idViagem = viagem.Result.Value.Id;
             IEnumerable<Despesa> despesa = await _despesaRepository.ObterTodos(idViagem);

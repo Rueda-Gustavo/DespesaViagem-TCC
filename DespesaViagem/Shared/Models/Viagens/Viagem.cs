@@ -2,18 +2,19 @@
 using DespesaViagem.Shared.Models.Core.Helpers;
 using DespesaViagem.Shared.Models.Despesas;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace DespesaViagem.Shared.Models.Viagens
 {
     public class Viagem
     {
-        public int Id { get; } = 1;
+        public int Id { get; } = 0;
         [Column(TypeName = "varchar(200)")]
         public string NomeViagem { get; set; } = string.Empty;
         [Column(TypeName = "varchar(3000)")]
         public string DescricaoViagem { get; set; } = string.Empty;
         [Column(TypeName = "decimal(18,2)")]
-        public decimal Adiantamento { get; }
+        public decimal Adiantamento { get; private set; }
         public DateTime DataInicial { get; private set; }
         public DateTime DataFinal { get; private set; }
         [Column(TypeName = "decimal(18,2)")]
@@ -25,6 +26,7 @@ namespace DespesaViagem.Shared.Models.Viagens
             get { return _despesas.AsReadOnly(); }
         }
         public Funcionario? Funcionario { get; private set; }
+        [JsonIgnore]
         public int IdFuncionario { get; private set; }
 
 
@@ -106,6 +108,15 @@ namespace DespesaViagem.Shared.Models.Viagens
             if (StatusViagem != StatusViagem.EmAndamento)
                 throw new Exception("Viagem a viagem deve estar em andamento para ser encerrada!");
             StatusViagem = StatusViagem.Encerrada;
+        }
+
+        public void AdicionarFuncionario(Funcionario funcionario)
+        {
+            if (funcionario.Id > 0 && (IdFuncionario != 0 || IdFuncionario != funcionario.Id))
+            {
+                Funcionario = funcionario;
+                IdFuncionario = funcionario.Id;
+            }
         }
 
         private Despesa? BuscarDespesa(int id)

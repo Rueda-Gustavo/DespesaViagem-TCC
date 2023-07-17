@@ -51,7 +51,7 @@ namespace DespesaViagem.Infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Enderecos", (string)null);
+                    b.ToTable("Enderecos");
                 });
 
             modelBuilder.Entity("DespesaViagem.Shared.Models.Core.Helpers.Funcionario", b =>
@@ -80,13 +80,26 @@ namespace DespesaViagem.Infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Funcionarios", (string)null);
+                    b.ToTable("Funcionarios");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CPF = "321.123.321-12",
+                            Matricula = "A65SD1ASD",
+                            Nome = "Gustavo",
+                            Sobrenome = "Rueda dos Reis"
+                        });
                 });
 
             modelBuilder.Entity("DespesaViagem.Shared.Models.Despesas.Despesa", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("DataDespesa")
                         .HasColumnType("datetime2");
@@ -113,7 +126,9 @@ namespace DespesaViagem.Infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Despesas", (string)null);
+                    b.HasIndex("IdViagem");
+
+                    b.ToTable("Despesas");
 
                     b.UseTptMappingStrategy();
                 });
@@ -126,6 +141,10 @@ namespace DespesaViagem.Infra.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<decimal>("Adiantamento")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal");
+
                     b.Property<DateTime>("DataFinal")
                         .HasColumnType("datetime2");
 
@@ -134,28 +153,32 @@ namespace DespesaViagem.Infra.Migrations
 
                     b.Property<string>("DescricaoViagem")
                         .IsRequired()
+                        .HasMaxLength(60)
+                        .IsUnicode(false)
                         .HasColumnType("varchar(3000)");
-
-                    b.Property<int?>("FuncionarioId")
-                        .HasColumnType("int");
 
                     b.Property<int>("IdFuncionario")
                         .HasColumnType("int");
 
                     b.Property<string>("NomeViagem")
                         .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
                         .HasColumnType("varchar(200)");
 
                     b.Property<string>("StatusViagem")
                         .IsRequired()
-                        .HasColumnType("varchar(20)");
+                        .HasMaxLength(15)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar");
 
                     b.Property<decimal>("TotalDespesas")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FuncionarioId");
+                    b.HasIndex("IdFuncionario");
 
                     b.ToTable("Viagens", (string)null);
                 });
@@ -182,7 +205,7 @@ namespace DespesaViagem.Infra.Migrations
                 {
                     b.HasOne("DespesaViagem.Shared.Models.Viagens.Viagem", "Viagem")
                         .WithMany("Despesas")
-                        .HasForeignKey("Id")
+                        .HasForeignKey("IdViagem")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -193,7 +216,9 @@ namespace DespesaViagem.Infra.Migrations
                 {
                     b.HasOne("DespesaViagem.Shared.Models.Core.Helpers.Funcionario", "Funcionario")
                         .WithMany("Viagens")
-                        .HasForeignKey("FuncionarioId");
+                        .HasForeignKey("IdFuncionario")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Funcionario");
                 });

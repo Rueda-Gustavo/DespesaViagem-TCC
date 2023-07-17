@@ -1,4 +1,5 @@
-﻿using DespesaViagem.Shared.Models.Despesas;
+﻿using DespesaViagem.Shared.Models.Core.Enums;
+using DespesaViagem.Shared.Models.Despesas;
 using DespesaViagem.Shared.Models.Viagens;
 
 namespace DespesaViagem.Infra.Interfaces
@@ -11,7 +12,7 @@ namespace DespesaViagem.Infra.Interfaces
         //Diferente do método para obter todas as despesas da interface de IDespesasRepository, esse método irá retornar
         //todas as despesas referentes a viagem em questão, independente de qual tipo ela seja, Hospedagem, Passagem etc.
         Task<IEnumerable<Despesa>> ObterTodasDepesas(int viagemId);
-        Task<Viagem?> ObterViagemAbertaOuEmAndamento();
+        Task<IEnumerable<Viagem?>> ObterViagemPorStatus(StatusViagem statusViagem);
         Task Insert(Viagem viagem);
         Task Update(Viagem viagem);
         Task Delete(Viagem viagem);

@@ -16,7 +16,12 @@ namespace DespesaViagem.Services.Services
         public async Task<Result<IEnumerable<Funcionario>>> ObterTodosFuncionarios()
         {
             IEnumerable<Funcionario> funcionarios = await _funcionarioRepository.ObterTodos();
-            return Result.FailureIf(funcionarios is null, funcionarios, "Não foram encontrados funcionários.");
+
+            if (!funcionarios.Any())
+                return Result.Failure<IEnumerable<Funcionario>>("Não foram encontrados funcionários.");
+            
+
+            return Result.Success(funcionarios);
         }
 
         public async Task<Result<Funcionario>> ObterFuncionarioPorId(int id)
@@ -26,7 +31,10 @@ namespace DespesaViagem.Services.Services
             if(id > 0)
             {
                 Funcionario funcionario = await _funcionarioRepository.ObterPorId(id);
-                return Result.FailureIf(funcionario is null, funcionario, "Funcionário não encontrado.");
+                if (funcionario is null)
+                    return Result.Failure<Funcionario>("Funcionário não encontrado.");
+
+                return Result.Success(funcionario); 
             }
 
             return Result.Failure<Funcionario>("Especifique um id válido!!");            
@@ -35,13 +43,21 @@ namespace DespesaViagem.Services.Services
         public async Task<Result<Funcionario>> ObterFuncionarioPorCPF(string CPF)
         {
             Funcionario funcionario = await _funcionarioRepository.ObterPorCPF(CPF);
-            return Result.FailureIf(funcionario is null, funcionario, "Funcionário não encontrado. Por favor faça o cadastro dos mesmos.");
+
+            if (funcionario is null)
+                return Result.Failure<Funcionario>("Funcionário não encontrado. Por favor faça o cadastro dos mesmos.");
+
+            return Result.Success(funcionario);
         }
 
         public async Task<Result<IEnumerable<Funcionario>>> ObterFuncionarioPorFiltro(string filtro)
         {
             IEnumerable<Funcionario> funcionarios = await _funcionarioRepository.ObterPorFiltro(filtro);
-            return Result.FailureIf(funcionarios.Any(), funcionarios, "Esses funcionarios não foram encontrados, por favor faça o cadastro dos mesmos!");
+
+            if (!funcionarios.Any())
+                return Result.Failure<IEnumerable<Funcionario>>("Esses funcionarios não foram encontrados, por favor faça o cadastro dos mesmos!");
+
+            return Result.Success(funcionarios);
         }
 
         public async Task<Result<Funcionario>> AdicionarFuncionario(Funcionario funcionario)
@@ -73,8 +89,8 @@ namespace DespesaViagem.Services.Services
         }
 
         private async Task<bool> FuncionarioJaExiste(Funcionario funcionario)
-        {
-            if(await _funcionarioRepository.ObterPorFiltro(funcionario.CPF) is not null)
+        {          
+            if ((await _funcionarioRepository.ObterPorFiltro(funcionario.CPF)).Any())
             {
                 return true;
             }
