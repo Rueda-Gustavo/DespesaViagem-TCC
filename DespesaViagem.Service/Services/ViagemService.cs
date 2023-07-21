@@ -3,6 +3,7 @@ using AutoMapper.Configuration.Annotations;
 using CSharpFunctionalExtensions;
 using DespesaViagem.Infra.Interfaces;
 using DespesaViagem.Infra.Repositories;
+using DespesaViagem.Server.Mapping;
 using DespesaViagem.Services.Interfaces;
 using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Core.Enums;
@@ -115,20 +116,14 @@ namespace DespesaViagem.Services.Services
 
         public async Task<Result<Viagem>> AdicionarViagem(ViagemDTO viagemDTO)
         {
+            viagemDTO.StatusViagem = StatusViagem.Aberta;
+            Viagem viagem = MappingDTOs.ConverterDTO(viagemDTO);
+
+            if (viagem is null || viagemDTO.Id != 0) //Caso o Id não seja 0 irá dar erro na hora de adicionar a viagem
+                return Result.Failure<Viagem>("Nenhuma viagem informada.");
+
             if ((await ObterViagemAbertaOuEmAndamento()) is null)
-                return Result.Failure<Viagem>("Já existe uma viagem aberta ou em andamento.");
-
-            MapperConfiguration config = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<Viagem, ViagemDTO>();
-                cfg.CreateMap<ViagemDTO, Viagem>()
-                .ForMember(dst => dst.Funcionario, opt => opt.Ignore());
-            });
-
-            Mapper mapper = new Mapper(config);
-
-            Viagem viagem = mapper.Map<Viagem>(viagemDTO);
-
+                return Result.Failure<Viagem>("Já existe uma viagem aberta ou em andamento.");                    
 
             if (viagem.DataFinal < viagem.DataInicial.AddDays(1))
                 return Result.Failure<Viagem>("Insira uma período válido, com pelo menos 1 dia de diferença entre as datas inicial e final. Por exemplo: Data inicial dia 01 e data final dia 02");
@@ -137,23 +132,29 @@ namespace DespesaViagem.Services.Services
             if (funcinonario is null)
                 return Result.Failure<Viagem>("Funcionário não encontrado!");
 
-            viagem.AdicionarFuncionario(funcinonario);
+            viagem.AdicionarFuncionario(funcinonario);            
 
             await _viagemRepository.Insert(viagem);
             return Result.Success(viagem);
         }
 
-        public async Task<Result<Viagem>> AlterarViagem(Viagem viagem)
+        public async Task<Result<Viagem>> AlterarViagem(ViagemDTO viagemDTO)
         {
-            if (viagem is null)
+            Viagem viagem = MappingDTOs.ConverterDTO(viagemDTO);
+
+            if (viagem is null || viagemDTO.Id <= 0)
                 return Result.Failure<Viagem>("Nenhuma viagem informada.");
 
-            if ((await ObterViagemAbertaOuEmAndamento()) is null)
-                return Result.Failure<Viagem>("Nenhuma viagem em Aberto ou Em Andamento.");
-
             Viagem? viagemAuxiliar = await ObterViagemAbertaOuEmAndamento();
+
+            if (viagemAuxiliar is null || viagemAuxiliar.Id != viagem.Id)
+                return Result.Failure<Viagem>("Nenhuma viagem em Aberto ou Em Andamento, ou a viagem informada foi cancelada ou encerrada.");
+
             if (viagemAuxiliar is not null && viagemAuxiliar.Adiantamento != viagem.Adiantamento)
                 return Result.Failure<Viagem>("O Adiantamento incial não pode ser modificado.");
+
+            viagem.DefinirStatusViagem(viagemAuxiliar.StatusViagem);
+            viagem.DefinirAdiantamento(viagemAuxiliar.Adiantamento);
 
             await _viagemRepository.Update(viagem);
             return Result.Success(viagem);
@@ -169,7 +170,7 @@ namespace DespesaViagem.Services.Services
             return Result.Success(viagem);
         }
 
-        public async Task<Result<decimal>> ObterPrestacaoDeContas(Viagem viagem)
+        public Result<decimal> ObterPrestacaoDeContas(Viagem viagem)
         {
             return Result.Success(viagem.GerarPrestacaoDeContas());
         }

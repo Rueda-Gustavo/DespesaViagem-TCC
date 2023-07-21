@@ -13,7 +13,7 @@ namespace DespesaViagem.Services
             service.AddScoped<IFuncionarioService, FuncionarioService>();
             service.AddScoped<IViagemService, ViagemService>();
             service.AddScoped<IDespesaService, DespesaService>();
-            service.AddScoped<IDespesasService<DespesaHospedagem, int>, DespesaHospedagemService>();
+            service.AddScoped<IDespesasService<DespesaHospedagem>, DespesaHospedagemService>();
             return service;
         }
     }

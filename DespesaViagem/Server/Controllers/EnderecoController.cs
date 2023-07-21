@@ -17,7 +17,6 @@ namespace DespesaViagem.Server.Controllers
             _enderecoService = enderecoService;
         }
 
-
         [HttpGet]
         public async Task<ActionResult> ObterTodosEnderecos()
         {
@@ -28,7 +27,6 @@ namespace DespesaViagem.Server.Controllers
 
             return Ok(result.Value.ToList());
         }
-
 
         [HttpGet]
         [Route("{filtro}/ObterEnderecoPorFiltro")]

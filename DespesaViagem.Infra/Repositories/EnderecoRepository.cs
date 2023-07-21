@@ -40,12 +40,11 @@ namespace DespesaViagem.Infra.Repositories
 
         public async Task Update(Endereco endereco)
         {
-            var enderecoNaMemoria = _context.Set<Endereco>().Find(endereco.Id);
-
+            var enderecoNaMemoria = _context.Set<Endereco>().Find(endereco.Id);            
+            
             if (enderecoNaMemoria != null)
                 _context.Entry(enderecoNaMemoria).State = EntityState.Detached;
-
-            _context.Entry(endereco).State = EntityState.Modified;
+                        
             _context.Update(endereco);
             await _context.SaveChangesAsync();
         }

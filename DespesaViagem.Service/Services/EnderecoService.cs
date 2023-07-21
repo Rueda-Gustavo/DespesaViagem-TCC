@@ -90,10 +90,8 @@ namespace DespesaViagem.Services.Services
         }
 
         private async Task<bool> EnderecoJaExiste(Endereco endereco)
-        {
-            endereco = await _enderecoRepository.ObterPorId(endereco.Id);
-
-            if (endereco is not null)
+        {            
+            if (await _enderecoRepository.ObterPorId(endereco.Id) is not null)
                 return true;
 
             IEnumerable<Endereco> enderecos = await _enderecoRepository.ObterPorFiltro(endereco.Logradouro);                            

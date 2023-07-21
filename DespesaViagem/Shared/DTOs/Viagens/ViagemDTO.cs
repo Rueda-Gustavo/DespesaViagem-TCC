@@ -5,7 +5,7 @@ namespace DespesaViagem.Shared.DTOs.Viagens
 {
     public class ViagemDTO
     {
-        public int Id { get; set; }
+        public int Id { get; set; } = 0;
         public string NomeViagem { get; set; } = string.Empty;
         public string DescricaoViagem { get; set; } = string.Empty;
         public decimal Adiantamento { get; set; }

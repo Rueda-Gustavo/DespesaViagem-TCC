@@ -1,5 +1,7 @@
-﻿using DespesaViagem.Shared.Models.Viagens;
+﻿using DespesaViagem.Shared.Models.Core.Enums;
+using DespesaViagem.Shared.Models.Viagens;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace DespesaViagem.Shared.Models.Despesas
 {
@@ -14,18 +16,21 @@ namespace DespesaViagem.Shared.Models.Despesas
         [Column(TypeName = "decimal(10,2)")]
         public virtual decimal TotalDespesa { get; protected set; }
         public virtual DateTime DataDespesa { get; protected set; }
-        public DateTime DataDeCadastro { get; } = DateTime.Now;        
-        public string TipoDespesa { get; protected set; } = string.Empty;
+        public DateTime DataDeCadastro { get; } = DateTime.Now;
+        [Column(TypeName = "varchar(20)")]
+        public TiposDespesas TipoDespesa { get; protected set; }
         public int IdViagem { get; protected set; }
+        [JsonIgnore]
         public Viagem? Viagem { get; set; }
 
-        public Despesa(string nomeDespesa, string descricaoDespesa, decimal totalDespesa, string tipoDespesa, int idViagem)
+        public Despesa(string nomeDespesa, string descricaoDespesa, decimal totalDespesa, TiposDespesas tipoDespesa, int idViagem)
         {            
             NomeDespesa = nomeDespesa;
             DescricaoDespesa = descricaoDespesa;
             TotalDespesa = totalDespesa;
             DataDespesa = DateTime.UtcNow;
-            TipoDespesa = tipoDespesa;            
+            TipoDespesa = tipoDespesa;    
+            IdViagem = idViagem;
         }
 
         public Despesa() { }

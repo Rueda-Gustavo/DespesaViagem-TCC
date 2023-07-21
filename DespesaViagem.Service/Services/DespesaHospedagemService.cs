@@ -1,26 +1,33 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Infra.Interfaces;
+using DespesaViagem.Infra.Repositories;
 using DespesaViagem.Services.Interfaces;
 using DespesaViagem.Shared.Models.Despesas;
 using DespesaViagem.Shared.Models.Viagens;
 
 namespace DespesaViagem.Services.Services
 {
-    public class DespesaHospedagemService : IDespesasService<DespesaHospedagem, int>
+    public class DespesaHospedagemService : IDespesasService<DespesaHospedagem>
     {
-        private readonly IViagemService _viagemService;
-        private readonly IDespesasRepository<DespesaHospedagem, int> _despesaRepository;
-        public DespesaHospedagemService(IDespesasRepository<DespesaHospedagem, int> despesaRepository, IViagemService viagemService)
+        private readonly IViagemRepository _viagemRepository;
+        private readonly IDespesasRepository<DespesaHospedagem> _despesaRepository;
+        private readonly IEnderecoRepository _enderecoRepository;
+
+        public DespesaHospedagemService(IDespesasRepository<DespesaHospedagem> despesaRepository,
+            IViagemRepository viagemRepository, IEnderecoRepository enderecoRepository)
         {
-            _viagemService = viagemService;
+            _viagemRepository = viagemRepository;
             _despesaRepository = despesaRepository;
+            _enderecoRepository = enderecoRepository;
         }
-        
+
         public async Task<Result<IEnumerable<DespesaHospedagem>>> ObterTodasDespesas(int idViagem)
         {            
-            Task<Result<Viagem>> viagem = _viagemService.ObterViagemPorId(idViagem);
-            viagem.Wait();
-            idViagem = viagem.Result.Value.Id;
+            Viagem viagem = await _viagemRepository.ObterPorId(idViagem);
+
+            if (viagem is null)
+                return Result.Failure<IEnumerable<DespesaHospedagem>>("Informe uma viagem válida.");
+                        
             IEnumerable<DespesaHospedagem> despesa = await _despesaRepository.ObterTodos(idViagem);
             return Result.FailureIf(despesa is null, despesa, "Não existem despesas para a viagem informada!!");
         }        
@@ -51,12 +58,20 @@ namespace DespesaViagem.Services.Services
             return Result.Failure<IEnumerable<DespesaHospedagem>>("Especifique um id válido para a viagem.");
         }
 
-        public async Task<Result<DespesaHospedagem>> AdicionarDespesa(DespesaHospedagem despesa, Viagem viagem)
+        public async Task<Result<DespesaHospedagem>> AdicionarDespesa(DespesaHospedagem despesa)
         {
             if (await DespesaJaExiste(despesa.Id))
                 return Result.Failure<DespesaHospedagem>("Já existe uma despesa como essa!");
+
+            if (await _enderecoRepository.ObterPorId(despesa.IdEndereco) is null || despesa.IdEndereco <= 0)
+                return Result.Failure<DespesaHospedagem>("Forneça um endereço já existente, ou cadastre um novo.");
+
+            Viagem viagem = await _viagemRepository.ObterPorId(despesa.IdViagem);
+
+            if (viagem is null)
+                return Result.Failure<DespesaHospedagem>("Viagem não encontrada.");
             
-            await _despesaRepository.Insert(despesa, viagem);
+            await _despesaRepository.Insert(despesa);
             return Result.Success(despesa);
         }
 

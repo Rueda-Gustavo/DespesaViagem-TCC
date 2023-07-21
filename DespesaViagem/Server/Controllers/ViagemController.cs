@@ -1,12 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Services.Interfaces;
-using DespesaViagem.Services.Services;
 using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Core.Enums;
-using DespesaViagem.Shared.Models.Core.Helpers;
 using DespesaViagem.Shared.Models.Despesas;
 using DespesaViagem.Shared.Models.Viagens;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DespesaViagem.Server.Controllers
@@ -60,7 +57,20 @@ namespace DespesaViagem.Server.Controllers
 
             Viagem viagem = result.Value;
 
-            return Ok(result.Value);
+            return Ok(viagem);
+        }
+
+        [HttpPut("Atualizar")]
+        public async Task<ActionResult> AtualizarViagem(ViagemDTO viagemDTO)
+        {
+            Result<Viagem> result = await _viagemService.AlterarViagem(viagemDTO);
+
+            if (result.IsFailure)
+                return BadRequest(result.Value);
+
+            Viagem viagem = result.Value;
+
+            return Ok(viagem);
         }
 
 

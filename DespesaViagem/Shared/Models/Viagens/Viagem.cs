@@ -8,7 +8,7 @@ namespace DespesaViagem.Shared.Models.Viagens
 {
     public class Viagem
     {
-        public int Id { get; } = 0;
+        public int Id { get; private set; } = 0;
         [Column(TypeName = "varchar(200)")]
         public string NomeViagem { get; set; } = string.Empty;
         [Column(TypeName = "varchar(3000)")]
@@ -32,8 +32,9 @@ namespace DespesaViagem.Shared.Models.Viagens
 
         private readonly List<Despesa> _despesas = new();
 
-        public Viagem(string nomeViagem, string descricaoViagem, decimal adiantamento, DateTime dataInicial, DateTime dataFinal, Funcionario funcionario)
+        public Viagem(int id, string nomeViagem, string descricaoViagem, decimal adiantamento,  StatusViagem statusViagem, DateTime dataInicial, DateTime dataFinal, Funcionario funcionario)
         {
+            Id = id;
             NomeViagem = nomeViagem;
             DescricaoViagem = descricaoViagem;
             Adiantamento = adiantamento;
@@ -41,7 +42,7 @@ namespace DespesaViagem.Shared.Models.Viagens
             DataFinal = dataFinal;
             Adiantamento = adiantamento;
             TotalDespesas = 0;
-            StatusViagem = StatusViagem.Aberta;
+           StatusViagem = statusViagem; 
             Funcionario = funcionario;
         }
 
@@ -117,6 +118,19 @@ namespace DespesaViagem.Shared.Models.Viagens
                 Funcionario = funcionario;
                 IdFuncionario = funcionario.Id;
             }
+        }
+
+        public void DefinirAdiantamento(decimal adiantamento)
+        {
+            if(adiantamento >= 0)
+            {
+                Adiantamento = adiantamento;
+            }
+        }
+
+        public void DefinirStatusViagem(StatusViagem statusViagem)
+        {
+            StatusViagem = statusViagem;
         }
 
         private Despesa? BuscarDespesa(int id)

@@ -1,4 +1,5 @@
-﻿using DespesaViagem.Shared.Models.Core.Helpers;
+﻿using DespesaViagem.Shared.Models.Core.Enums;
+using DespesaViagem.Shared.Models.Core.Helpers;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DespesaViagem.Shared.Models.Despesas
@@ -11,7 +12,7 @@ namespace DespesaViagem.Shared.Models.Despesas
         public int IdEndereco { get; private set; }
         public Endereco? Endereco { get; private set; }
         public DespesaHospedagem(string descricaoDespesa, Endereco endereco, int quantidadeDias, decimal valorDiaria, int idViagem)
-            : base("Despesa com hospedagem", descricaoDespesa, quantidadeDias * valorDiaria, "Hospedagem", idViagem)
+            : base("Despesa com hospedagem", descricaoDespesa, quantidadeDias * valorDiaria, TiposDespesas.Hospedagem, idViagem)
         {
             Endereco = endereco;
             QuantidadeDias = quantidadeDias;

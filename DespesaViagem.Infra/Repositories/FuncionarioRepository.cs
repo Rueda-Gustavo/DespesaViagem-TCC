@@ -46,6 +46,12 @@ namespace DespesaViagem.Infra.Repositories
 
         public async Task Update(Funcionario funcionario)
         {
+            //Como é feita uma verificação antes, o Entity acaba rastreando a entidade, por isso é necessário faze-lo esse comando para desanexa-lo e realizar o update do novo objeto.
+            var funcionarioNaMemoria = _context.Set<Funcionario>().Find(funcionario.Id);
+
+            if (funcionarioNaMemoria != null)
+                _context.Entry(funcionarioNaMemoria).State = EntityState.Detached;
+
             _context.Update(funcionario);
             await _context.SaveChangesAsync();
         }

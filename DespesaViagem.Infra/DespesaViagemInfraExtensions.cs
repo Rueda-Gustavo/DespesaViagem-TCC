@@ -18,7 +18,7 @@ namespace DespesaViagem.Infra
             service.AddScoped<IFuncionarioRepository, FuncionarioRepository>();
             service.AddScoped<IViagemRepository, ViagemRepository>();
             service.AddScoped<IDespesaRepository, DespesaRepository>();
-            service.AddScoped<IDespesasRepository<DespesaHospedagem, int>, DespesaHospedagemRepository>();
+            service.AddScoped<IDespesasRepository<DespesaHospedagem>, DespesaHospedagemRepository>();
             return service;
         }
     }

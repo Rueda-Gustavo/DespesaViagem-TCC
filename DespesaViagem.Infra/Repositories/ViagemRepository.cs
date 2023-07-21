@@ -1,6 +1,7 @@
 ﻿using DespesaViagem.Infra.Database;
 using DespesaViagem.Infra.Interfaces;
 using DespesaViagem.Shared.Models.Core.Enums;
+using DespesaViagem.Shared.Models.Core.Helpers;
 using DespesaViagem.Shared.Models.Despesas;
 using DespesaViagem.Shared.Models.Viagens;
 using Microsoft.EntityFrameworkCore;
@@ -61,6 +62,11 @@ namespace DespesaViagem.Infra.Repositories
 
         public async Task Update(Viagem viagem)
         {
+            var viagemNaMemoria = _context.Set<Viagem>().Find(viagem.Id);
+
+            if (viagemNaMemoria != null)
+                _context.Entry(viagemNaMemoria).State = EntityState.Detached;
+
             _context.Update(viagem);
             await _context.SaveChangesAsync();
         }

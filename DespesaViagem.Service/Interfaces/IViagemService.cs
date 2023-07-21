@@ -14,9 +14,9 @@ namespace DespesaViagem.Services.Interfaces
         Task<Result<IEnumerable<Despesa>>> ObterTodasDespesas(int id);
         Task<Result<IEnumerable<Viagem>>> ObterViagemPorStatus(StatusViagem statusViagem);      
         Task<Result<Viagem>> AdicionarViagem(ViagemDTO viagemDTO);
-        Task<Result<Viagem>> AlterarViagem(Viagem viagem);
+        Task<Result<Viagem>> AlterarViagem(ViagemDTO viagemDTO);
         Task<Result<Viagem>> RemoverViagem(int id);
-        Task<Result<decimal>> ObterPrestacaoDeContas(Viagem viagem);
+        Result<decimal> ObterPrestacaoDeContas(Viagem viagem);
         Task<Result<Viagem>> IniciarViagem();
         Task<Result<Viagem>> EncerrarViagem();
         Task<Result<Viagem>> CancelarViagem();
