@@ -34,7 +34,7 @@ namespace DespesaViagem.Server.Controllers
             return Ok(viagens);
         }
 
-        [HttpGet("{id:int}")]        
+        [HttpGet("{idViagem:int}")]        
         public async Task<ActionResult> ObterViagemPorId(int idViagem)
         {
             Result<Viagem> result = await _viagemService.ObterViagemPorId(idViagem);
@@ -88,7 +88,7 @@ namespace DespesaViagem.Server.Controllers
         }
 
         [HttpGet]
-        [Route("{id}/ObterDespesas")]
+        [Route("ObterDespesas/{idViagem}")]
         public async Task<ActionResult> ObterTodasDespesasDaViagem(int idViagem)
         {
             Result<IEnumerable<Despesa>> result = await _viagemService.ObterTodasDespesas(idViagem);

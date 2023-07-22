@@ -8,20 +8,20 @@ namespace DespesaViagem.Services.Services
 {
     public class DespesaService : IDespesaService
     {
-        private readonly IViagemService _viagemService;
+        private readonly IViagemRepository _viagemRepository;
         private readonly IDespesaRepository _despesaRepository;
 
-        public DespesaService(IDespesaRepository despesaRepository, IViagemService viagemService)
+        public DespesaService(IDespesaRepository despesaRepository, IViagemRepository viagemRepository)
         {
             _despesaRepository = despesaRepository;
-            _viagemService = viagemService;
+            _viagemRepository = viagemRepository;
         }
 
         public async Task<Result<IEnumerable<Despesa>>> ObterTodasDespesas(int idViagem)
         {
-            Task<Result<Viagem>> viagem = _viagemService.ObterViagemPorId(idViagem);
-            viagem.Wait();
-            idViagem = viagem.Result.Value.Id;
+            Viagem viagem = await _viagemRepository.ObterPorId(idViagem);
+            
+            idViagem = viagem.Id;
             IEnumerable<Despesa> despesa = await _despesaRepository.ObterTodos(idViagem);
             return Result.FailureIf(despesa is null, despesa, "Não existem despesas para a viagem informada!!");
         }

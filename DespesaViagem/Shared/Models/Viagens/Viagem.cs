@@ -42,7 +42,7 @@ namespace DespesaViagem.Shared.Models.Viagens
             DataFinal = dataFinal;
             Adiantamento = adiantamento;
             TotalDespesas = 0;
-           StatusViagem = statusViagem; 
+            StatusViagem = statusViagem; 
             Funcionario = funcionario;
         }
 
@@ -131,6 +131,12 @@ namespace DespesaViagem.Shared.Models.Viagens
         public void DefinirStatusViagem(StatusViagem statusViagem)
         {
             StatusViagem = statusViagem;
+        }
+
+        public void VerificarDataInicialeFinal()
+        {                        
+            if (DataFinal < DataInicial.AddDays(1))
+                throw new ArgumentException("Insira uma período válido, com pelo menos 24 horas de diferença entre as datas inicial e final. Por exemplo: Data inicial dia 01 e data final dia 02");
         }
 
         private Despesa? BuscarDespesa(int id)

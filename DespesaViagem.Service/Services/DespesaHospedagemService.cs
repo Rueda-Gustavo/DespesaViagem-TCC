@@ -2,6 +2,7 @@
 using DespesaViagem.Infra.Interfaces;
 using DespesaViagem.Infra.Repositories;
 using DespesaViagem.Services.Interfaces;
+using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Despesas;
 using DespesaViagem.Shared.Models.Viagens;
 
@@ -68,8 +69,8 @@ namespace DespesaViagem.Services.Services
 
             Viagem viagem = await _viagemRepository.ObterPorId(despesa.IdViagem);
 
-            if (viagem is null)
-                return Result.Failure<DespesaHospedagem>("Viagem não encontrada.");
+            if (viagem is null || viagem.StatusViagem != StatusViagem.Aberta || viagem.StatusViagem != StatusViagem.EmAndamento)
+                return Result.Failure<DespesaHospedagem>("Viagem não encontrada ou não existe uma viagem aberta ou em andamento.");
             
             await _despesaRepository.Insert(despesa);
             return Result.Success(despesa);

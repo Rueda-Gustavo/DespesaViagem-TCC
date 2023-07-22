@@ -56,6 +56,7 @@ namespace DespesaViagem.Services.Services
                     return Result.Failure<Viagem>("Não existem viagens com o filtro especificado!");
 
                 viagem = await AdicionarDespesaParaAViagem(viagem);
+                viagem.AdicionarFuncionario(await _funcionarioRepository.ObterPorId(viagem.IdFuncionario));
 
                 return Result.Success(viagem);
             }
@@ -71,6 +72,7 @@ namespace DespesaViagem.Services.Services
                 return Result.Failure<IEnumerable<Viagem>>("Não existem viagens com o filtro especificado!");
 
             viagens = await AdicionarDespesasParaAViagem(viagens);
+            viagens = await AdicionarFuncionarioParaAViagem(viagens); 
 
             return Result.Success(viagens);
         }
@@ -92,28 +94,6 @@ namespace DespesaViagem.Services.Services
             return Result.Success(await _viagemRepository.ObterTodasDepesas(id));
         }
 
-        public async Task<Result<Viagem>> ObterViagemEmAndamento()
-        {
-            Viagem? viagem = await ObterViagemAbertaOuEmAndamento();
-
-            if (viagem is not null && viagem.StatusViagem == StatusViagem.EmAndamento)
-            {
-                viagem = await AdicionarDespesaParaAViagem(viagem);
-                return viagem;
-            }
-
-            return Result.Failure<Viagem>("Não existe uma viagem em andamento.");
-        }
-        public async Task<Result<Viagem>> ObterViagemAberta()
-        {
-            Viagem? viagem = await ObterViagemAbertaOuEmAndamento();
-
-            if (viagem is not null && viagem.StatusViagem == StatusViagem.Aberta)
-                return viagem;
-
-            return Result.Failure<Viagem>("Não existe uma viagem aberta.");
-        }
-
         public async Task<Result<Viagem>> AdicionarViagem(ViagemDTO viagemDTO)
         {
             viagemDTO.StatusViagem = StatusViagem.Aberta;
@@ -122,17 +102,16 @@ namespace DespesaViagem.Services.Services
             if (viagem is null || viagemDTO.Id != 0) //Caso o Id não seja 0 irá dar erro na hora de adicionar a viagem
                 return Result.Failure<Viagem>("Nenhuma viagem informada.");
 
-            if ((await ObterViagemAbertaOuEmAndamento()) is null)
-                return Result.Failure<Viagem>("Já existe uma viagem aberta ou em andamento.");                    
+            if ((await ObterViagemAbertaOuEmAndamento()) is not null)
+                return Result.Failure<Viagem>("Já existe uma viagem aberta ou em andamento.");
 
-            if (viagem.DataFinal < viagem.DataInicial.AddDays(1))
-                return Result.Failure<Viagem>("Insira uma período válido, com pelo menos 1 dia de diferença entre as datas inicial e final. Por exemplo: Data inicial dia 01 e data final dia 02");
+            viagem.VerificarDataInicialeFinal();
 
             Funcionario funcinonario = await _funcionarioRepository.ObterPorId(viagem.IdFuncionario);
             if (funcinonario is null)
                 return Result.Failure<Viagem>("Funcionário não encontrado!");
 
-            viagem.AdicionarFuncionario(funcinonario);            
+            viagem.AdicionarFuncionario(funcinonario);
 
             await _viagemRepository.Insert(viagem);
             return Result.Success(viagem);
@@ -148,13 +127,14 @@ namespace DespesaViagem.Services.Services
             Viagem? viagemAuxiliar = await ObterViagemAbertaOuEmAndamento();
 
             if (viagemAuxiliar is null || viagemAuxiliar.Id != viagem.Id)
-                return Result.Failure<Viagem>("Nenhuma viagem em Aberto ou Em Andamento, ou a viagem informada foi cancelada ou encerrada.");
+                return Result.Failure<Viagem>("Nenhuma viagem em Aberto ou Em Andamento, ou a viagem informada está Cancelada ou Encerrada.");
 
-            if (viagemAuxiliar is not null && viagemAuxiliar.Adiantamento != viagem.Adiantamento)
+            if (viagemAuxiliar.Adiantamento != viagem.Adiantamento && viagemAuxiliar.StatusViagem != StatusViagem.Aberta)
                 return Result.Failure<Viagem>("O Adiantamento incial não pode ser modificado.");
 
-            viagem.DefinirStatusViagem(viagemAuxiliar.StatusViagem);
-            viagem.DefinirAdiantamento(viagemAuxiliar.Adiantamento);
+
+            viagem.DefinirStatusViagem(viagemAuxiliar.StatusViagem); //O status é utilizado da forma como já está no banco por ele não ser mudado pelo usuário diretamente
+            viagem.DefinirAdiantamento(viagem.Adiantamento); //Caso a viagem esteja em aberto será possível modificar o adiantamento
 
             await _viagemRepository.Update(viagem);
             return Result.Success(viagem);
@@ -266,5 +246,16 @@ namespace DespesaViagem.Services.Services
 
             return viagem;
         }
+
+        private async Task<IEnumerable<Viagem>> AdicionarFuncionarioParaAViagem(IEnumerable<Viagem> viagens)
+        {
+            foreach (var viagem in viagens)
+            {
+                Funcionario funcionario = await _funcionarioRepository.ObterPorId(viagem.IdFuncionario);
+                viagem.AdicionarFuncionario(funcionario);
+            }
+
+            return viagens;
+        }      
     }
 }
