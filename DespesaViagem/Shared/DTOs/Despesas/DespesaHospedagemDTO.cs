@@ -7,10 +7,10 @@ namespace DespesaViagem.Shared.DTOs.Despesas
     {
         public int Id { get; set; } = 0;
         [JsonIgnore]
-        public virtual string NomeDespesa { get; set; } = "Despesa com hospedagem";
-        public virtual string DescricaoDespesa { get; set; } = string.Empty;
-        public virtual decimal TotalDespesa { get; set; }
-        public virtual DateTime DataDespesa { get; set; }
+        public string NomeDespesa { get; } = "Despesa com hospedagem";
+        public string DescricaoDespesa { get; set; } = string.Empty;
+        //public decimal TotalDespesa { get; set; }
+        public DateTime DataDespesa { get; set; }
         public DateTime DataDeCadastro { get; } = DateTime.Now;
         [JsonIgnore]
         public TiposDespesas TipoDespesa { get; set; } = TiposDespesas.Hospedagem;

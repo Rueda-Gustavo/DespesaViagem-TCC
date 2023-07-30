@@ -18,6 +18,12 @@ namespace DespesaViagem.Shared.Models.Despesas
             QuantidadeDias = quantidadeDias;
             ValorDiaria = valorDiaria;
         }
-        public DespesaHospedagem() { }
+        public DespesaHospedagem() {}
+
+        public void CalcularTotalDespesa()
+        {
+            if (QuantidadeDias >= 0 && ValorDiaria >= 0)
+                TotalDespesa = QuantidadeDias * ValorDiaria;
+        }
     }
 }

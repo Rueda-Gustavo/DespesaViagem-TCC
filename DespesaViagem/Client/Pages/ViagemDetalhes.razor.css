@@ -1,0 +1,47 @@
+﻿body {
+    background-color: #f2f2f2;
+}
+
+.card {
+    border: 2px solid #007BFF;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+}
+
+.btn-primary {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+}
+
+.card-header {
+    background-color: #007BFF;
+    color: #fff;
+}
+
+/* Estilos para a tabela de despesas */
+table {
+    width: 100%;
+    margin-bottom: 20px;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+.container {
+    max-width: 1200px; /* Largura máxima personalizada */
+    margin: 0 auto; /* Centraliza o container na página */
+    padding: 20px; /* Espaçamento interno personalizado */        
+    margin-left: 2rem;    
+}
+.row {
+    justify-content: space-around;
+}

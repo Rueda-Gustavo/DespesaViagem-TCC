@@ -1,10 +1,13 @@
 ﻿using CSharpFunctionalExtensions;
+using DespesaViagem.Client.Pages;
 using DespesaViagem.Services.Interfaces;
 using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Core.Enums;
+using DespesaViagem.Shared.Models.Core.Helpers;
 using DespesaViagem.Shared.Models.Despesas;
 using DespesaViagem.Shared.Models.Viagens;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace DespesaViagem.Server.Controllers
 {
@@ -21,77 +24,61 @@ namespace DespesaViagem.Server.Controllers
             //_funcionarioService = funcionarioService;
         }
 
-        [HttpGet]        
+        [HttpGet]
         public async Task<ActionResult> ObterTodasViagens()
         {
-            Result<IEnumerable<Viagem>> result = await _viagemService.ObterTodasViagens();
+            Result<List<ViagemDTO>> viagens = await _viagemService.ObterTodasViagens();
 
-            if (result.IsFailure)
-                return BadRequest(result.Value);
+            if (viagens.IsFailure) return BadRequest(viagens.Value);
 
-            IEnumerable<Viagem> viagens = result.Value.ToList();
-
-            return Ok(viagens);
+            return Ok(viagens.Value);
         }
 
-        [HttpGet("{idViagem:int}")]        
+        [HttpGet("{idViagem:int}")]
         public async Task<ActionResult> ObterViagemPorId(int idViagem)
         {
-            Result<Viagem> result = await _viagemService.ObterViagemPorId(idViagem);
+            Result<ViagemDTO> viagem = await _viagemService.ObterViagemPorId(idViagem);
 
-            if (result.IsFailure)
-                return BadRequest(result.Value);
+            if (viagem.IsFailure) return BadRequest(viagem.Value);
 
-            Viagem viagem = result.Value;
-
-            return Ok(viagem);
+            return Ok(viagem.Value);
         }
 
         [HttpPost("Novo")]
         public async Task<ActionResult> InserirViagem(ViagemDTO viagemDTO)
-        {                      
-            Result<Viagem> result = await _viagemService.AdicionarViagem(viagemDTO);
+        {
+            Result<ViagemDTO> viagem = await _viagemService.AdicionarViagem(viagemDTO);
 
-            if (result.IsFailure)
-                return BadRequest(result.Value);
+            if (viagem.IsFailure) return BadRequest(viagem.Value);            
 
-            Viagem viagem = result.Value;
-
-            return Ok(viagem);
+            return Ok(viagem.Value) ;
         }
 
         [HttpPut("Atualizar")]
         public async Task<ActionResult> AtualizarViagem(ViagemDTO viagemDTO)
         {
-            Result<Viagem> result = await _viagemService.AlterarViagem(viagemDTO);
+            Result<ViagemDTO> viagem = await _viagemService.AlterarViagem(viagemDTO);
 
-            if (result.IsFailure)
-                return BadRequest(result.Value);
-
-            Viagem viagem = result.Value;
+            if (viagem.IsFailure) return BadRequest(viagem.Value);            
 
             return Ok(viagem);
         }
 
-
         [HttpGet("{filtro}")]
         public async Task<ActionResult> ObterViagensPorFiltro(string filtro)
         {
-            Result<IEnumerable<Viagem>> result = await _viagemService.ObterViagemPorFiltro(filtro);
+            Result<List<ViagemDTO>> viagens = await _viagemService.ObterViagemPorFiltro(filtro);
 
-            if (result.IsFailure)
-                return BadRequest(result);
+            if (viagens.IsFailure) return BadRequest(viagens.Value);
 
-            IEnumerable<Viagem> viagens = result.Value.ToList();
-
-            return Ok(viagens);
+            return Ok(viagens.Value);
         }
 
         [HttpGet]
         [Route("ObterDespesas/{idViagem}")]
         public async Task<ActionResult> ObterTodasDespesasDaViagem(int idViagem)
         {
-            Result<IEnumerable<Despesa>> result = await _viagemService.ObterTodasDespesas(idViagem);
+            Result<List<Despesa>> result = await _viagemService.ObterTodasDespesas(idViagem);
 
             if (result.IsFailure)
                 return BadRequest(result);
@@ -104,53 +91,41 @@ namespace DespesaViagem.Server.Controllers
         [Route("status/{statusViagem}")]
         public async Task<ActionResult> ObterViagensPorEstado(StatusViagem statusViagem)
         {
-            Result<IEnumerable<Viagem>> result = await _viagemService.ObterViagemPorStatus(statusViagem);
+            Result<List<ViagemDTO>> viagens = await _viagemService.ObterViagemPorStatus(statusViagem);
 
-            if (result.IsFailure)
-                return BadRequest(result);
+            if (viagens.IsFailure) return BadRequest(viagens.Value);            
 
-            IEnumerable<Viagem> viagens = result.Value.ToList();
-
-            return Ok(viagens);
+            return Ok(viagens.Value);
         }
 
         [HttpPatch("Iniciar")]
         public async Task<ActionResult> IniciarViagem()
         {
-            Result<Viagem> result = await _viagemService.IniciarViagem();
+            Result<ViagemDTO> viagem = await _viagemService.IniciarViagem();
 
-            if (result.IsFailure)
-                return BadRequest(result);
-
-            Viagem viagem = result.Value;
+            if (viagem.IsFailure) return BadRequest(viagem.Value);            
 
             return Ok(viagem);
         }
 
         [HttpPatch("Encerrar")]
         public async Task<ActionResult> EncerrarViagem()
-        {                                           
-            Result<Viagem> result = await _viagemService.EncerrarViagem();
+        {
+            Result<ViagemDTO> viagem = await _viagemService.EncerrarViagem();
 
-            if (result.IsFailure)
-                return BadRequest(result);
+            if (viagem.IsFailure) return BadRequest(viagem.Value);            
 
-            Viagem viagem = result.Value;
-
-            return Ok(viagem);
+            return Ok(viagem.Value);
         }
 
-        [HttpPatch("Cancelar")]        
+        [HttpPatch("Cancelar")]
         public async Task<ActionResult> CancelarViagem()
         {
-            Result<Viagem> result = await _viagemService.CancelarViagem();
+            Result<ViagemDTO> viagem = await _viagemService.CancelarViagem();
 
-            if (result.IsFailure)
-                return BadRequest(result);
+            if (viagem.IsFailure) return BadRequest(viagem.Value);
 
-            Viagem viagem = result.Value;
-
-            return Ok(viagem);
+            return Ok(viagem.Value);
         }
     }
 }

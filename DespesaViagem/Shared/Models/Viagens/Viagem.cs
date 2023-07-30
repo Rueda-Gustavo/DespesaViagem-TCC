@@ -25,14 +25,14 @@ namespace DespesaViagem.Shared.Models.Viagens
         {
             get { return _despesas.AsReadOnly(); }
         }
-        public Funcionario? Funcionario { get; private set; }
+        public Funcionario Funcionario { get; private set; }
         [JsonIgnore]
         public int IdFuncionario { get; private set; }
 
 
         private readonly List<Despesa> _despesas = new();
 
-        public Viagem(int id, string nomeViagem, string descricaoViagem, decimal adiantamento,  StatusViagem statusViagem, DateTime dataInicial, DateTime dataFinal, Funcionario funcionario)
+        public Viagem(int id, string nomeViagem, string descricaoViagem, decimal adiantamento, StatusViagem statusViagem, DateTime dataInicial, DateTime dataFinal, Funcionario funcionario)
         {
             Id = id;
             NomeViagem = nomeViagem;
@@ -42,11 +42,14 @@ namespace DespesaViagem.Shared.Models.Viagens
             DataFinal = dataFinal;
             Adiantamento = adiantamento;
             TotalDespesas = 0;
-            StatusViagem = statusViagem; 
+            StatusViagem = statusViagem;
             Funcionario = funcionario;
         }
 
-        public Viagem() { }
+        public Viagem()
+        {
+            Funcionario = new();
+        }
 
         public void AdicionarDespesa(Despesa despesa)
         {
@@ -122,7 +125,7 @@ namespace DespesaViagem.Shared.Models.Viagens
 
         public void DefinirAdiantamento(decimal adiantamento)
         {
-            if(adiantamento >= 0)
+            if (adiantamento >= 0)
             {
                 Adiantamento = adiantamento;
             }
@@ -134,7 +137,7 @@ namespace DespesaViagem.Shared.Models.Viagens
         }
 
         public void VerificarDataInicialeFinal()
-        {                        
+        {
             if (DataFinal < DataInicial.AddDays(1))
                 throw new ArgumentException("Insira uma período válido, com pelo menos 24 horas de diferença entre as datas inicial e final. Por exemplo: Data inicial dia 01 e data final dia 02");
         }

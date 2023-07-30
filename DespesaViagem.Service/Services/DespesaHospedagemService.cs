@@ -69,7 +69,7 @@ namespace DespesaViagem.Services.Services
 
             Viagem viagem = await _viagemRepository.ObterPorId(despesa.IdViagem);
 
-            if (viagem is null || viagem.StatusViagem != StatusViagem.Aberta || viagem.StatusViagem != StatusViagem.EmAndamento)
+            if (viagem is null || (viagem.StatusViagem != StatusViagem.Aberta && viagem.StatusViagem != StatusViagem.EmAndamento))
                 return Result.Failure<DespesaHospedagem>("Viagem não encontrada ou não existe uma viagem aberta ou em andamento.");
             
             await _despesaRepository.Insert(despesa);

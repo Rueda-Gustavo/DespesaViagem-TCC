@@ -1,0 +1,20 @@
+﻿@page "/viagens"
+@inject IViagemService ViagemService
+
+<h3>Viagens</h3>
+
+
+<div class="card-container" style="flex-wrap:wrap">
+    <ExibirViagens />
+</div>
+
+
+
+@code {
+    private IEnumerable<Viagem> TodasViagens { get; set; } = new List<Viagem>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ViagemService.GetViagens();
+    }
+}

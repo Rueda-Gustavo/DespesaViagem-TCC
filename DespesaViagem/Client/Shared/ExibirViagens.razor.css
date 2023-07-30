@@ -1,0 +1,48 @@
+﻿.card {
+    max-width: 30rem;
+    background-color: #fff;
+    border: 1.3px solid rgba(0,0,0,.125);
+    border-radius: .25rem;
+    box-shadow: 5px 5px 8px rgba(0,0,0,.05);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    transition: transform 0.2s ease-out;
+}
+
+    .card:hover {
+        transform: translateY(-10px);
+    }
+
+.card-header {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.card-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: .5rem;
+}
+
+.card-subtitle {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: .5rem;
+}
+
+.card-text {
+    font-size: 1rem;
+    margin-bottom: .5rem;
+}
+
+.btn-exibir-despesas {
+    border: 1.5px solid rgba(0,0,0,.250);
+    box-shadow: 5px 5px 8px rgba(0,0,0,.05);
+    border-radius: .25rem;
+    float: right;
+    padding-bottom: 3px;
+    background-color: #fff;
+}

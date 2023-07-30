@@ -1,0 +1,86 @@
+﻿@page "/viagens/{id:int}"
+@inject IViagemService ViagemService
+
+<h3>Detalhes da viagem</h3>
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Coluna 1: Card da Viagem -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    Informações da Viagem
+                </div>
+                <div class="card-body">
+                    <!-- Conteúdo do card da viagem aqui -->
+                    <h5 class="card-title">@ViagemService.Viagem.NomeViagem</h5>
+                    <p class="card-text">@ViagemService.Viagem.DescricaoViagem</p>
+                    <ul>
+                        <li class="card-text">De: @ViagemService.Viagem.DataInicial.Date</li>
+                        <li class="card-text">Até: @ViagemService.Viagem.DataFinal.Date</li>
+                        <li>Adiantamento incial: @ViagemService.Viagem.Adiantamento</li>
+                    </ul>
+                    <!-- Mais informações da viagem aqui -->
+                </div>
+            </div>
+        </div>
+        <!-- Coluna 2: Grid com as Despesas -->
+        <div class="col-md-6">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Categoria</th>
+                        <th>Data</th>
+                        <th>Descrição</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="4"><strong>Alimentação</strong></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>01/08/2023</td>
+                        <td>Restaurante A</td>
+                        <td>R$ 50,00</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>02/08/2023</td>
+                        <td>Restaurante B</td>
+                        <td>R$ 60,00</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4"><strong>Hospedagem</strong></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>03/08/2023</td>
+                        <td>Hotel X</td>
+                        <td>R$ 200,00</td>
+                    </tr>
+                    <!-- Mais linhas com as despesas aqui -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private ViagemDTO? Viagem { get; set; }
+    private Funcionario? Funcionario { get; set; }
+    private Dictionary<TiposDespesas, List<object>>? Despesas { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ViagemService.GetViagem(Id);
+    }
+
+    private async Task ObterDespesasDespesas()
+    {
+        throw new NotImplementedException();
+    }
+}

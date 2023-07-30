@@ -1,7 +1,6 @@
 ﻿using DespesaViagem.Infra.Database;
 using DespesaViagem.Infra.Interfaces;
 using DespesaViagem.Shared.Models.Core.Enums;
-using DespesaViagem.Shared.Models.Core.Helpers;
 using DespesaViagem.Shared.Models.Despesas;
 using DespesaViagem.Shared.Models.Viagens;
 using Microsoft.EntityFrameworkCore;
@@ -16,10 +15,11 @@ namespace DespesaViagem.Infra.Repositories
         => _context = context;
 
 
-        public async Task<IEnumerable<Viagem>> ObterTodos()
+        public async Task<List<Viagem>> ObterTodos()
         {
             return await _context.Viagens
                 .Include(f => f.Funcionario)
+                .Include(d => d.Despesas)
                 .ToListAsync();
         }
         public async Task<Viagem> ObterPorId(int id)
@@ -31,15 +31,15 @@ namespace DespesaViagem.Infra.Repositories
             //    .ToListAsync();
         }
 
-        public async Task<IEnumerable<Viagem?>> ObterViagemPorStatus(StatusViagem statusViagem)
+        public async Task<List<Viagem?>> ObterViagemPorStatus(StatusViagem statusViagem)
         {            
             return await _context.Viagens
                 .Include(f => f.Funcionario)
-                .Where(viagem => viagem.StatusViagem == statusViagem)                
+                .Where(viagem => viagem.StatusViagem == statusViagem)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Viagem>> ObterPorFiltro(string filtro)
+        public async Task<List<Viagem>> ObterPorFiltro(string filtro)
         {
             _ = int.TryParse(filtro, out int id);
             return await _context.Viagens
@@ -47,7 +47,7 @@ namespace DespesaViagem.Infra.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Despesa>> ObterTodasDepesas(int viagemId)
+        public async Task<List<Despesa>> ObterTodasDepesas(int viagemId)
         {
             return await _context.Despesas
                 .Where(despesa => despesa.Viagem.Id == viagemId)

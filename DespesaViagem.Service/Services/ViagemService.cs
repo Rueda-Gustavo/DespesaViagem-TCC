@@ -27,24 +27,19 @@ namespace DespesaViagem.Services.Services
             _funcionarioRepository = funcionarioRepository;
         }
 
-        public async Task<Result<IEnumerable<Viagem>>> ObterTodasViagens()
+        public async Task<Result<List<ViagemDTO>>> ObterTodasViagens()
         {
-            var viagens = await _viagemRepository.ObterTodos();
+            List<Viagem> viagens = await _viagemRepository.ObterTodos();
 
             if (!viagens.Any())
-                return Result.Failure<IEnumerable<Viagem>>("Não existem viagens cadastradas.");
+                return Result.Failure<List<ViagemDTO>>("Não existem viagens cadastradas.");
 
-            foreach (var viagem in viagens)
-            {
-                IEnumerable<Despesa> despesas = await _despesaRepository.ObterTodos(viagem.Id);
-                if (despesas.Any())
-                    viagem.AdicionarDespesas(despesas);
-            }
+            List<ViagemDTO> viagensDTO = MappingDTOs.ConverterDTO(viagens);
 
-            return Result.Success(viagens);
+            return Result.Success(viagensDTO);
         }
 
-        public async Task<Result<Viagem>> ObterViagemPorId(int idViagem)
+        public async Task<Result<ViagemDTO>> ObterViagemPorId(int idViagem)
         {
             //_ = int.TryParse(id, out int idViagem);
 
@@ -53,101 +48,107 @@ namespace DespesaViagem.Services.Services
                 Viagem viagem = await _viagemRepository.ObterPorId(idViagem);
 
                 if (viagem is null)
-                    return Result.Failure<Viagem>("Não existem viagens com o filtro especificado!");
+                    return Result.Failure<ViagemDTO>("Não existem viagens com o filtro especificado!");
 
                 viagem = await AdicionarDespesaParaAViagem(viagem);
                 viagem.AdicionarFuncionario(await _funcionarioRepository.ObterPorId(viagem.IdFuncionario));
 
-                return Result.Success(viagem);
+                ViagemDTO viagemDTO = MappingDTOs.ConverterDTO(viagem);
+
+                return Result.Success(viagemDTO);
             }
 
-            return Result.Failure<Viagem>("Especifique um id válido!!");
+            return Result.Failure<ViagemDTO>("Especifique um id válido!!");
         }
 
-        public async Task<Result<IEnumerable<Viagem>>> ObterViagemPorFiltro(string filtro)
+        public async Task<Result<List<ViagemDTO>>> ObterViagemPorFiltro(string filtro)
         {
-            IEnumerable<Viagem> viagens = await _viagemRepository.ObterPorFiltro(filtro);
+            List<Viagem> viagens = await _viagemRepository.ObterPorFiltro(filtro);
 
             if (!viagens.Any())
-                return Result.Failure<IEnumerable<Viagem>>("Não existem viagens com o filtro especificado!");
+                return Result.Failure<List<ViagemDTO>>("Não existem viagens com o filtro especificado!");
 
-            viagens = await AdicionarDespesasParaAViagem(viagens);
-            viagens = await AdicionarFuncionarioParaAViagem(viagens); 
+            //viagens = await AdicionarDespesasParaAViagem(viagens);
+            //viagens = await AdicionarFuncionarioParaAViagem(viagens);
+            List<ViagemDTO> viagensDTO = MappingDTOs.ConverterDTO(viagens);
 
-            return Result.Success(viagens);
+            return Result.Success(viagensDTO);
         }
 
-        public async Task<Result<IEnumerable<Viagem>>> ObterViagemPorStatus(StatusViagem statusViagem)
+        public async Task<Result<List<ViagemDTO>>> ObterViagemPorStatus(StatusViagem statusViagem)
         {
-            IEnumerable<Viagem> viagens = await _viagemRepository.ObterViagemPorStatus(statusViagem);
+            List<Viagem> viagens = await _viagemRepository.ObterViagemPorStatus(statusViagem);
 
             if (viagens is null || !viagens.Any())
-                return Result.Failure<IEnumerable<Viagem>>("Não existem viagens com o status especificado!");
+                return Result.Failure<List<ViagemDTO>>("Não existem viagens com o status especificado!");
 
-            viagens = await AdicionarDespesasParaAViagem(viagens);
+            //viagens = await AdicionarDespesasParaAViagem(viagens);
+            List<ViagemDTO> viagensDTO = MappingDTOs.ConverterDTO(viagens);
 
-            return Result.Success(viagens);
+            return Result.Success(viagensDTO);
         }
 
-        public async Task<Result<IEnumerable<Despesa>>> ObterTodasDespesas(int id)
+        public async Task<Result<List<Despesa>>> ObterTodasDespesas(int id)
         {
             return Result.Success(await _viagemRepository.ObterTodasDepesas(id));
         }
 
-        public async Task<Result<Viagem>> AdicionarViagem(ViagemDTO viagemDTO)
+        public async Task<Result<ViagemDTO>> AdicionarViagem(ViagemDTO viagemDTO)
         {
-            viagemDTO.StatusViagem = StatusViagem.Aberta;
+            viagemDTO.StatusViagem = StatusViagem.Aberta.ToString();
             Viagem viagem = MappingDTOs.ConverterDTO(viagemDTO);
 
             if (viagem is null || viagemDTO.Id != 0) //Caso o Id não seja 0 irá dar erro na hora de adicionar a viagem
-                return Result.Failure<Viagem>("Nenhuma viagem informada.");
+                return Result.Failure<ViagemDTO>("Nenhuma viagem informada.");
 
             if ((await ObterViagemAbertaOuEmAndamento()) is not null)
-                return Result.Failure<Viagem>("Já existe uma viagem aberta ou em andamento.");
+                return Result.Failure<ViagemDTO>("Já existe uma viagem aberta ou em andamento.");
 
             viagem.VerificarDataInicialeFinal();
 
             Funcionario funcinonario = await _funcionarioRepository.ObterPorId(viagem.IdFuncionario);
             if (funcinonario is null)
-                return Result.Failure<Viagem>("Funcionário não encontrado!");
+                return Result.Failure<ViagemDTO>("Funcionário não encontrado!");
 
-            viagem.AdicionarFuncionario(funcinonario);
+            //viagem.AdicionarFuncionario(funcinonario);
 
             await _viagemRepository.Insert(viagem);
-            return Result.Success(viagem);
+
+            return Result.Success(viagemDTO);
         }
 
-        public async Task<Result<Viagem>> AlterarViagem(ViagemDTO viagemDTO)
+        public async Task<Result<ViagemDTO>> AlterarViagem(ViagemDTO viagemDTO)
         {
             Viagem viagem = MappingDTOs.ConverterDTO(viagemDTO);
 
             if (viagem is null || viagemDTO.Id <= 0)
-                return Result.Failure<Viagem>("Nenhuma viagem informada.");
+                return Result.Failure<ViagemDTO>("Nenhuma viagem informada.");
 
             Viagem? viagemAuxiliar = await ObterViagemAbertaOuEmAndamento();
 
             if (viagemAuxiliar is null || viagemAuxiliar.Id != viagem.Id)
-                return Result.Failure<Viagem>("Nenhuma viagem em Aberto ou Em Andamento, ou a viagem informada está Cancelada ou Encerrada.");
+                return Result.Failure<ViagemDTO>("Nenhuma viagem em Aberto ou Em Andamento, ou a viagem informada está Cancelada ou Encerrada.");
 
             if (viagemAuxiliar.Adiantamento != viagem.Adiantamento && viagemAuxiliar.StatusViagem != StatusViagem.Aberta)
-                return Result.Failure<Viagem>("O Adiantamento incial não pode ser modificado.");
+                return Result.Failure<ViagemDTO>("O Adiantamento incial não pode ser modificado.");
 
 
             viagem.DefinirStatusViagem(viagemAuxiliar.StatusViagem); //O status é utilizado da forma como já está no banco por ele não ser mudado pelo usuário diretamente
             viagem.DefinirAdiantamento(viagem.Adiantamento); //Caso a viagem esteja em aberto será possível modificar o adiantamento
 
             await _viagemRepository.Update(viagem);
-            return Result.Success(viagem);
+            return Result.Success(viagemDTO);
         }
 
-        public async Task<Result<Viagem>> RemoverViagem(int id)
+        public async Task<Result<ViagemDTO>> RemoverViagem(int id)
         {
             Viagem viagem = await _viagemRepository.ObterPorId(id);
 
             if (viagem is null)
-                return Result.Failure<Viagem>("Viagem não existe!");
+                return Result.Failure<ViagemDTO>("Viagem não existe!");
             await _viagemRepository.Delete(viagem);
-            return Result.Success(viagem);
+            ViagemDTO viagemDTO = MappingDTOs.ConverterDTO(viagem);
+            return Result.Success(viagemDTO);
         }
 
         public Result<decimal> ObterPrestacaoDeContas(Viagem viagem)
@@ -155,50 +156,56 @@ namespace DespesaViagem.Services.Services
             return Result.Success(viagem.GerarPrestacaoDeContas());
         }
 
-        public async Task<Result<Viagem>> IniciarViagem()
+        public async Task<Result<ViagemDTO>> IniciarViagem()
         {
             var viagemAberta = await _viagemRepository.ObterViagemPorStatus(StatusViagem.Aberta);
 
             if (viagemAberta is null || !viagemAberta.Any())
-                return Result.Failure<Viagem>("Não há nenhuma viagem Aberta");
+                return Result.Failure<ViagemDTO>("Não há nenhuma viagem Aberta");
 
             Viagem viagem = viagemAberta.First();
 
             viagem.IniciarViagem();
             await _viagemRepository.Update(viagem);
-            return Result.Success(viagem);
+            ViagemDTO viagemDTO = MappingDTOs.ConverterDTO(viagem);
+
+            return Result.Success(viagemDTO);
         }
 
-        public async Task<Result<Viagem>> EncerrarViagem()
+        public async Task<Result<ViagemDTO>> EncerrarViagem()
         {
             Viagem? viagem = await ObterViagemAbertaOuEmAndamento();
 
-            if (viagem is null) return Result.Failure<Viagem>("Nenhuma viagem Em Andamento ou Aberta.");
+            if (viagem is null) return Result.Failure<ViagemDTO>("Nenhuma viagem Em Andamento ou Aberta.");
 
             if (viagem.StatusViagem != StatusViagem.EmAndamento)
             {
-                return Result.Failure<Viagem>("A viagem deve estar em andamento para ser encerrada.");
+                return Result.Failure<ViagemDTO>("A viagem deve estar em andamento para ser encerrada.");
             }
 
             viagem.EncerrarViagem();
             await _viagemRepository.Update(viagem);
-            return Result.Success(viagem);
+            ViagemDTO viagemDTO = MappingDTOs.ConverterDTO(viagem);
+
+            return Result.Success(viagemDTO);
         }
 
-        public async Task<Result<Viagem>> CancelarViagem()
+        public async Task<Result<ViagemDTO>> CancelarViagem()
         {
             Viagem? viagem = await ObterViagemAbertaOuEmAndamento();
 
-            if (viagem is null) return Result.Failure<Viagem>("Nenhuma viagem Em Andamento ou Aberta.");
+            if (viagem is null) return Result.Failure<ViagemDTO>("Nenhuma viagem Em Andamento ou Aberta.");
 
             if (await ViagemCancelada(viagem.Id))
             {
-                return Result.Failure<Viagem>("Viagem já foi cancelada.");
+                return Result.Failure<ViagemDTO>("Viagem já foi cancelada.");
             }
 
             viagem.CancelarViagem();
             await _viagemRepository.Update(viagem);
-            return Result.Success(viagem);
+            ViagemDTO viagemDTO = MappingDTOs.ConverterDTO(viagem);
+
+            return Result.Success(viagemDTO);
         }
 
         //Verifica se já existe alguma viagem em andamento, caso não existe pode prosseguir com a criação.
@@ -227,7 +234,7 @@ namespace DespesaViagem.Services.Services
             return false;
         }
 
-        private async Task<IEnumerable<Viagem>> AdicionarDespesasParaAViagem(IEnumerable<Viagem> viagens)
+        private async Task<List<Viagem>> AdicionarDespesasParaAViagem(List<Viagem> viagens)
         {
             foreach (var viagem in viagens)
             {
@@ -247,7 +254,7 @@ namespace DespesaViagem.Services.Services
             return viagem;
         }
 
-        private async Task<IEnumerable<Viagem>> AdicionarFuncionarioParaAViagem(IEnumerable<Viagem> viagens)
+        private async Task<List<Viagem>> AdicionarFuncionarioParaAViagem(List<Viagem> viagens)
         {
             foreach (var viagem in viagens)
             {
@@ -256,6 +263,6 @@ namespace DespesaViagem.Services.Services
             }
 
             return viagens;
-        }      
+        }
     }
 }
