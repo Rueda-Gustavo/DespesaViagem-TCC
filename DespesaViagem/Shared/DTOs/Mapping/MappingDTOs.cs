@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using DespesaViagem.Shared.DTOs.Despesas;
 using DespesaViagem.Shared.DTOs.Viagens;
-using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Despesas;
 using DespesaViagem.Shared.Models.Viagens;
 
@@ -14,6 +13,7 @@ namespace DespesaViagem.Server.Mapping
             MapperConfiguration config = new(cfg =>
             {
                 cfg.CreateMap<DespesaHospedagemDTO, DespesaHospedagem>()
+                .ForMember(dst => dst.NomeDespesa, opt => opt.Ignore())
                 .ForMember(dst => dst.Viagem, opt => opt.Ignore())
                 .ForMember(dst => dst.Endereco, opt => opt.Ignore())
                 .ForMember(dst => dst.TotalDespesa, opt => opt.Ignore());
@@ -24,6 +24,65 @@ namespace DespesaViagem.Server.Mapping
 
             DespesaHospedagem despesa = mapper.Map<DespesaHospedagem>(despesaHospedagemDTO);
             
+            despesa.CalcularTotalDespesa();
+
+            return despesa;
+        }
+        public static DespesaPassagem ConverterDTO(DespesaPassagemDTO despesaPassagemDTO)
+        {
+            MapperConfiguration config = new(cfg =>
+            {
+                cfg.CreateMap<DespesaPassagemDTO, DespesaPassagem>()
+                .ForMember(dst => dst.NomeDespesa, opt => opt.Ignore())
+                .ForMember(dst => dst.Viagem, opt => opt.Ignore())                 
+                .ForMember(dst => dst.TotalDespesa, opt => opt.Ignore());
+                ;
+            });
+
+            Mapper mapper = new(config);
+
+            DespesaPassagem despesa = mapper.Map<DespesaPassagem>(despesaPassagemDTO);
+
+            despesa.CalcularTotalDespesa();
+
+            return despesa;
+        }
+
+        public static DespesaAlimentacao ConverterDTO(DespesaAlimentacaoDTO despesaAlimentacaoDTO)
+        {
+            MapperConfiguration config = new(cfg =>
+            {
+                cfg.CreateMap<DespesaAlimentacaoDTO, DespesaAlimentacao>()
+                .ForMember(dst => dst.NomeDespesa, opt => opt.Ignore())
+                .ForMember(dst => dst.Viagem, opt => opt.Ignore())
+                .ForMember(dst => dst.TotalDespesa, opt => opt.Ignore());
+                ;
+            });
+
+            Mapper mapper = new(config);
+
+            DespesaAlimentacao despesa = mapper.Map<DespesaAlimentacao>(despesaAlimentacaoDTO);
+
+            despesa.CalcularTotalDespesa();
+
+            return despesa;
+        }       
+
+        public static DespesaDeslocamento ConverterDTO(DespesaDeslocamentoDTO despesaDeslocamentoDTO)
+        {
+            MapperConfiguration config = new(cfg =>
+            {
+                cfg.CreateMap<DespesaDeslocamentoDTO, DespesaDeslocamento>()
+                .ForMember(dst => dst.NomeDespesa, opt => opt.Ignore())
+                .ForMember(dst => dst.Viagem, opt => opt.Ignore())
+                .ForMember(dst => dst.TotalDespesa, opt => opt.Ignore());
+                ;
+            });
+
+            Mapper mapper = new(config);
+
+            DespesaDeslocamento despesa = mapper.Map<DespesaDeslocamento>(despesaDeslocamentoDTO);
+
             despesa.CalcularTotalDespesa();
 
             return despesa;

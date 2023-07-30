@@ -4,8 +4,6 @@ using DespesaViagem.Shared.Models.Core.Helpers;
 using DespesaViagem.Shared.Models.Despesas;
 using DespesaViagem.Shared.Models.Viagens;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 
 namespace DespesaViagem.Infra.Database
 {
@@ -13,7 +11,12 @@ namespace DespesaViagem.Infra.Database
     {
         public DbSet<Viagem> Viagens { get; set; }
         public DbSet<Despesa> Despesas { get; set; }
-        public DbSet<DespesaHospedagem> DespesasHospedagens { get; set; }
+        public DbSet<DespesaHospedagem> DespesasHospedagem { get; set; }
+        public DbSet<DespesaDeslocamento> DespesasDeslocamento { get; set; }
+        public DbSet<DespesaAlimentacao> DespesasAlimentacao { get; set; }
+        public DbSet<DespesaPassagem> DespesasPassagem { get; set; }
+
+
         public DbSet<Endereco> Enderecos { get; set; }
         public DbSet<Funcionario> Funcionarios { get; set; }
         public DespesaViagemContext(DbContextOptions<DespesaViagemContext> options) : base(options) { }
@@ -23,6 +26,15 @@ namespace DespesaViagem.Infra.Database
             modelBuilder.Entity<Despesa>().HasKey(k => k.Id);
 
             modelBuilder.Entity<DespesaHospedagem>()
+                .HasBaseType<Despesa>();
+
+            modelBuilder.Entity<DespesaAlimentacao>()
+                .HasBaseType<Despesa>();
+
+            modelBuilder.Entity<DespesaDeslocamento>()
+                .HasBaseType<Despesa>();
+
+            modelBuilder.Entity<DespesaPassagem>()
                 .HasBaseType<Despesa>();
 
             modelBuilder.Entity<Endereco>().HasKey(k => k.Id);
@@ -39,6 +51,10 @@ namespace DespesaViagem.Infra.Database
             });
 
             modelBuilder.ApplyConfiguration(new DespesaHospedagemEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new DespesaAlimentacaoEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new DespesaDeslocamentoEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new DespesaPassagemEntityTypeConfiguration());
+
             modelBuilder.ApplyConfiguration(new ViagemEntityTypeConfiguration());
 
 

@@ -4,6 +4,7 @@ using DespesaViagem.Infra.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DespesaViagem.Infra.Migrations
 {
     [DbContext(typeof(DespesaViagemContext))]
-    partial class DespesaViagemContextModelSnapshot : ModelSnapshot
+    [Migration("20230730174055_Corrigindo_Nomenclatura")]
+    partial class Corrigindo_Nomenclatura
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -200,7 +203,7 @@ namespace DespesaViagem.Infra.Migrations
                         .HasColumnType("varchar(30)");
 
                     b.Property<decimal>("ValorRefeicao")
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("decimal");
 
                     b.ToTable("DespesasAlimentacao", (string)null);
                 });
@@ -225,7 +228,7 @@ namespace DespesaViagem.Infra.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<decimal>("ValorPorQuilometro")
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("decimal");
 
                     b.ToTable("DespesasDeslocamento", (string)null);
                 });
@@ -241,7 +244,7 @@ namespace DespesaViagem.Infra.Migrations
                         .HasColumnType("integer");
 
                     b.Property<decimal>("ValorDiaria")
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("decimal");
 
                     b.HasIndex("IdEndereco");
 
@@ -274,7 +277,7 @@ namespace DespesaViagem.Infra.Migrations
                         .HasColumnType("varchar(40)");
 
                     b.Property<decimal>("Preco")
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("decimal");
 
                     b.ToTable("DespesasPassagem", (string)null);
                 });

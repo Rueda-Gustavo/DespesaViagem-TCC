@@ -15,17 +15,15 @@ namespace DespesaViagem.Infra.Database.EntityConfiguration.DespesasEntityTypeCon
                    .IsRequired(true);
 
             builder.Property(p => p.ValorDiaria)
-                   .HasColumnType("decimal")
+                   .HasColumnType("decimal(10,2)")
                    .IsRequired(true);
 
-            builder
-                   .Property(p => p.TipoDespesa)
+            builder.Property(p => p.TipoDespesa)
                    .HasMaxLength(20)
                    .IsUnicode(false)
                    .IsRequired(true);
 
-            builder
-                    .HasOne(e => e.Endereco)
+            builder.HasOne(e => e.Endereco)
                     .WithMany(d => d.DespesasHospedagem)
                     .HasForeignKey(d => d.IdEndereco);
         }
