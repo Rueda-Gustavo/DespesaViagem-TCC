@@ -1,0 +1,11 @@
+﻿@page "/viagens/{idViagem:int}/{idDespesa:int}"
+
+<h3>Detalhes da Despesa @IdViagem @IdDespesa</h3>
+
+@code {
+    [Parameter]
+    public int IdViagem { get; set; }
+
+    [Parameter]
+    public int IdDespesa{ get; set; }
+}

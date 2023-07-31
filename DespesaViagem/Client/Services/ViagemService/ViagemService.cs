@@ -1,9 +1,11 @@
 ﻿using DespesaViagem.Client.Pages;
 using DespesaViagem.Client.Services.Interfaces;
 using DespesaViagem.Server.Mapping;
+using DespesaViagem.Shared.DTOs.Despesas;
 using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
+using DespesaViagem.Shared.Models.Despesas;
 using DespesaViagem.Shared.Models.Viagens;
 using System.Net.Http.Json;
 
@@ -17,7 +19,6 @@ namespace DespesaViagem.Client.Services.ViagemService
         private readonly ILogger<ViagemService> _logger;
 
         public List<ViagemDTO> Viagens { get; set; } = new List<ViagemDTO>();
-        public ViagemDTO Viagem { get; set; } = new ViagemDTO();
         public string Mensagem { get; set; } = "Carregando viagens...";
 
         public ViagemService(HttpClient httpClient, ILogger<ViagemService> logger)
@@ -37,42 +38,57 @@ namespace DespesaViagem.Client.Services.ViagemService
             {
                 Viagens = response;
             }
-
+            _logger.LogInformation("Sucesso.");
             ViagensChanged.Invoke();
         }
 
-        public async Task GetViagem(int id)
+        public async Task<ViagemDTO> GetViagem(int idViagem)
         {
             var response = await _httpClient
-                .GetFromJsonAsync<ViagemDTO>($"api/Viagem/{id}");
+                .GetFromJsonAsync<ViagemDTO>($"api/Viagem/{idViagem}");
 
             if (response == null)
             {
-                Mensagem = "Nenhuma viagem encontrada!";                
+                Mensagem = "Nenhuma viagem encontrada!";
+                return new ViagemDTO();
             }
             else
             {
-                Viagem = response;
-            }
-
-            ViagensChanged.Invoke();
+                _logger.LogInformation("Sucesso.");
+                return response;
+            }           
         }
 
-        public async Task<ServiceResponse<Funcionario>> GetFuncionario(string CPF)
+        public async Task<Funcionario> GetFuncionario(string CPF)
         {
             Funcionario funcionario = await _httpClient
                 .GetFromJsonAsync<Funcionario>($"api/funcionario/{CPF}/obterfuncionarioporfiltro")
                 ?? new Funcionario();
 
-            if (funcionario == null || funcionario.CPF != CPF)
-                return new ServiceResponse<Funcionario> { Sucesso = false };
+            if (funcionario.CPF != CPF)
+            {
+                _logger.LogError("Funcionário não encontrado.");
+                return funcionario;
+            }
+            
+            _logger.LogInformation("Sucesso.");
+            return funcionario;                                                
+        }
 
-            return new ServiceResponse<Funcionario> { Dados = funcionario };
-            /*
-            _logger.LogError($"Erro ao obter Funcionario pelo CPF = {CPF} - {message}");
-            throw new Exception($"Status Code : {response.StatusCode} - {message}");
-            */
+        public async Task<List<DespesaDTO>> ObterDespesas(int idViagem)
+        {
+            List<DespesaDTO> despesas = await _httpClient
+                .GetFromJsonAsync<List<DespesaDTO>>($"api/Viagem/ObterDespesas/{idViagem}")
+                ?? new List<DespesaDTO>();
 
+            if (!despesas.Any())
+            {
+                _logger.LogError("Despesas não encontradas.");
+                return despesas;
+            }
+
+            _logger.LogInformation("Sucesso.");
+            return despesas;
         }
     }
 }

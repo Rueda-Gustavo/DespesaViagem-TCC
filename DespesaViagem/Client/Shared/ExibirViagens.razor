@@ -1,5 +1,6 @@
 ﻿@inject IViagemService ViagemService
 @inject NavigationManager NavigationManager
+@implements IDisposable
 
 @if (ViagemService.Viagens == null || !ViagemService.Viagens.Any())
 {
@@ -30,8 +31,8 @@ else
                 <h5 class="card-subtitle">Informações sobre a viagem:</h5>
                 <ul>
                     <li class="card-text">Descrição da viagem: @descricao</li>
-                    <li class="card-text">De: @viagem.DataInicial.Date</li>
-                    <li class="card-text">Até: @viagem.DataFinal.Date</li>
+                    <li class="card-text">De: @viagem.DataInicial</li>
+                    <li class="card-text">Até: @viagem.DataFinal</li>
                     <li>Adiantamento incial: @viagem.Adiantamento</li>
                 </ul>
                 <hr />
@@ -50,6 +51,11 @@ else
     protected override void OnInitialized()
     {
         ViagemService.ViagensChanged += StateHasChanged;          
+    }
+
+    public void Dispose()
+    {
+        ViagemService.ViagensChanged -= StateHasChanged;
     }
 
     private void VerDetalhes(int idViagem)

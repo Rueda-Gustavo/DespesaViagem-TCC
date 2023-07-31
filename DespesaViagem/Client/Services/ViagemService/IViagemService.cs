@@ -1,6 +1,6 @@
-﻿using DespesaViagem.Shared.DTOs.Viagens;
+﻿using DespesaViagem.Shared.DTOs.Despesas;
+using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Core.Helpers;
-using DespesaViagem.Shared.Models.Viagens;
 
 namespace DespesaViagem.Client.Services.Interfaces
 {
@@ -8,10 +8,10 @@ namespace DespesaViagem.Client.Services.Interfaces
     {
         event Action ViagensChanged;
         List<ViagemDTO> Viagens { get; set; }
-        ViagemDTO Viagem { get; set; }
         string Mensagem { get; set; }
         Task GetViagens();
-        Task GetViagem(int id);
-        Task<ServiceResponse<Funcionario>> GetFuncionario(string CPF);
+        Task<ViagemDTO> GetViagem(int idViagem);
+        Task<Funcionario> GetFuncionario(string CPF);
+        Task<List<DespesaDTO>> ObterDespesas(int idViagem);
     }
 }

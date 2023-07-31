@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Client.Pages;
 using DespesaViagem.Services.Interfaces;
+using DespesaViagem.Shared.DTOs.Despesas;
 using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
@@ -78,12 +79,12 @@ namespace DespesaViagem.Server.Controllers
         [Route("ObterDespesas/{idViagem}")]
         public async Task<ActionResult> ObterTodasDespesasDaViagem(int idViagem)
         {
-            Result<List<Despesa>> result = await _viagemService.ObterTodasDespesas(idViagem);
+            Result<List<DespesaDTO>> result = await _viagemService.ObterTodasDespesas(idViagem);
 
             if (result.IsFailure)
-                return BadRequest(result);
+                return BadRequest(result.Value);
 
-            List<Despesa> despesas = result.Value.ToList();
+            List<DespesaDTO> despesas = result.Value;
             return Ok(despesas);
         }
 

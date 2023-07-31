@@ -1,47 +1,48 @@
-﻿body {
-    background-color: #f2f2f2;
-}
-
-.card {
-    border: 2px solid #007BFF;
+﻿.card-viagem {
+    border: 2px solid #a5a5a5;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 10px;
 }
 
-.btn-primary {
-    background-color: #17a2b8;
-    border-color: #17a2b8;
+.card-header-viagem {
+    background-color: #fff;
+    color: #191919;
+    border-radius: 10px;
+    border: 2px solid #bdbdbd;
+    display: flex;
+    justify-content: center;
+    padding-top: .5rem;
 }
 
-.card-header {
-    background-color: #007BFF;
-    color: #fff;
-}
-
-/* Estilos para a tabela de despesas */
-table {
-    width: 100%;
-    margin-bottom: 20px;
-    border-collapse: collapse;
-}
-
-th, td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-th {
-    background-color: #f2f2f2;
+card-title-viagem {
+    padding: 1rem 0 0 0; 
 }
 
 .container {
     max-width: 1200px; /* Largura máxima personalizada */
     margin: 0 auto; /* Centraliza o container na página */
-    padding: 20px; /* Espaçamento interno personalizado */        
-    margin-left: 2rem;    
+    padding: 20px; /* Espaçamento interno personalizado */
+    margin-left: 2rem;
 }
 .row {
-    justify-content: space-around;
+    justify-content: space-evenly;
+}
+
+.categoria {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.categoria-titulo {
+    font-weight: bold;
+}
+
+.despesa {
+    margin: 5px 0;
+    padding: 5px;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
 }

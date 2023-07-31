@@ -1,4 +1,4 @@
-﻿@page "/viagens/{id:int}"
+﻿@page "/viagens/{idViagem:int}"
 @inject IViagemService ViagemService
 
 <h3>Detalhes da viagem</h3>
@@ -7,80 +7,63 @@
     <div class="row">
         <!-- Coluna 1: Card da Viagem -->
         <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    Informações da Viagem
+            <div class="card-viagem">
+                <div class="card-header-viagem">
+                    <h5 class="card-title-viagem">@Viagem.NomeViagem</h5>
                 </div>
                 <div class="card-body">
-                    <!-- Conteúdo do card da viagem aqui -->
-                    <h5 class="card-title">@ViagemService.Viagem.NomeViagem</h5>
-                    <p class="card-text">@ViagemService.Viagem.DescricaoViagem</p>
+                    <span class="status-viagem">Viagem: @Status</span>
+                    <p class="card-text">@Viagem.DescricaoViagem</p>
                     <ul>
-                        <li class="card-text">De: @ViagemService.Viagem.DataInicial.Date</li>
-                        <li class="card-text">Até: @ViagemService.Viagem.DataFinal.Date</li>
-                        <li>Adiantamento incial: @ViagemService.Viagem.Adiantamento</li>
+                        <li class="card-text">De: @Viagem.DataInicial</li>
+                        <li class="card-text">Até: @Viagem.DataFinal</li>
+                        <li>Adiantamento incial: @Viagem.Adiantamento</li>
+
                     </ul>
-                    <!-- Mais informações da viagem aqui -->
                 </div>
             </div>
         </div>
-        <!-- Coluna 2: Grid com as Despesas -->
-        <div class="col-md-6">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Categoria</th>
-                        <th>Data</th>
-                        <th>Descrição</th>
-                        <th>Valor</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="4"><strong>Alimentação</strong></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td>01/08/2023</td>
-                        <td>Restaurante A</td>
-                        <td>R$ 50,00</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td>02/08/2023</td>
-                        <td>Restaurante B</td>
-                        <td>R$ 60,00</td>
-                    </tr>
-                    <tr>
-                        <td colspan="4"><strong>Hospedagem</strong></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td>03/08/2023</td>
-                        <td>Hotel X</td>
-                        <td>R$ 200,00</td>
-                    </tr>
-                    <!-- Mais linhas com as despesas aqui -->
-                </tbody>
-            </table>
+        <div class="col-md-4">
+            <!-- Coluna 2: Grid com as Despesas -->
+            @foreach (var despesa in Despesas)
+            {
+                <div class="list-group mb-2">
+                    <a href="#" class="list-group-item list-group-item-action" aria-current="true">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">@despesa.NomeDespesa</h5>
+                        </div>
+                        <p class="mb-1">@despesa.DescricaoDespesa</p>
+                        <p class="mb-1">Data da despesa: @despesa.DataDespesa</p>
+                        <p class="mb-1">R$@despesa.TotalDespesa</p>
+                    </a>
+                </div>
+            }
         </div>
     </div>
 </div>
 
 @code {
     [Parameter]
-    public int Id { get; set; }
-    private ViagemDTO? Viagem { get; set; }
+    public int IdViagem { get; set; }
+    private ViagemDTO Viagem { get; set; } = new();
     private Funcionario? Funcionario { get; set; }
-    private Dictionary<TiposDespesas, List<object>>? Despesas { get; set; }
+    private List<DespesaDTO> Despesas { get; set; } = new();
+    private string Status { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        await ViagemService.GetViagem(Id);
+        Viagem = await ViagemService.GetViagem(IdViagem);
+
+        if (Viagem.StatusViagem == StatusViagem.EmAndamento.ToString())
+            Status = "Em andamento";
+        else
+            Status = Viagem.StatusViagem;
+
+        await ObterDespesas();       
     }
 
-    private async Task ObterDespesasDespesas()
+    private async Task ObterDespesas()
     {
-        throw new NotImplementedException();
+        Despesas = await ViagemService.ObterDespesas(Viagem.Id);
     }
 }

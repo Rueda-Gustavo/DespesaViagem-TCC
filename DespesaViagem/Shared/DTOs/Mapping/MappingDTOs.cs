@@ -8,6 +8,25 @@ namespace DespesaViagem.Server.Mapping
 {
     public static class MappingDTOs
     {
+
+        public static List<DespesaDTO> ConverterDTO(List<Despesa> despesas)
+        {
+            MapperConfiguration config = new(cfg =>
+            {
+                cfg.CreateMap<Despesa, DespesaDTO>();                
+            });
+
+            Mapper mapper = new(config);
+
+            List<DespesaDTO> despesasDTO = new();
+
+            foreach (var despesa in despesas)
+            {
+                despesasDTO.Add(mapper.Map<DespesaDTO>(despesa));
+            }
+
+            return despesasDTO;
+        }
         public static DespesaHospedagem ConverterDTO(DespesaHospedagemDTO despesaHospedagemDTO)
         {
             MapperConfiguration config = new(cfg =>

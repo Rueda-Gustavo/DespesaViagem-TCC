@@ -5,6 +5,7 @@ using DespesaViagem.Infra.Interfaces;
 using DespesaViagem.Infra.Repositories;
 using DespesaViagem.Server.Mapping;
 using DespesaViagem.Services.Interfaces;
+using DespesaViagem.Shared.DTOs.Despesas;
 using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
@@ -88,9 +89,11 @@ namespace DespesaViagem.Services.Services
             return Result.Success(viagensDTO);
         }
 
-        public async Task<Result<List<Despesa>>> ObterTodasDespesas(int id)
+        public async Task<Result<List<DespesaDTO>>> ObterTodasDespesas(int id)
         {
-            return Result.Success(await _viagemRepository.ObterTodasDepesas(id));
+            List<Despesa> despesas = await _viagemRepository.ObterTodasDepesas(id);
+            List<DespesaDTO> despesasDTO = MappingDTOs.ConverterDTO(despesas);
+            return Result.Success(despesasDTO);
         }
 
         public async Task<Result<ViagemDTO>> AdicionarViagem(ViagemDTO viagemDTO)

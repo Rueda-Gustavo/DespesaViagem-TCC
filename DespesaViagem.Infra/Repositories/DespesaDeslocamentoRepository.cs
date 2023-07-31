@@ -29,7 +29,11 @@ namespace DespesaViagem.Infra.Repositories
             return await _context.DespesasDeslocamento
                 .Where(despesa =>
                  (despesa.NomeDespesa.Contains(filtro) ||
-                 despesa.DescricaoDespesa.Contains(filtro)) &&
+                 despesa.DescricaoDespesa.Contains(filtro) ||
+                 despesa.Placa.Contains(filtro) || 
+                 despesa.Modelo.Contains(filtro) ||
+                 despesa.Quilometragem.ToString().Contains(filtro) ||
+                 despesa.ValorPorQuilometro.ToString().Contains(filtro)) &&
                  despesa.Viagem.Id == idViagem)
                 .ToListAsync();
         }
