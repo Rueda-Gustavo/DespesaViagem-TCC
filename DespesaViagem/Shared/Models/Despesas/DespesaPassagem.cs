@@ -12,9 +12,9 @@ namespace DespesaViagem.Shared.Models.Despesas
         [Column(TypeName = "decimal(12,2)")]
         public decimal Preco { get; private set; }
 
-        public DespesaPassagem(string descricaoDespesa, string companhia, string origem, 
+        public DespesaPassagem(string nomeDespesa,string descricaoDespesa, string companhia, string origem, 
             string destino, DateTime dataHoraEmbarque, decimal preco, int idViagem) : 
-            base("Despesa com passagem", descricaoDespesa, preco, TiposDespesas.Passagem, idViagem)
+            base(nomeDespesa, descricaoDespesa, preco, TiposDespesas.Passagem, idViagem)
         {
             Companhia = companhia;
             Origem = origem;

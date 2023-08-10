@@ -25,6 +25,7 @@ namespace DespesaViagem.Infra.Repositories
         public async Task<Viagem> ObterPorId(int id)
         {
             return await _context.Viagens
+                .Include(v => v.Despesas)
                 .FirstOrDefaultAsync(viagem => viagem.Id == id);
 
             //    .Where(viagem => viagem.Id == id)

@@ -1,5 +1,6 @@
 ﻿using DespesaViagem.Infra.Database.EntityConfiguration.DespesasEntityTypeConfiguration;
 using DespesaViagem.Infra.Database.EntityConfiguration.ViagensEntityTypeConfiguration;
+using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
 using DespesaViagem.Shared.Models.Despesas;
 using DespesaViagem.Shared.Models.Viagens;
@@ -19,6 +20,7 @@ namespace DespesaViagem.Infra.Database
 
         public DbSet<Endereco> Enderecos { get; set; }
         public DbSet<Funcionario> Funcionarios { get; set; }
+        public DbSet<Gestor> Gestores { get; set; }
         public DespesaViagemContext(DbContextOptions<DespesaViagemContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -37,18 +39,26 @@ namespace DespesaViagem.Infra.Database
             modelBuilder.Entity<DespesaPassagem>()
                 .HasBaseType<Despesa>();
 
+            modelBuilder.Entity<Usuario>()
+                .ToTable($"{nameof(Usuario)}s")
+                .HasDiscriminator(u => u.TipoDeUsuario)
+                .HasValue<Usuario>(RolesUsuario.Administrador)
+                .HasValue<Funcionario>(RolesUsuario.Funcionario)
+                .HasValue<Gestor>(RolesUsuario.Gestor);
+
+            modelBuilder.Entity<Usuario>().HasKey(k => k.Id);
+
+            modelBuilder.Entity<Usuario>()
+                        .Property(u => u.CPF)
+                        .IsRequired(false);
+
             modelBuilder.Entity<Endereco>().HasKey(k => k.Id);
 
-            modelBuilder.Entity<Funcionario>().HasKey(k => k.Id);
-
-            modelBuilder.Entity<Funcionario>().HasData(new Funcionario
-            {
-                Id = 1,
-                Nome = "Gustavo",
-                Sobrenome = "Rueda dos Reis",
-                CPF = "321.123.321-12",
-                Matricula = "A65SD1ASD"
-            });
+            modelBuilder.Entity<Funcionario>()
+                .HasOne(f => f.Gestor)
+                .WithMany(g => g.Funcionarios)
+                //.HasForeignKey(f => f.IdGestor)
+                .OnDelete(DeleteBehavior.Restrict);            
 
             modelBuilder.ApplyConfiguration(new DespesaHospedagemEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DespesaAlimentacaoEntityTypeConfiguration());

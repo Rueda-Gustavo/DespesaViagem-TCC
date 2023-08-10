@@ -8,59 +8,19 @@ namespace DespesaViagem.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FuncionarioController : ControllerBase
+    public class FuncionarioController : UsuariosController<Funcionario>
     {
         private readonly IFuncionarioService _funcionarioService;
 
-        public FuncionarioController(IFuncionarioService funcionarioService)
+        public FuncionarioController(IFuncionarioService funcionarioService) : base(funcionarioService)
         {
             _funcionarioService = funcionarioService;
         }
 
-
-        [HttpGet]
-        public async Task<ActionResult> ObterTodosFuncionarios()
-        {
-            Result<IEnumerable<Funcionario>> result = await _funcionarioService.ObterTodosFuncionarios();
-
-            if (result.IsFailure)
-                return BadRequest(result.Value);
-
-            return Ok(result.Value.ToList());
-        }
-
-
-        [HttpGet]
-        [Route("{filtro}/ObterFuncionarioPorFiltro")]
-        public async Task<ActionResult> ObterFuncionarioPorFiltro(string filtro)
-        {
-            Result<IEnumerable<Funcionario>> result = await _funcionarioService.ObterFuncionarioPorFiltro(filtro);
-
-            if (result.IsFailure)
-                return BadRequest(result.Value);
-
-            IEnumerable<Funcionario> funcionarios = result.Value.ToList();
-
-            return Ok(funcionarios);
-        }
-
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult> ObterFuncionarioPorId(int id)
-        {
-            Result<Funcionario> result = await _funcionarioService.ObterFuncionarioPorId(id);
-
-            if (result.IsFailure)
-                return BadRequest(result.Value);
-
-            Funcionario funcionario = result.Value;
-
-            return Ok(funcionario);
-        }
-
-        [HttpPut("Atualizar")]
+        [HttpPut]
         public async Task<ActionResult> AlterarFuncionario(Funcionario funcionario)
         {
-            Result<Funcionario> result = await _funcionarioService.AlterarFuncionario(funcionario);
+            Result<Funcionario> result = await _funcionarioService.Alterar(funcionario);
 
             if (result.IsFailure)
                 return BadRequest(result.Value);
@@ -70,10 +30,10 @@ namespace DespesaViagem.Server.Controllers
             return Ok(funcionario);
         }
 
-        [HttpPost("Novo")]
+        [HttpPost]
         public async Task<ActionResult> AdicionarFuncionario(Funcionario funcionario)
         {
-            Result<Funcionario> result = await _funcionarioService.AdicionarFuncionario(funcionario);
+            Result<Funcionario> result = await _funcionarioService.Adicionar(funcionario);
 
             if (result.IsFailure)
                 return BadRequest(result.Value);
@@ -81,20 +41,21 @@ namespace DespesaViagem.Server.Controllers
             funcionario = result.Value;
 
             return Ok(funcionario);
-        }
-
-        [HttpDelete("Delete")]
-        public async Task<ActionResult> ExcluirFuncionario(int id)
-        {
-            Result<Funcionario> result = await _funcionarioService.RemoverFuncionario(id);
-
-            if (result.IsFailure)
-                return BadRequest(result.Value);
-
-            Funcionario funcionario = result.Value;
-
-            return Ok(funcionario);
-        }
-        
+        }        
     }
 }
+
+/*
+ {
+  "id": 0,
+  "nome": "Gustavo",
+  "sobrenome": "Rueda",
+  "username": "gustavo.rueda",
+  "tipoDeUsuario": 0,
+  "passwordHash": "senhagenerica1",
+  "matricula": "ASD16A5SD1",
+  "cpf": "987.654.321-12",
+  "idGestor": 2,
+  "idViagem": 0
+}
+*/

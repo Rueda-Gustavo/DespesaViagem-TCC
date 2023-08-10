@@ -18,7 +18,7 @@ namespace DespesaViagem.Services.Interfaces
         Task<Result<ViagemDTO>> AdicionarViagem(ViagemDTO viagemDTO);
         Task<Result<ViagemDTO>> AlterarViagem(ViagemDTO viagemDTO);
         Task<Result<ViagemDTO>> RemoverViagem(int id);
-        Result<decimal> ObterPrestacaoDeContas(Viagem viagem);
+        Task<Result<decimal>> ObterPrestacaoDeContas(int idViagem);
         Task<Result<ViagemDTO>> IniciarViagem();
         Task<Result<ViagemDTO>> EncerrarViagem();
         Task<Result<ViagemDTO>> CancelarViagem();

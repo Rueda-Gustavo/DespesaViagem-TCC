@@ -4,6 +4,7 @@ using DespesaViagem.Infra.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DespesaViagem.Infra.Migrations
 {
     [DbContext(typeof(DespesaViagemContext))]
-    partial class DespesaViagemContextModelSnapshot : ModelSnapshot
+    [Migration("20230802125438_Corrigindo-Usuarios")]
+    partial class CorrigindoUsuarios
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,9 +64,6 @@ namespace DespesaViagem.Infra.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CPF")
-                        .HasColumnType("varchar(15)");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -188,21 +188,53 @@ namespace DespesaViagem.Infra.Migrations
                 {
                     b.HasBaseType("DespesaViagem.Shared.Models.Core.Helpers.Usuario");
 
-                    b.Property<int>("GestorId")
+                    b.Property<string>("CPF")
+                        .IsRequired()
+                        .HasColumnType("varchar(15)");
+
+                    b.Property<int>("IdGestor")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdViagem")
                         .HasColumnType("int");
 
                     b.Property<string>("Matricula")
                         .IsRequired()
                         .HasColumnType("varchar(30)");
 
-                    b.HasIndex("GestorId");
+                    b.HasIndex("IdGestor");
+
+                    b.ToTable("Usuarios", t =>
+                        {
+                            t.Property("CPF")
+                                .HasColumnName("Funcionario_CPF");
+                        });
 
                     b.HasDiscriminator().HasValue("Funcionario");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nome = "Gustavo",
+                            PasswordHash = "",
+                            Sobrenome = "Rueda dos Reis",
+                            TipoDeUsuario = "Funcionario",
+                            Username = "",
+                            CPF = "321.123.321-12",
+                            IdGestor = 0,
+                            IdViagem = 0,
+                            Matricula = "A65SD1ASD"
+                        });
                 });
 
             modelBuilder.Entity("DespesaViagem.Shared.Models.Core.Helpers.Gestor", b =>
                 {
                     b.HasBaseType("DespesaViagem.Shared.Models.Core.Helpers.Usuario");
+
+                    b.Property<string>("CPF")
+                        .IsRequired()
+                        .HasColumnType("varchar(15)");
 
                     b.HasDiscriminator().HasValue("Gestor");
                 });
@@ -329,7 +361,7 @@ namespace DespesaViagem.Infra.Migrations
                 {
                     b.HasOne("DespesaViagem.Shared.Models.Core.Helpers.Gestor", "Gestor")
                         .WithMany("Funcionarios")
-                        .HasForeignKey("GestorId")
+                        .HasForeignKey("IdGestor")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 

@@ -26,7 +26,6 @@ namespace DespesaViagem.Shared.Models.Viagens
             get { return _despesas.AsReadOnly(); }
         }
         public Funcionario Funcionario { get; private set; }
-        [JsonIgnore]
         public int IdFuncionario { get; private set; }
 
 
@@ -91,8 +90,35 @@ namespace DespesaViagem.Shared.Models.Viagens
 
         public decimal GerarPrestacaoDeContas()
         {
-            StatusViagem = StatusViagem.Encerrada;
-            return TotalDespesas - Adiantamento;
+            if(StatusViagem == StatusViagem.EmAndamento)
+                StatusViagem = StatusViagem.Encerrada;
+            
+            return Adiantamento - TotalDespesas;
+        }        
+
+        public void AtualizarTotalDespesas()
+        {
+            if (_despesas == null)
+                throw new ArgumentException("Sem despesas cadastradas");
+
+            decimal totalDespesas = 0m;
+            foreach(var despesa in _despesas)
+            {
+                totalDespesas += despesa.TotalDespesa;
+            }
+
+            if (totalDespesas > 0 && totalDespesas != TotalDespesas) TotalDespesas = totalDespesas;
+        }
+
+        public void AtualizarDespesa(Despesa despesa)
+        {
+            Despesa? despesaAtual = _despesas.FirstOrDefault(d => d.Id == despesa.Id);
+
+            if (despesaAtual == null || despesa.TotalDespesa <= 0) throw new ArgumentException("Despesa não encontrada ou os valores fornecidos são inválidos.");
+
+            _despesas.Remove(despesaAtual);
+            _despesas.Add(despesa);
+            AtualizarTotalDespesas();
         }
 
         public void IniciarViagem()

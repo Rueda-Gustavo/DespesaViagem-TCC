@@ -10,8 +10,8 @@ namespace DespesaViagem.Shared.Models.Despesas
         public decimal ValorPorQuilometro { get; private set; }
         public string Placa { get; private set; } = string.Empty;
         public string Modelo { get; private set; } = string.Empty;
-        public DespesaDeslocamento(string descricaoDespesa, int quilometragem, decimal valorPorQuilometro, string modelo, string placa, int idViagem)
-            : base("Despesa com deslocamento", descricaoDespesa, quilometragem * valorPorQuilometro, TiposDespesas.Deslocamento, idViagem)
+        public DespesaDeslocamento(string nomeDespesa, string descricaoDespesa, int quilometragem, decimal valorPorQuilometro, string modelo, string placa, int idViagem)
+            : base(nomeDespesa, descricaoDespesa, quilometragem * valorPorQuilometro, TiposDespesas.Deslocamento, idViagem)
         {
             Quilometragem = quilometragem;
             ValorPorQuilometro = valorPorQuilometro;

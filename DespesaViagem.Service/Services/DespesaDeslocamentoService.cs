@@ -59,7 +59,7 @@ namespace DespesaViagem.Services.Services
 
         public async Task<Result<DespesaDeslocamento>> AdicionarDespesa(DespesaDeslocamento despesa)
         {
-            if (await DespesaJaExiste(despesa.Id))
+            if (await _despesaRepository.ObterPorId(despesa.Id) is not null)
                 return Result.Failure<DespesaDeslocamento>("Já existe uma despesa como essa!");
 
             Viagem viagem = await _viagemRepository.ObterPorId(despesa.IdViagem);
@@ -67,14 +67,27 @@ namespace DespesaViagem.Services.Services
             if (viagem is null || (viagem.StatusViagem != StatusViagem.Aberta && viagem.StatusViagem != StatusViagem.EmAndamento))
                 return Result.Failure<DespesaDeslocamento>("Viagem não encontrada ou não existe uma viagem aberta ou em andamento.");
 
+            viagem.AdicionarDespesa(despesa);
+            viagem.AtualizarTotalDespesas();
+
+            //await _viagemRepository.Update(viagem);         
             await _despesaRepository.Insert(despesa);
             return Result.Success(despesa);
         }
 
         public async Task<Result<DespesaDeslocamento>> AlterarDespesa(DespesaDeslocamento despesa)
         {
-            if (!await DespesaJaExiste(despesa.Id))
+            DespesaDeslocamento despesaAtual = await _despesaRepository.ObterPorId(despesa.Id);
+
+            if (despesaAtual is null)
                 return Result.Failure<DespesaDeslocamento>("Despesa não encontrada!");
+
+            if (despesaAtual.TotalDespesa != despesa.TotalDespesa && despesa.TotalDespesa > 0)
+            {
+                Viagem viagem = await _viagemRepository.ObterPorId(despesa.IdViagem);
+                viagem.AtualizarDespesa(despesa);
+                await _viagemRepository.Update(viagem);
+            }
 
             await _despesaRepository.Update(despesa);
             return Result.Success(despesa);
@@ -88,15 +101,6 @@ namespace DespesaViagem.Services.Services
 
             await _despesaRepository.Delete(despesa);
             return Result.Success(despesa);
-        }
-
-        private async Task<bool> DespesaJaExiste(int id)
-        {
-            if (await _despesaRepository.ObterPorId(id) is not null)
-            {
-                return true;
-            }
-            return false;
         }
     }
 }

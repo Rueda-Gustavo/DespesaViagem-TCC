@@ -9,16 +9,55 @@ namespace DespesaViagem.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DespesaHospedagemController : DespesasController<DespesaHospedagem>
+    public class DespesaHospedagemController : ControllerBase//DespesasController<DespesaHospedagem>
     {
         private readonly IDespesasService<DespesaHospedagem> _despesasService;
 
-        public DespesaHospedagemController(IDespesasService<DespesaHospedagem> despesasService) : base(despesasService)
+        public DespesaHospedagemController(IDespesasService<DespesaHospedagem> despesasService)// : base(despesasService)
         {
             _despesasService = despesasService;
         }
 
-        [HttpPost("Novo")]
+        [HttpGet]
+        public async Task<ActionResult> ObterTodasDespesas(int idViagem)
+        {
+            Result<IEnumerable<DespesaHospedagem>> result = await _despesasService.ObterTodasDespesas(idViagem);
+
+            if (result.IsFailure)
+                return BadRequest(result);
+
+            List<DespesaHospedagemDTO> despesas = MappingDTOs.ConverterDTO(result.Value.ToList());
+
+            return Ok(despesas);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult> ObterDespesaPorId(string id)
+        {
+            Result<DespesaHospedagem> result = await _despesasService.ObterDespesaPorId(id);
+
+            if (result.IsFailure)
+                return BadRequest(result);
+
+            DespesaHospedagemDTO despesa = MappingDTOs.ConverterDTO(result.Value);
+
+            return Ok(despesa);
+        }
+
+        [HttpGet("filtro")]
+        public async Task<ActionResult> ObterDespesasPorFiltro(string filtro, string idViagem)
+        {
+            Result<IEnumerable<DespesaHospedagem>> result = await _despesasService.ObterDespesasPorFiltro(filtro, idViagem);
+
+            if (result.IsFailure)
+                return BadRequest(result);
+
+            List<DespesaHospedagemDTO> despesas = MappingDTOs.ConverterDTO(result.Value.ToList());
+
+            return Ok(despesas);
+        }
+
+        [HttpPost]
         public async Task<ActionResult> AdicionarDespesa(DespesaHospedagemDTO despesaDTO)
         {
 
@@ -34,7 +73,7 @@ namespace DespesaViagem.Server.Controllers
             return Ok(despesa);
         }
 
-        [HttpPut("Atualizar")]
+        [HttpPut]
         public async Task<ActionResult> AtualizarDespesa(DespesaHospedagemDTO despesaDTO)
         {
             DespesaHospedagem despesa= MappingDTOs.ConverterDTO(despesaDTO);

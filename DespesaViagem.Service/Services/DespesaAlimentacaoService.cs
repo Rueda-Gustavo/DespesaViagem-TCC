@@ -58,22 +58,35 @@ namespace DespesaViagem.Services.Services
 
         public async Task<Result<DespesaAlimentacao>> AdicionarDespesa(DespesaAlimentacao despesa)
         {
-            if (await DespesaJaExiste(despesa.Id))
+            if (await _despesaRepository.ObterPorId(despesa.Id) is not null)
                 return Result.Failure<DespesaAlimentacao>("Já existe uma despesa como essa!");
 
             Viagem viagem = await _viagemRepository.ObterPorId(despesa.IdViagem);
 
             if (viagem is null || (viagem.StatusViagem != StatusViagem.Aberta && viagem.StatusViagem != StatusViagem.EmAndamento))
                 return Result.Failure<DespesaAlimentacao>("Viagem não encontrada ou não existe uma viagem aberta ou em andamento.");
-            
+
+            viagem.AdicionarDespesa(despesa);
+            viagem.AtualizarTotalDespesas();
+
+            //await _viagemRepository.Update(viagem);         
             await _despesaRepository.Insert(despesa);
             return Result.Success(despesa);
         }
 
         public async Task<Result<DespesaAlimentacao>> AlterarDespesa(DespesaAlimentacao despesa)
         {
-            if (!await DespesaJaExiste(despesa.Id))
+            DespesaAlimentacao despesaAtual = await _despesaRepository.ObterPorId(despesa.Id);
+
+            if (despesaAtual is null)
                 return Result.Failure<DespesaAlimentacao>("Despesa não encontrada!");
+
+            if (despesaAtual.TotalDespesa != despesa.TotalDespesa && despesa.TotalDespesa > 0)
+            {
+                Viagem viagem = await _viagemRepository.ObterPorId(despesa.IdViagem);
+                viagem.AtualizarDespesa(despesa);
+                await _viagemRepository.Update(viagem);
+            }
 
             await _despesaRepository.Update(despesa);
             return Result.Success(despesa);

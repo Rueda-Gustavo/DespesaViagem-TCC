@@ -16,8 +16,4 @@
     <ProjectReference Include="..\Shared\DespesaViagem.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\DespesasService\" />
-  </ItemGroup>
-
 </Project>

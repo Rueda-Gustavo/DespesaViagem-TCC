@@ -16,24 +16,29 @@ namespace DespesaViagem.Infra.Repositories
 
         public async Task<IEnumerable<Funcionario>> ObterTodos()
         {
-            return await _context.Funcionarios.ToListAsync();
+            return await _context.Funcionarios
+                .Include(f => f.Gestor)
+                .ToListAsync();
         }
 
         public async Task<Funcionario> ObterPorId(int id)
         {
             return await _context.Funcionarios
+                .Include(f => f.Gestor)
                 .FirstOrDefaultAsync(f => f.Id == id);
         }
 
         public async Task<Funcionario> ObterPorCPF(string CPF)
         {
             return await _context.Funcionarios
+                .Include(f => f.Gestor)
                 .FirstOrDefaultAsync(f => f.CPF == CPF);
         }
 
         public async Task<IEnumerable<Funcionario>> ObterPorFiltro(string filtro)
         {
             return await _context.Funcionarios
+            .Include(f => f.Gestor)
             .Where(funcionario => funcionario.CPF.Contains(filtro) || funcionario.Nome.Contains(filtro) || funcionario.Sobrenome.Contains(filtro) || funcionario.Matricula.Contains(filtro))
             .ToListAsync();
         }

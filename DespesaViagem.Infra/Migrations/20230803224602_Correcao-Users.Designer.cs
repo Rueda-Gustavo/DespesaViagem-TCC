@@ -4,6 +4,7 @@ using DespesaViagem.Infra.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DespesaViagem.Infra.Migrations
 {
     [DbContext(typeof(DespesaViagemContext))]
-    partial class DespesaViagemContextModelSnapshot : ModelSnapshot
+    [Migration("20230803224602_Correcao-Users")]
+    partial class CorrecaoUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,9 +64,6 @@ namespace DespesaViagem.Infra.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CPF")
-                        .HasColumnType("varchar(15)");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -188,6 +188,10 @@ namespace DespesaViagem.Infra.Migrations
                 {
                     b.HasBaseType("DespesaViagem.Shared.Models.Core.Helpers.Usuario");
 
+                    b.Property<string>("CPF")
+                        .IsRequired()
+                        .HasColumnType("varchar(15)");
+
                     b.Property<int>("GestorId")
                         .HasColumnType("int");
 
@@ -197,12 +201,22 @@ namespace DespesaViagem.Infra.Migrations
 
                     b.HasIndex("GestorId");
 
+                    b.ToTable("Usuarios", t =>
+                        {
+                            t.Property("CPF")
+                                .HasColumnName("Funcionario_CPF");
+                        });
+
                     b.HasDiscriminator().HasValue("Funcionario");
                 });
 
             modelBuilder.Entity("DespesaViagem.Shared.Models.Core.Helpers.Gestor", b =>
                 {
                     b.HasBaseType("DespesaViagem.Shared.Models.Core.Helpers.Usuario");
+
+                    b.Property<string>("CPF")
+                        .IsRequired()
+                        .HasColumnType("varchar(15)");
 
                     b.HasDiscriminator().HasValue("Gestor");
                 });

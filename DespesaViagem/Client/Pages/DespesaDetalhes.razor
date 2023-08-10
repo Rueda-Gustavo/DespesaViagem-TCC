@@ -1,6 +1,13 @@
 ﻿@page "/viagens/{idViagem:int}/{idDespesa:int}"
+@inject IDespesasService<DespesaHospedagemDTO> DespesaHospedagemService
+<!--inject IDespesasService<DespesaPassagem> DespesaPassagemService
+inject IDespesasService<DespesaAlimentacao> DespesaAlimentacaoService
+inject IDespesasService<DespesaDeslocamento> DespesaDeslocamentoService-->
+@inject NavigationManager NavigationManager
 
 <h3>Detalhes da Despesa @IdViagem @IdDespesa</h3>
+
+
 
 @code {
     [Parameter]
@@ -8,4 +15,43 @@
 
     [Parameter]
     public int IdDespesa{ get; set; }
+
+    [Parameter]
+    public string TipoDespesa { get; set; } = string.Empty;
+
+    private Dictionary<string, Func<Task>> services {get; set;} = new();
+
+    private dynamic Despesa { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        services.Add(TiposDespesas.Hospedagem.ToString(), GetDespesaHospedagem);
+        /*services.Add(TiposDespesas.Passagem, (IDespesasService<DespesaPassagem>)DespesaPassagemService);
+        services.Add(TiposDespesas.Deslocamento, (IDespesasService<DespesaDeslocamento>)DespesaDeslocamentoService);
+        services.Add(TiposDespesas.Alimentação, (IDespesasService<DespesaAlimentacao>)DespesaAlimentacaoService);*/
+        DespesaHospedagemService.DespesasChanged += StateHasChanged;
+        await CarregarDespesa();
+    }
+
+    private async Task CarregarDespesa()
+    {
+        TipoDespesa = NavigationManager.Uri.Split('?').LastOrDefault()?.Split('=')?.LastOrDefault() ?? string.Empty;
+        if (services.TryGetValue(TipoDespesa, out var carregarDespesa))
+        {
+            await carregarDespesa(); // Chama o método void associado à chave
+        }
+    }
+
+    private async Task GetDespesaHospedagem()
+    {
+        await DespesaHospedagemService.GetDespesa(IdDespesa);
+        //Despesa = DespesaHospedagemService.Despesa;
+        DespesaHospedagemDTO despesaHospedagemDTO = DespesaHospedagemService.Despesa;
+        Despesa = despesaHospedagemDTO;
+              
+        foreach (var propriedade in Despesa.GetType().GetProperties())
+        {
+            Console.WriteLine($"{propriedade.Name}: {propriedade.GetValue(Despesa)}");
+        }        
+    }
 }

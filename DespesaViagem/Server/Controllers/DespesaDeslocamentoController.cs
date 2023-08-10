@@ -9,13 +9,52 @@ namespace DespesaViagem.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DespesaDeslocamentoController : DespesasController<DespesaDeslocamento>
+    public class DespesaDeslocamentoController : ControllerBase
     {
         private readonly IDespesasService<DespesaDeslocamento> _despesasService;
 
-        public DespesaDeslocamentoController(IDespesasService<DespesaDeslocamento> despesasService) : base(despesasService)
+        public DespesaDeslocamentoController(IDespesasService<DespesaDeslocamento> despesasService)
         {
             _despesasService = despesasService;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> ObterTodasDespesas(int idViagem)
+        {
+            Result<IEnumerable<DespesaDeslocamento>> result = await _despesasService.ObterTodasDespesas(idViagem);
+
+            if (result.IsFailure)
+                return BadRequest(result);
+
+            List<DespesaDeslocamentoDTO> despesas = MappingDTOs.ConverterDTO(result.Value.ToList());
+
+            return Ok(despesas);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult> ObterDespesaPorId(string id)
+        {
+            Result<DespesaDeslocamento> result = await _despesasService.ObterDespesaPorId(id);
+
+            if (result.IsFailure)
+                return BadRequest(result.Value);
+
+            DespesaDeslocamentoDTO despesa = MappingDTOs.ConverterDTO(result.Value);
+
+            return Ok(despesa);
+        }
+
+        [HttpGet("filtro")]
+        public async Task<ActionResult> ObterDespesasPorFiltro(string filtro, string idViagem)
+        {
+            Result<IEnumerable<DespesaDeslocamento>> result = await _despesasService.ObterDespesasPorFiltro(filtro, idViagem);
+
+            if (result.IsFailure)
+                return BadRequest(result);
+
+            List<DespesaDeslocamentoDTO> despesas = MappingDTOs.ConverterDTO(result.Value.ToList());
+
+            return Ok(despesas);
         }
 
         [HttpPost("Novo")]

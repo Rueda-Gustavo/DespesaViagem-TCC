@@ -9,13 +9,52 @@ namespace DespesaViagem.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DespesaPassagemController : DespesasController<DespesaPassagem>
+    public class DespesaPassagemController : ControllerBase
     {
         private readonly IDespesasService<DespesaPassagem> _despesasService;
 
-        public DespesaPassagemController(IDespesasService<DespesaPassagem> despesasService) : base(despesasService)
+        public DespesaPassagemController(IDespesasService<DespesaPassagem> despesasService)
         {
             _despesasService = despesasService;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> ObterTodasDespesas(int idViagem)
+        {
+            Result<IEnumerable<DespesaPassagem>> result = await _despesasService.ObterTodasDespesas(idViagem);
+
+            if (result.IsFailure)
+                return BadRequest(result);
+
+            List<DespesaPassagemDTO> despesas = MappingDTOs.ConverterDTO(result.Value.ToList());
+             
+            return Ok(despesas);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult> ObterDespesaPorId(string id)
+        {
+            Result<DespesaPassagem> result = await _despesasService.ObterDespesaPorId(id);
+
+            if (result.IsFailure)
+                return BadRequest(result.Value);
+
+            DespesaPassagemDTO despesa = MappingDTOs.ConverterDTO(result.Value);
+
+            return Ok(despesa);
+        }
+
+        [HttpGet("filtro")]
+        public async Task<ActionResult> ObterDespesasPorFiltro(string filtro, string idViagem)
+        {
+            Result<IEnumerable<DespesaPassagem>> result = await _despesasService.ObterDespesasPorFiltro(filtro, idViagem);
+
+            if (result.IsFailure)
+                return BadRequest(result);
+
+            List<DespesaPassagemDTO> despesas = MappingDTOs.ConverterDTO(result.Value.ToList());
+
+            return Ok(despesas);
         }
 
         [HttpPost("Novo")]

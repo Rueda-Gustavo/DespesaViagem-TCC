@@ -110,10 +110,11 @@ namespace DespesaViagem.Services.Services
             viagem.VerificarDataInicialeFinal();
 
             Funcionario funcinonario = await _funcionarioRepository.ObterPorId(viagem.IdFuncionario);
+            
             if (funcinonario is null)
                 return Result.Failure<ViagemDTO>("Funcionário não encontrado!");
 
-            //viagem.AdicionarFuncionario(funcinonario);
+            viagem.AdicionarFuncionario(funcinonario);
 
             await _viagemRepository.Insert(viagem);
 
@@ -135,6 +136,7 @@ namespace DespesaViagem.Services.Services
             if (viagemAuxiliar.Adiantamento != viagem.Adiantamento && viagemAuxiliar.StatusViagem != StatusViagem.Aberta)
                 return Result.Failure<ViagemDTO>("O Adiantamento incial não pode ser modificado.");
 
+            viagem.AdicionarFuncionario(await _funcionarioRepository.ObterPorId(viagemDTO.IdFuncionario));
 
             viagem.DefinirStatusViagem(viagemAuxiliar.StatusViagem); //O status é utilizado da forma como já está no banco por ele não ser mudado pelo usuário diretamente
             viagem.DefinirAdiantamento(viagem.Adiantamento); //Caso a viagem esteja em aberto será possível modificar o adiantamento
@@ -154,9 +156,16 @@ namespace DespesaViagem.Services.Services
             return Result.Success(viagemDTO);
         }
 
-        public Result<decimal> ObterPrestacaoDeContas(Viagem viagem)
+        public async Task<Result<decimal>> ObterPrestacaoDeContas(int idViagem)
         {
-            return Result.Success(viagem.GerarPrestacaoDeContas());
+            Viagem viagem = await _viagemRepository.ObterPorId(idViagem);
+            if (viagem is null) return Result.Failure<decimal>("Viagem não encontrada");
+
+            decimal prestacaoDeContas = viagem.GerarPrestacaoDeContas();
+
+            await _viagemRepository.Update(viagem);
+
+            return Result.Success(prestacaoDeContas);
         }
 
         public async Task<Result<ViagemDTO>> IniciarViagem()

@@ -10,8 +10,8 @@ namespace DespesaViagem.Shared.Models.Despesas
         [Column(TypeName = "decimal(10,2)")]
         public decimal ValorRefeicao { get; private set; }
 
-        public DespesaAlimentacao(string descricaoDespesa, decimal valorRefeicao, string nomeEstabelecimento, string CNPJ, int idViagem) : 
-            base("Despesa com alimentação", descricaoDespesa, valorRefeicao, TiposDespesas.Alimentação, idViagem)
+        public DespesaAlimentacao(string nomeDespesa, string descricaoDespesa, decimal valorRefeicao, string nomeEstabelecimento, string CNPJ, int idViagem) : 
+            base(nomeDespesa, descricaoDespesa, valorRefeicao, TiposDespesas.Alimentação, idViagem)
         {
             NomeEstabelecimento = nomeEstabelecimento;
             this.CNPJ = CNPJ;

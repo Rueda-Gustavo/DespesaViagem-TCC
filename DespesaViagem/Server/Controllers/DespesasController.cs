@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DespesaViagem.Server.Mapping;
 using DespesaViagem.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +9,7 @@ namespace DespesaViagem.Server.Controllers
     [ApiController]
     public class DespesasController<T> : Controller where T : class
     {
+        
         private readonly IDespesasService<T> _despesasService;
 
         public DespesasController(IDespesasService<T> despesasService)
@@ -15,7 +17,7 @@ namespace DespesaViagem.Server.Controllers
             _despesasService = despesasService;
         }
 
-        [HttpGet("Listar")]
+        [HttpGet]
         public async Task<ActionResult> ObterTodasDespesas(int idViagem)
         {
             Result<IEnumerable<T>> result = await _despesasService.ObterTodasDespesas(idViagem);
@@ -28,20 +30,18 @@ namespace DespesaViagem.Server.Controllers
             return Ok(despesas);
         }
 
-        [HttpGet("Listar por Id")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult> ObterDespesaPorId(string id)
         {
             Result<T> result = await _despesasService.ObterDespesaPorId(id);
 
             if (result.IsFailure)
-                return BadRequest(result);
+                return BadRequest(result.Value);
 
-            T despesa = result.Value;
-
-            return Ok(despesa);
+            return Ok(result.Value);
         }
 
-        [HttpGet("Listar por filtro")]
+        [HttpGet("filtro")]
         public async Task<ActionResult> ObterDespesasPorFiltro(string filtro, string idViagem)
         {
             Result<IEnumerable<T>> result = await _despesasService.ObterDespesasPorFiltro(filtro, idViagem);
@@ -53,5 +53,6 @@ namespace DespesaViagem.Server.Controllers
 
             return Ok(despesa);
         } 
+        
     }
 }

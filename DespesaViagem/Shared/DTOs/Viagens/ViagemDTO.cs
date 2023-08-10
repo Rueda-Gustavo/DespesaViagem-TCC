@@ -14,7 +14,8 @@ namespace DespesaViagem.Shared.DTOs.Viagens
         public DateTime DataInicial { get; set; }
         public DateTime DataFinal { get; set; }
         public decimal TotalDespesas { get; set; }        
-        public string StatusViagem { get; set; } = string.Empty;
+        public StatusViagem StatusViagem { get; set; }
+        [JsonIgnore]
         public Funcionario Funcionario { get; set; } = new Funcionario();        
         public int IdFuncionario { get; set; }
     }

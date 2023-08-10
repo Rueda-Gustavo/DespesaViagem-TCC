@@ -10,6 +10,7 @@ namespace DespesaViagem.Services
         public static IServiceCollection AddDespesaViagemService(this IServiceCollection service)
         {
             service.AddScoped<IEnderecoService, EnderecoService>();
+            service.AddScoped<IGestorService, GestorService>();
             service.AddScoped<IFuncionarioService, FuncionarioService>();
             service.AddScoped<IViagemService, ViagemService>();
             service.AddScoped<IDespesaService, DespesaService>();

@@ -1,14 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
-using DespesaViagem.Client.Pages;
 using DespesaViagem.Services.Interfaces;
 using DespesaViagem.Shared.DTOs.Despesas;
 using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Core.Enums;
-using DespesaViagem.Shared.Models.Core.Helpers;
-using DespesaViagem.Shared.Models.Despesas;
-using DespesaViagem.Shared.Models.Viagens;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 
 namespace DespesaViagem.Server.Controllers
 {
@@ -45,6 +40,18 @@ namespace DespesaViagem.Server.Controllers
             return Ok(viagem.Value);
         }
 
+
+        [HttpGet("/PrestacaoDeContas/{idViagem:int}")]
+        public async Task<ActionResult> ObterPrestacaoDeContas(int idViagem)
+        {
+            var totalDespesas = await _viagemService.ObterPrestacaoDeContas(idViagem);
+
+            if (totalDespesas.IsFailure) return BadRequest(totalDespesas.Value);
+
+            return Ok(totalDespesas.Value);
+        }
+
+
         [HttpPost("Novo")]
         public async Task<ActionResult> InserirViagem(ViagemDTO viagemDTO)
         {
@@ -60,9 +67,9 @@ namespace DespesaViagem.Server.Controllers
         {
             Result<ViagemDTO> viagem = await _viagemService.AlterarViagem(viagemDTO);
 
-            if (viagem.IsFailure) return BadRequest(viagem.Value);            
+            if (viagem.IsFailure) return BadRequest(viagem.Value);
 
-            return Ok(viagem);
+            return Ok(viagem.Value) ;
         }
 
         [HttpGet("{filtro}")]
@@ -106,7 +113,7 @@ namespace DespesaViagem.Server.Controllers
 
             if (viagem.IsFailure) return BadRequest(viagem.Value);            
 
-            return Ok(viagem);
+            return Ok(viagem.Value);
         }
 
         [HttpPatch("Encerrar")]

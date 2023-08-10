@@ -11,8 +11,8 @@ namespace DespesaViagem.Shared.Models.Despesas
         public decimal ValorDiaria { get; private set; }
         public int IdEndereco { get; private set; }
         public Endereco? Endereco { get; private set; }
-        public DespesaHospedagem(string descricaoDespesa, Endereco endereco, int quantidadeDias, decimal valorDiaria, int idViagem)
-            : base("Despesa com hospedagem", descricaoDespesa, quantidadeDias * valorDiaria, TiposDespesas.Hospedagem, idViagem)
+        public DespesaHospedagem(string nomeDespesa, string descricaoDespesa, Endereco endereco, int quantidadeDias, decimal valorDiaria, int idViagem)
+            : base(nomeDespesa, descricaoDespesa, quantidadeDias * valorDiaria, TiposDespesas.Hospedagem, idViagem)
         {
             Endereco = endereco;
             QuantidadeDias = quantidadeDias;
