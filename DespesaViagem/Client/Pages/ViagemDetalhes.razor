@@ -5,40 +5,97 @@
 
 <div class="container mt-4">
     <div class="row">
-        <!-- Coluna 1: Card da Viagem -->
-        <div class="col-md-4">
-            <div class="card-viagem">
+        <div class="col-md-8 border-end">
+            <div class="lista-despesas">
+                <!-- Grid com as Despesas -->
+                @if (!Despesas.Any())
+                {
+                    <span>Nenhuma despesa foi cadastrada, <a href="/viagens/adicionar-despesa/@IdViagem">clique aqui</a> para cadastrar uma nova despesa.</span>
+                }
+
+                @foreach (var despesa in Despesas)
+                {
+                    CoresDespesas.TryGetValue(despesa.TipoDespesa, out string? corDespesa);
+                    <div class="list-group m-2">
+                        <a href="/viagens/@IdViagem/@despesa.Id?TipoDespesa=@despesa.TipoDespesa.ToString()" class="list-group-item list-group-item-action" aria-current="true" style="border: 2px solid @corDespesa">
+                            <small style="opacity: 70%">@despesa.TipoDespesa.ToString()</small>
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">@despesa.NomeDespesa</h5>
+                            </div>
+                            <p class="mb-1">@despesa.DescricaoDespesa</p>
+                            <p class="mb-1">Data da despesa: @despesa.DataDespesa</p>
+                            <p class="mb-1">R$@despesa.TotalDespesa</p>
+                        </a>
+                    </div>
+                }
+                <!----------------------->
+            </div>
+        </div>
+
+        <!-- Card da Viagem -->
+        <div class="col border-start">
+            <div class="card-viagem m-2">
+                <button class="btn pt-0 btn-edit-viagem" @onclick="AbrirFormulario"><FeatherEdit Size="24" Color="#000" StrokeWidth="1.9f" /></button>
                 <div class="card-header-viagem">
                     <h5 class="card-title-viagem">@Viagem.NomeViagem</h5>
                 </div>
                 <div class="card-body">
                     <span class="status-viagem">Viagem: @Status</span>
-                    <p class="card-text">@Viagem.DescricaoViagem</p>
+                    <p class="card-text">Descrição: @Viagem.DescricaoViagem</p>
                     <ul>
-                        <li class="card-text">De: @Viagem.DataInicial</li>
-                        <li class="card-text">Até: @Viagem.DataFinal</li>
-                        <li>Adiantamento incial: @Viagem.Adiantamento</li>
-
+                        <li class="card-text">Funcionário: @Funcionario.Nome @Funcionario.Sobrenome</li>
+                        <li class="card-text">Matrícula: @Funcionario.Matricula</li>
+                        <li class="card-text">CPF: @Funcionario.CPF</li>
                     </ul>
+                    <span class="card-text">Período: @Viagem.DataInicial.ToString("dd/MM/yyyy") até @Viagem.DataFinal.ToString("dd/MM/yyyy")</span>
+
+                    <hr />
+                    <div class="card-subtitle">
+                        <span class="card-text">
+                            Adiantamento incial: R$@Viagem.Adiantamento <br />
+                            Ajuda de custos: R$ <br />
+                            Total das despesas: R$@Viagem.TotalDespesas <br />
+                            <strong>Subtotal: R$@Subtotal</strong>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card-viagem m-2 resumo-despesas" type="button" data-bs-toggle="collapse" data-bs-target="#resumoDespesas" aria-expanded="false" aria-controls="resumoDespesas" @onclick="ToggleMenuResumoDespesas">
+                    <span>
+                        Mostrar resumo das despesas
+                        <i class="resumo-despesas-btn">
+                            @if (!ResumoDespesasAberto)
+                            {
+                                <FeatherChevronDown Size="24" Color="#000" StrokeWidth="1.9f" />
+                            }
+                            else
+                            {
+                                <FeatherChevronUp Size="24" Color="#000" StrokeWidth="1.9f" />
+                            }
+                        </i>
+                    </span>
+                    <div class="collapse" id="resumoDespesas">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"></li>
+                            @foreach (var despesa in DespesasPorCategoria)
+                            {
+                                <li class="list-group-item">
+                                    @despesa.TipoDespesa.ToString() - R$@despesa.TotalDespesa
+                                </li>
+                            }
+                            <li class="list-group-item">
+                                <strong>Total: R$@Viagem.TotalDespesas</strong>
+                            </li>
+                        </ul>
+
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <!-- Coluna 2: Grid com as Despesas -->
-            @foreach (var despesa in Despesas)
-            {
-                <div class="list-group mb-2">
-                    <a href="/viagens/@IdViagem/@despesa.Id?TipoDespesa=@despesa.TipoDespesa.ToString()" class="list-group-item list-group-item-action" aria-current="true">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">@despesa.NomeDespesa</h5>
-                        </div>
-                        <p class="mb-1">@despesa.DescricaoDespesa</p>
-                        <p class="mb-1">Data da despesa: @despesa.DataDespesa</p>
-                        <p class="mb-1">R$@despesa.TotalDespesa</p>
-                    </a>
-                </div>
-            }
-        </div>
+
+
+        <!----------------------->
     </div>
 </div>
 
@@ -46,24 +103,63 @@
     [Parameter]
     public int IdViagem { get; set; }
     private ViagemDTO Viagem { get; set; } = new();
-    private Funcionario? Funcionario { get; set; }
+    private Funcionario Funcionario { get; set; } = new();
     private List<DespesaDTO> Despesas { get; set; } = new();
     private string Status { get; set; } = string.Empty;
+    private Dictionary<TiposDespesas, string> CoresDespesas = new();
+    private List<DespesaPorCategoria> DespesasPorCategoria = new();
+
+    private bool FormularioAberto = false;
+    private bool ResumoDespesasAberto = false;
+
+    private decimal Subtotal { get; set; } = 0m;
 
     protected override async Task OnInitializedAsync()
     {
         Viagem = await ViagemService.GetViagem(IdViagem);
 
-        if (Viagem.StatusViagem == StatusViagem.EmAndamento.ToString())
+        if (Viagem.StatusViagem == StatusViagem.EmAndamento)
             Status = "Em andamento";
         else
-            Status = Viagem.StatusViagem;
+            Status = Viagem.StatusViagem.ToString();
 
-        await ObterDespesas();       
+        await ObterDespesas();
+        await ObterFuncionario();
+        ObterSubtotal();
+        PopularDictionaryCores();
+        DespesasPorCategoria = await ViagemService.ObterTotalDespesasPorCategoria(IdViagem);
     }
 
     private async Task ObterDespesas()
     {
         Despesas = await ViagemService.ObterDespesas(Viagem.Id);
+    }
+
+    private async Task ObterFuncionario()
+    {
+        Funcionario = await ViagemService.GetFuncionario(Viagem.IdFuncionario);
+    }
+
+    private void ObterSubtotal()
+    {
+        Subtotal = Viagem.Adiantamento - Viagem.TotalDespesas;
+    }
+
+    private void AbrirFormulario() => FormularioAberto = true;
+    private void FecharFormulario() => FormularioAberto = false;
+
+    private void ToggleMenuResumoDespesas()
+    {
+        ResumoDespesasAberto = !ResumoDespesasAberto;
+    }
+
+    private void HandleViagem() => Console.WriteLine("Teste viagem.");
+
+    private void PopularDictionaryCores()
+    {
+        CoresDespesas.Add(TiposDespesas.Alimentação, "#27ea11");
+        CoresDespesas.Add(TiposDespesas.Deslocamento, "#f8b410");
+        CoresDespesas.Add(TiposDespesas.Passagem, "#1848e5");
+        CoresDespesas.Add(TiposDespesas.Hospedagem, "#a500c6");
     }
 }

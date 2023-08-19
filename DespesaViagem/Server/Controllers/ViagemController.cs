@@ -3,6 +3,8 @@ using DespesaViagem.Services.Interfaces;
 using DespesaViagem.Shared.DTOs.Despesas;
 using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Core.Enums;
+using DespesaViagem.Shared.Models.Core.Helpers;
+using DespesaViagem.Shared.Models.Despesas;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DespesaViagem.Server.Controllers
@@ -82,8 +84,7 @@ namespace DespesaViagem.Server.Controllers
             return Ok(viagens.Value);
         }
 
-        [HttpGet]
-        [Route("ObterDespesas/{idViagem}")]
+        [HttpGet("ObterDespesas/{idViagem}")]        
         public async Task<ActionResult> ObterTodasDespesasDaViagem(int idViagem)
         {
             Result<List<DespesaDTO>> result = await _viagemService.ObterTodasDespesas(idViagem);
@@ -92,6 +93,19 @@ namespace DespesaViagem.Server.Controllers
                 return BadRequest(result.Value);
 
             List<DespesaDTO> despesas = result.Value;
+            return Ok(despesas);
+        }
+
+        [HttpGet("ObterDespesasPorCategoria/{idViagem}")]
+        
+        public async Task<ActionResult> ObterTotalDasDespesasPorCategoria(int idViagem)
+        {
+            Result<List<DespesaPorCategoria>> result = await _viagemService.ObterTotalDasDespesasPorCategoria(idViagem);
+
+            if (result.IsFailure)
+                return BadRequest(result.Value);
+
+            List<DespesaPorCategoria> despesas = result.Value;
             return Ok(despesas);
         }
 

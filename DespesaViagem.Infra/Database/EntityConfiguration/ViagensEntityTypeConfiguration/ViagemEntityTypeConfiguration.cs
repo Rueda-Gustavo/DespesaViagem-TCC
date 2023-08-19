@@ -17,12 +17,12 @@ namespace DespesaViagem.Infra.Database.EntityConfiguration.ViagensEntityTypeConf
             builder.HasKey(k => k.Id);
 
             builder.Property(p => p.NomeViagem)
-                   .HasMaxLength(20)
+                   .HasMaxLength(40)
                    .IsUnicode(false)
                    .IsRequired(true);
 
             builder.Property(p => p.DescricaoViagem)
-                   .HasMaxLength(60)
+                   .HasMaxLength(200)
                    .IsUnicode(false)
                    .IsRequired(true);
 

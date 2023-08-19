@@ -1,11 +1,22 @@
 ﻿@page "/viagens/{idViagem:int}/{idDespesa:int}"
-@inject IDespesasService<DespesaHospedagemDTO> DespesaHospedagemService
-<!--inject IDespesasService<DespesaPassagem> DespesaPassagemService
-inject IDespesasService<DespesaAlimentacao> DespesaAlimentacaoService
-inject IDespesasService<DespesaDeslocamento> DespesaDeslocamentoService-->
+@inject IDespesasService<DespesaAlimentacaoDTO> DespesaAlimentacaoService
+@inject IDespesasService<DespesaPassagemDTO> DespesaPassagemService
+@inject IDespesasService<DespesaDeslocamentoDTO> DespesaDeslocamentoService
 @inject NavigationManager NavigationManager
 
-<h3>Detalhes da Despesa @IdViagem @IdDespesa</h3>
+@if (TipoDespesa == string.Empty)
+{
+    <span>@Mensagem</span>
+}
+else
+{    
+    if(DespesasComponentes.TryGetValue(TipoDespesa, out var DespesaComponent))
+    {
+        @DespesaComponent
+    }
+}
+
+
 
 
 
@@ -14,44 +25,60 @@ inject IDespesasService<DespesaDeslocamento> DespesaDeslocamentoService-->
     public int IdViagem { get; set; }
 
     [Parameter]
-    public int IdDespesa{ get; set; }
+    public int IdDespesa { get; set; }
 
     [Parameter]
     public string TipoDespesa { get; set; } = string.Empty;
 
-    private Dictionary<string, Func<Task>> services {get; set;} = new();
+    private Dictionary<string, RenderFragment> DespesasComponentes = new();
 
-    private dynamic Despesa { get; set; }
+    private string Mensagem { get; set; } = "Carregando despesa ...";
 
-    protected override async Task OnInitializedAsync()
-    {
-        services.Add(TiposDespesas.Hospedagem.ToString(), GetDespesaHospedagem);
-        /*services.Add(TiposDespesas.Passagem, (IDespesasService<DespesaPassagem>)DespesaPassagemService);
-        services.Add(TiposDespesas.Deslocamento, (IDespesasService<DespesaDeslocamento>)DespesaDeslocamentoService);
-        services.Add(TiposDespesas.Alimentação, (IDespesasService<DespesaAlimentacao>)DespesaAlimentacaoService);*/
-        DespesaHospedagemService.DespesasChanged += StateHasChanged;
-        await CarregarDespesa();
+    protected override void OnInitialized()
+    {        
+        string tipoDespesa = NavigationManager.Uri.Split('?').LastOrDefault()?.Split('=')?.LastOrDefault() ?? string.Empty;
+        TipoDespesa = HttpUtility.UrlDecode(tipoDespesa); //Essa linha formata a string. Por exemplo na Url o valor fica como Alimenta%C3%A7%C3%A3o mas essa linha deixa com o valor correto, Alimentação
+
+        PopularDictionaries();
     }
 
-    private async Task CarregarDespesa()
+    /*
+    private async Task GetDespesaAlimentacao()
     {
-        TipoDespesa = NavigationManager.Uri.Split('?').LastOrDefault()?.Split('=')?.LastOrDefault() ?? string.Empty;
-        if (services.TryGetValue(TipoDespesa, out var carregarDespesa))
-        {
-            await carregarDespesa(); // Chama o método void associado à chave
-        }
+        await DespesaAlimentacaoService.GetDespesa(IdDespesa);
+        Despesa = DespesaAlimentacaoService.Despesa;
+        //ApresentarNoConsole(Despesa);
+        Mensagem = DespesaAlimentacaoService.Mensagem;
     }
 
-    private async Task GetDespesaHospedagem()
+    private async Task GetDespesaDeslocamento()
     {
-        await DespesaHospedagemService.GetDespesa(IdDespesa);
-        //Despesa = DespesaHospedagemService.Despesa;
-        DespesaHospedagemDTO despesaHospedagemDTO = DespesaHospedagemService.Despesa;
-        Despesa = despesaHospedagemDTO;
-              
-        foreach (var propriedade in Despesa.GetType().GetProperties())
-        {
-            Console.WriteLine($"{propriedade.Name}: {propriedade.GetValue(Despesa)}");
-        }        
+        await DespesaDeslocamentoService.GetDespesa(IdDespesa);
+        Despesa = DespesaDeslocamentoService.Despesa;
+        //ApresentarNoConsole(Despesa);
+        Mensagem = DespesaDeslocamentoService.Mensagem;
+    }
+
+    private async Task GetDespesaPassagem()
+    {
+        await DespesaPassagemService.GetDespesa(IdDespesa);
+        Despesa = DespesaPassagemService.Despesa;
+        //ApresentarNoConsole(Despesa);
+        Mensagem = DespesaPassagemService.Mensagem;
+    }
+    */
+
+
+    private void PopularDictionaries()
+    {
+        DespesasComponentes.Add("Hospedagem", builder => { 
+            builder.OpenComponent(0, typeof(DespesaHospedagemForm));
+            builder.AddAttribute(1, "IdDespesa", IdDespesa);
+            builder.CloseComponent(); });
+
+        
+        //DespesasComponentes.Add("Deslocamento", builder => { builder.OpenComponent<DespesaDeslocamentoForm>(0); builder.CloseComponent(); });
+        //DespesasComponentes.Add("Passagem", builder => { builder.OpenComponent<DespesaPassagemForm>(0); builder.CloseComponent(); });
+        //DespesasComponentes.Add("Alimentacao", builder => { builder.OpenComponent<DespesaAlimentacaoForm>(0); builder.CloseComponent(); });
     }
 }

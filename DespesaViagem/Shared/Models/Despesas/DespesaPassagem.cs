@@ -12,8 +12,8 @@ namespace DespesaViagem.Shared.Models.Despesas
         [Column(TypeName = "decimal(12,2)")]
         public decimal Preco { get; private set; }
 
-        public DespesaPassagem(string nomeDespesa,string descricaoDespesa, string companhia, string origem, 
-            string destino, DateTime dataHoraEmbarque, decimal preco, int idViagem) : 
+        public DespesaPassagem(string nomeDespesa, string descricaoDespesa, string companhia, string origem,
+            string destino, DateTime dataHoraEmbarque, decimal preco, int idViagem) :
             base(nomeDespesa, descricaoDespesa, preco, TiposDespesas.Passagem, idViagem)
         {
             Companhia = companhia;
@@ -22,8 +22,6 @@ namespace DespesaViagem.Shared.Models.Despesas
             DataHoraEmbarque = dataHoraEmbarque;
             Preco = preco;
         }
-
-        public DespesaPassagem() { }
 
         public void CalcularTotalDespesa()
         {

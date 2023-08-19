@@ -15,6 +15,6 @@ namespace DespesaViagem.Shared.DTOs.Despesas
         //public int IdViagem { get; set; }
         public int QuantidadeDias { get; set; }
         public decimal ValorDiaria { get; set; }
-        public int IdEndereco { get; set; }        
+        public int IdEndereco { get; set; }
     }
 }

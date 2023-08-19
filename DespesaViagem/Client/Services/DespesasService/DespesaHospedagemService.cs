@@ -6,8 +6,8 @@ namespace DespesaViagem.Client.Services.DespesasService
 {
     public class DespesaHospedagemService : IDespesasService<DespesaHospedagemDTO>
     {
-        private readonly HttpClient _httpClient;        
-        public string Mensagem { get; set; }
+        private readonly HttpClient _httpClient;
+        public string Mensagem { get; set; } = "Carregando despesa com hospedagem ...";
         public DespesaHospedagemDTO Despesa { get; set; } = new();
 
         public event Action DespesasChanged;

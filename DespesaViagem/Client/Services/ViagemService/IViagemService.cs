@@ -12,6 +12,8 @@ namespace DespesaViagem.Client.Services.Interfaces
         Task GetViagens();
         Task<ViagemDTO> GetViagem(int idViagem);
         Task<Funcionario> GetFuncionario(string CPF);
+        Task<Funcionario> GetFuncionario(int idFuncionario);
         Task<List<DespesaDTO>> ObterDespesas(int idViagem);
+        Task<List<DespesaPorCategoria>> ObterTotalDespesasPorCategoria(int idViagem);
     }
 }

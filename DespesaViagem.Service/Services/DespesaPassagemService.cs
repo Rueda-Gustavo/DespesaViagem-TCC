@@ -70,6 +70,8 @@ namespace DespesaViagem.Services.Services
             viagem.AdicionarDespesa(despesa);
             viagem.AtualizarTotalDespesas();
 
+
+
             //await _viagemRepository.Update(viagem);         
             await _despesaRepository.Insert(despesa);
             return Result.Success(despesa);

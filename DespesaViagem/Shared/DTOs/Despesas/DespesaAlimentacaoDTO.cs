@@ -1,4 +1,6 @@
-﻿namespace DespesaViagem.Shared.DTOs.Despesas
+﻿using DespesaViagem.Shared.Models.Core.Enums;
+
+namespace DespesaViagem.Shared.DTOs.Despesas
 {
     public class DespesaAlimentacaoDTO : DespesaDTO
     {

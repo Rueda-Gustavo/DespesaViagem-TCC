@@ -3,8 +3,6 @@ using DespesaViagem.Shared.DTOs.Despesas;
 using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
-using DespesaViagem.Shared.Models.Despesas;
-using DespesaViagem.Shared.Models.Viagens;
 
 namespace DespesaViagem.Services.Interfaces
 {
@@ -14,6 +12,7 @@ namespace DespesaViagem.Services.Interfaces
         Task<Result<ViagemDTO>> ObterViagemPorId(int id);
         Task<Result<List<ViagemDTO>>> ObterViagemPorFiltro(string filtro);        
         Task<Result<List<DespesaDTO>>> ObterTodasDespesas(int id);
+        Task<List<DespesaPorCategoria>> ObterTotalDasDespesasPorCategoria(int viagemId);
         Task<Result<List<ViagemDTO>>> ObterViagemPorStatus(StatusViagem statusViagem);      
         Task<Result<ViagemDTO>> AdicionarViagem(ViagemDTO viagemDTO);
         Task<Result<ViagemDTO>> AlterarViagem(ViagemDTO viagemDTO);

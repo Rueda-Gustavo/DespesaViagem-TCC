@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DespesaViagem.Shared.DTOs.Despesas;
 using DespesaViagem.Shared.DTOs.Viagens;
+using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Despesas;
 using DespesaViagem.Shared.Models.Viagens;
 
@@ -29,6 +30,8 @@ namespace DespesaViagem.Server.Mapping
         }
         public static DespesaHospedagem ConverterDTO(DespesaHospedagemDTO despesaHospedagemDTO)
         {
+            despesaHospedagemDTO.TipoDespesa = TiposDespesas.Hospedagem;
+            
             MapperConfiguration config = new(cfg =>
             {
                 cfg.CreateMap<DespesaHospedagemDTO, DespesaHospedagem>()
@@ -87,6 +90,8 @@ namespace DespesaViagem.Server.Mapping
 
         public static DespesaPassagem ConverterDTO(DespesaPassagemDTO despesaPassagemDTO)
         {
+            despesaPassagemDTO.TipoDespesa = TiposDespesas.Passagem;
+
             MapperConfiguration config = new(cfg =>
             {
                 cfg.CreateMap<DespesaPassagemDTO, DespesaPassagem>()
@@ -142,6 +147,8 @@ namespace DespesaViagem.Server.Mapping
 
         public static DespesaAlimentacao ConverterDTO(DespesaAlimentacaoDTO despesaAlimentacaoDTO)
         {
+            despesaAlimentacaoDTO.TipoDespesa = TiposDespesas.Alimentação;
+
             MapperConfiguration config = new(cfg =>
             {
                 cfg.CreateMap<DespesaAlimentacaoDTO, DespesaAlimentacao>()
@@ -197,6 +204,8 @@ namespace DespesaViagem.Server.Mapping
 
         public static DespesaDeslocamento ConverterDTO(DespesaDeslocamentoDTO despesaDeslocamentoDTO)
         {
+            despesaDeslocamentoDTO.TipoDespesa = TiposDespesas.Deslocamento;
+
             MapperConfiguration config = new(cfg =>
             {
                 cfg.CreateMap<DespesaDeslocamentoDTO, DespesaDeslocamento>()
@@ -272,8 +281,8 @@ namespace DespesaViagem.Server.Mapping
             MapperConfiguration config = new(cfg =>
             {
                 cfg.CreateMap<Viagem, ViagemDTO>()
-                .ForMember(dst => dst.Funcionario, opt => opt.Ignore())
-                .ForMember(dst => dst.StatusViagem, opt => opt.MapFrom(src => src.StatusViagem.ToString()));
+                .ForMember(dst => dst.Funcionario, opt => opt.Ignore());
+                //.ForMember(dst => dst.StatusViagem, opt => opt.MapFrom(src => src.StatusViagem.ToString()));
 
             });
 

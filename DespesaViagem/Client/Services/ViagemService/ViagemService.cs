@@ -1,12 +1,7 @@
-﻿using DespesaViagem.Client.Pages;
-using DespesaViagem.Client.Services.Interfaces;
-using DespesaViagem.Server.Mapping;
+﻿using DespesaViagem.Client.Services.Interfaces;
 using DespesaViagem.Shared.DTOs.Despesas;
 using DespesaViagem.Shared.DTOs.Viagens;
-using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
-using DespesaViagem.Shared.Models.Despesas;
-using DespesaViagem.Shared.Models.Viagens;
 using System.Net.Http.Json;
 
 namespace DespesaViagem.Client.Services.ViagemService
@@ -16,15 +11,15 @@ namespace DespesaViagem.Client.Services.ViagemService
         public event Action ViagensChanged;
 
         private readonly HttpClient _httpClient;
-        private readonly ILogger<ViagemService> _logger;
+        //private readonly ILogger<ViagemService> _logger;
 
         public List<ViagemDTO> Viagens { get; set; } = new List<ViagemDTO>();
         public string Mensagem { get; set; } = "Carregando viagens...";
 
-        public ViagemService(HttpClient httpClient, ILogger<ViagemService> logger)
+        public ViagemService(HttpClient httpClient/*, ILogger<ViagemService> logger*/)
         {
             _httpClient = httpClient;
-            _logger = logger;
+            //_logger = logger;
         }
 
         public async Task GetViagens()
@@ -38,7 +33,7 @@ namespace DespesaViagem.Client.Services.ViagemService
             {
                 Viagens = response;
             }
-            _logger.LogInformation("Sucesso.");
+            Console.WriteLine("Sucesso - ViagemService - Client");
             ViagensChanged.Invoke();
         }
 
@@ -54,7 +49,7 @@ namespace DespesaViagem.Client.Services.ViagemService
             }
             else
             {
-                _logger.LogInformation("Sucesso.");
+                Console.WriteLine("Sucesso - ViagemService - Client");
                 return response;
             }           
         }
@@ -67,12 +62,28 @@ namespace DespesaViagem.Client.Services.ViagemService
 
             if (funcionario.CPF != CPF)
             {
-                _logger.LogError("Funcionário não encontrado.");
+                Console.WriteLine("Funcionário não encontrado.");
                 return funcionario;
             }
-            
-            _logger.LogInformation("Sucesso.");
+
+            Console.WriteLine("Sucesso - ViagemService - Client");
             return funcionario;                                                
+        }
+
+        public async Task<Funcionario> GetFuncionario(int idFuncionario)
+        {
+            Funcionario funcionario = await _httpClient
+                .GetFromJsonAsync<Funcionario>($"api/funcionario/{idFuncionario}")
+                ?? new Funcionario();
+
+            if (funcionario.Id == 0 || funcionario.CPF == string.Empty)
+            {
+                Console.WriteLine("Funcionário não encontrado.");
+                return funcionario;
+            }
+
+            Console.WriteLine("Sucesso - ViagemService - Client");
+            return funcionario;
         }
 
         public async Task<List<DespesaDTO>> ObterDespesas(int idViagem)
@@ -83,12 +94,30 @@ namespace DespesaViagem.Client.Services.ViagemService
 
             if (!despesas.Any())
             {
-                _logger.LogError("Despesas não encontradas.");
+                Console.WriteLine("Despesas não encontradas.");
                 return despesas;
             }
 
-            _logger.LogInformation("Sucesso.");
+            Console.WriteLine("Sucesso - ViagemService - Client");
             return despesas;
         }
+
+        public async Task<List<DespesaPorCategoria>> ObterTotalDespesasPorCategoria(int idViagem)
+        {
+            List<DespesaPorCategoria> despesas = await _httpClient
+                .GetFromJsonAsync<List<DespesaPorCategoria>>($"api/Viagem/ObterDespesasPorCategoria/{idViagem}")
+                ?? new List<DespesaPorCategoria>();
+
+            if (!despesas.Any())
+            {
+                Console.WriteLine("Despesas não encontradas.");
+                return despesas;
+            }
+
+            Console.WriteLine("Sucesso - ViagemService - Client");
+            return despesas;
+
+        }        
     }
 }
+

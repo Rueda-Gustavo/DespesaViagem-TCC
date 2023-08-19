@@ -96,9 +96,17 @@ namespace DespesaViagem.Services.Services
             return Result.Success(despesasDTO);
         }
 
+        public async Task<List<DespesaPorCategoria>> ObterTotalDasDespesasPorCategoria(int viagemId)
+        {
+            List<DespesaPorCategoria> despesas = await _viagemRepository.ObterTotalDasDespesasPorCategoria(viagemId);
+
+            return despesas;
+        }
+
+
         public async Task<Result<ViagemDTO>> AdicionarViagem(ViagemDTO viagemDTO)
         {
-            viagemDTO.StatusViagem = StatusViagem.Aberta.ToString();
+            viagemDTO.StatusViagem = StatusViagem.Aberta;
             Viagem viagem = MappingDTOs.ConverterDTO(viagemDTO);
 
             if (viagem is null || viagemDTO.Id != 0) //Caso o Id não seja 0 irá dar erro na hora de adicionar a viagem
@@ -110,7 +118,7 @@ namespace DespesaViagem.Services.Services
             viagem.VerificarDataInicialeFinal();
 
             Funcionario funcinonario = await _funcionarioRepository.ObterPorId(viagem.IdFuncionario);
-            
+
             if (funcinonario is null)
                 return Result.Failure<ViagemDTO>("Funcionário não encontrado!");
 

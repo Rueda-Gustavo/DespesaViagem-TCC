@@ -1,8 +1,10 @@
 ﻿using DespesaViagem.Infra.Database;
 using DespesaViagem.Infra.Interfaces;
 using DespesaViagem.Shared.Models.Core.Enums;
+using DespesaViagem.Shared.Models.Core.Helpers;
 using DespesaViagem.Shared.Models.Despesas;
 using DespesaViagem.Shared.Models.Viagens;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace DespesaViagem.Infra.Repositories
@@ -33,7 +35,7 @@ namespace DespesaViagem.Infra.Repositories
         }
 
         public async Task<List<Viagem?>> ObterViagemPorStatus(StatusViagem statusViagem)
-        {            
+        {
             return await _context.Viagens
                 .Include(f => f.Funcionario)
                 .Where(viagem => viagem.StatusViagem == statusViagem)
@@ -53,6 +55,28 @@ namespace DespesaViagem.Infra.Repositories
             return await _context.Despesas
                 .Where(despesa => despesa.Viagem.Id == viagemId)
                 .ToListAsync();
+        }
+
+        public async Task<List<DespesaPorCategoria>> ObterTotalDasDespesasPorCategoria(int viagemId)
+        {
+            /*
+            string sqlDespesasPorCategoria = @"
+            SELECT TipoDespesa,SUM(Totaldespesa) 
+            FROM Despesas 
+            WHERE IdViagem = @viagemId";
+            */ //Basicamente esse é o select que é feito na consulta LINQ abaixo
+
+            var result = await _context.Despesas
+            .Where(despesa => despesa.IdViagem == viagemId)
+            .GroupBy(despesa => despesa.TipoDespesa)
+            .Select(agrupamento => new DespesaPorCategoria
+            {
+                TipoDespesa = agrupamento.Key,
+                TotalDespesa = agrupamento.Sum(despesa => despesa.TotalDespesa)
+            })
+            .ToListAsync();
+
+            return result;
         }
 
         public async Task Insert(Viagem viagem)

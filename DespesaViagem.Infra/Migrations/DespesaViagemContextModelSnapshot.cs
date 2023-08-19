@@ -154,7 +154,7 @@ namespace DespesaViagem.Infra.Migrations
 
                     b.Property<string>("DescricaoViagem")
                         .IsRequired()
-                        .HasMaxLength(60)
+                        .HasMaxLength(200)
                         .IsUnicode(false)
                         .HasColumnType("varchar(3000)");
 
@@ -163,7 +163,7 @@ namespace DespesaViagem.Infra.Migrations
 
                     b.Property<string>("NomeViagem")
                         .IsRequired()
-                        .HasMaxLength(20)
+                        .HasMaxLength(40)
                         .IsUnicode(false)
                         .HasColumnType("varchar(200)");
 
@@ -188,7 +188,7 @@ namespace DespesaViagem.Infra.Migrations
                 {
                     b.HasBaseType("DespesaViagem.Shared.Models.Core.Helpers.Usuario");
 
-                    b.Property<int>("GestorId")
+                    b.Property<int?>("GestorId")
                         .HasColumnType("int");
 
                     b.Property<string>("Matricula")
@@ -330,8 +330,7 @@ namespace DespesaViagem.Infra.Migrations
                     b.HasOne("DespesaViagem.Shared.Models.Core.Helpers.Gestor", "Gestor")
                         .WithMany("Funcionarios")
                         .HasForeignKey("GestorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Gestor");
                 });

@@ -1,22 +1,32 @@
 ﻿.card-viagem {
-    border: 2px solid #a5a5a5;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 30rem;
+    background: #fff;
+    border: 0.5px solid #1639a357;
+    border-radius: 5px;
+    box-shadow: 8px 4px 10px 5px rgba(0, 0, 0, 0.1);
     padding: 10px;
+    display: flex;
+    flex-direction: column;
 }
 
 .card-header-viagem {
-    background-color: #fff;
     color: #191919;
     border-radius: 10px;
-    border: 2px solid #bdbdbd;
     display: flex;
     justify-content: center;
     padding-top: .5rem;
 }
 
-card-title-viagem {
-    padding: 1rem 0 0 0; 
+.card-title-viagem {
+    padding: 0.5rem 0 0 0; 
+}
+
+.lista-despesas {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: stretch;    
+    max-height: 800px;
 }
 
 .container {
@@ -46,3 +56,43 @@ card-title-viagem {
     border: 1px solid #ccc;
     background-color: #f0f0f0;
 }
+
+.btn-edit-viagem {
+    padding: 8px 9px 5px 10px;
+    min-height: 30px;
+    color: #000;
+    position: absolute;
+    /*margin-left: 18rem;*/
+    align-self:end;
+    margin: 0.5rem 1rem 0 0;
+}
+
+    .btn-edit-viagem:hover {
+        color: #fff;
+        border: 2px solid #575757;
+    }
+
+.resumo-despesas {
+    align-items: center;
+}
+
+.seta {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid black;
+    margin-right: 5px;
+}
+/*
+.resumo-despesas-btn {
+    margin-left: 5px;
+    padding: 1px 3px 1.5px 3px;
+    cursor: pointer;
+}
+
+.resumo-despesas-btn:hover {
+    background-color: #d9d9d9;
+    border-radius: 20%;
+}
+*/

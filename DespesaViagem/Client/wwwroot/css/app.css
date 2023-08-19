@@ -34,8 +34,25 @@ a, .btn-link {
     outline: 1px solid red;
 }
 
+.btn-edit {
+    padding: 8px 9px 5px 10px;
+    min-height: 30px;    
+    color: #000;
+}
+
+.btn-edit:hover{
+    color: #fff;
+    border: 2px solid #575757;
+}
+
 .validation-message {
     color: red;
+}
+
+.total-despesa{
+    right: 10px;
+    margin-top:5px;
+    float:right;
 }
 
 #blazor-error-ui {
@@ -99,3 +116,23 @@ a, .btn-link {
     .loading-progress-text:after {
         content: var(--blazor-load-percentage-text, "Loading");
     }
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.card-subtitle {
+    font-size: 18px;
+    margin-top: 5px;
+    
+}
+
+.container-despesas-detalhes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

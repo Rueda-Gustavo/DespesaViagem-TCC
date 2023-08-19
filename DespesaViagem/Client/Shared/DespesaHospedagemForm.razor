@@ -1,0 +1,161 @@
+﻿@inject IDespesasService<DespesaHospedagemDTO> DespesaHospedagemService
+@inject IEnderecoService EnderecoService
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+@if (Despesa is null)
+{
+    <h3>Carregando despesa...</h3>
+}
+else
+{
+    <div class="container container-despesas-detalhes">
+        <h3 style="margin:40px 0 40px 0">Despesa com @Despesa.TipoDespesa</h3>
+        <div class="card-container" style="flex-wrap:wrap; height: 50vh;">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mt-1 pt-1">@Despesa.NomeDespesa <button class="btn pt-0 btn-edit" @onclick="AbrirFormulario"><FeatherEdit Size="24" Color="#000" StrokeWidth="1.9f" /></button></h4>
+                </div>
+                <div class="card-body">
+                    <div class="card-body-item">
+                        <strong>Descrição: </strong>@Despesa.DescricaoDespesa
+                    </div>
+                    <div class="card-body-item mt-2">
+                        <strong>Data: </strong>@Despesa.DataDespesa
+                    </div>
+                    <div class="card-body-item">
+                        <strong>Diária: </strong>R$@Despesa.ValorDiaria
+                    </div>
+                    <div class="card-body-item">
+                        <strong>Quantidade de dias: </strong>@Despesa.QuantidadeDias
+                    </div>
+                    <hr />
+                    <div class="card-subtitle">
+                        <strong>Endereço</strong>
+                    </div>
+
+                    <div class="card-body-item">
+                        <strong>Logradouro: </strong>@Endereco.Logradouro, n° @Endereco.NumeroCasa
+                    </div>
+                    <div class="card-body-item">
+                        <strong>CEP: </strong>@Endereco.CEP
+                    </div>
+                    <div class="card-body-item">
+                        <strong>Cidade / Estado: </strong>@Endereco.Cidade / @Endereco.Estado
+                    </div>
+                    <div class="card-body-item total-despesa">
+                        <strong>Total: </strong> R$ @Despesa.TotalDespesa
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@if (FormularioAberto)
+{
+    <div class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Despesa</h5>
+                <button type="button" class="close" @onclick="FecharFormulario">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form @onsubmit="HandleDespesa">
+                    <div class="form-group row">
+                        <div class="col">
+                            <label for="NomeDespesa">Nome da Despesa</label>
+                            <input id="NomeDespesa" class="form-control" @bind="Despesa.NomeDespesa" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col">
+                            <label for="DescricaoDespesa">Descrição da Despesa</label>
+                            <textarea id="DescricaoDespesa" class="form-control" @bind="Despesa.DescricaoDespesa" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col">
+                            <label for="Logradouro">Logradouro</label>
+                            <input id="Logradouro" class="form-control" @bind="Endereco.Logradouro" />
+                        </div>
+                        <div class="col-auto" style="max-width: 5rem">
+                            <label for="NumeroCasa">Nº</label>
+                            <input id="NumeroCasa" class="form-control" @bind="Endereco.NumeroCasa" />
+                        </div>
+                    </div>
+                    <div class="form-group row">                        
+                        <div class="col">
+                            <label for="Cidade">Cidade</label>
+                            <input id="Cidade" class="form-control" @bind="Endereco.Cidade" />
+                        </div>
+                        <div class="col">
+                            <label for="Estado">Estado</label>
+                            <input id="Estado" class="form-control" @bind="Endereco.Estado" />
+                        </div>
+                        <div class="col">
+                            <label for="CEP">CEP</label>
+                            <input id="CEP" class="form-control" pattern="[0-9]{3}" onkeypress="$(this).mask('00000-000')" @bind-value="Endereco.CEP" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-auto">
+                            <label for="ValorDiaria">Diária</label>
+                            <input id="ValorDiaria" class="form-control" style="max-width:6rem" @bind="Despesa.ValorDiaria" />
+                        </div>
+                        <div class="col-auto">
+                            <label for="QuantidadeDias">Quantidade de dias</label>
+                            <input id="QuantidadeDias" class="form-control" style="max-width:5rem" @bind="Despesa.QuantidadeDias" />
+                        </div>
+                    </div>
+                    <!-- Adicione outros campos aqui -->
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int IdDespesa { get; set; }
+
+    private DespesaHospedagemDTO Despesa { get; set; } = new();
+    private Endereco Endereco { get; set; } = new();
+
+    private bool FormularioAberto { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        DespesaHospedagemService.DespesasChanged += StateHasChanged;
+
+        //Helper.InicializarApresentacaoDespesas();
+
+        await GetDespesaHospedagem();
+    }
+
+    public void Dispose()
+    {
+        DespesaHospedagemService.DespesasChanged -= StateHasChanged;
+    }
+
+    private async Task HandleDespesa() { 
+        FecharFormulario();
+        await JSRuntime.InvokeVoidAsync("alert", "Dados salvos com sucesso!");
+    }
+
+    private void AbrirFormulario() => FormularioAberto = true;
+
+    private void FecharFormulario() => FormularioAberto = false;
+
+    private async Task GetDespesaHospedagem()
+    {
+        await DespesaHospedagemService.GetDespesa(IdDespesa);
+        Despesa = DespesaHospedagemService.Despesa;
+
+        await EnderecoService.GetEndereco(Despesa.IdEndereco);
+        Endereco = EnderecoService.Endereco;
+    }
+}

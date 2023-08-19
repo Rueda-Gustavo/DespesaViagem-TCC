@@ -1,5 +1,6 @@
 ﻿@inject IViagemService ViagemService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 @implements IDisposable
 
 @if (ViagemService.Viagens == null || !ViagemService.Viagens.Any())
@@ -11,46 +12,63 @@ else
     @foreach (var viagem in ViagemService.Viagens)
     {
         string descricao = viagem.DescricaoViagem;
-        string opacidade = string.Empty;
-        if (viagem.DescricaoViagem.Length > 30)
-            descricao = descricao.Substring(0, 30);
-
-        if (viagem.StatusViagem == StatusViagem.Aberta.ToString() || viagem.StatusViagem == StatusViagem.EmAndamento.ToString())
-            opacidade = "100%";                    
-        else        
+        string opacidade = OpacidadeStatus.GetValueOrDefault(viagem.StatusViagem) ?? string.Empty;
+        string statusViagem = viagem.StatusViagem.ToString();
+        if (viagem.DescricaoViagem.Length > 60)
+            descricao = descricao.Substring(0, 60) + "...";
+        /*
+        if (viagem.StatusViagem == StatusViagem.Aberta || viagem.StatusViagem == StatusViagem.EmAndamento)
+            opacidade = "100%";
+        else
             opacidade = "50%";
+        */
 
-        if (viagem.StatusViagem == StatusViagem.EmAndamento.ToString()) viagem.StatusViagem = "Em andamento";
 
-        
+
+        if (viagem.StatusViagem == StatusViagem.EmAndamento) statusViagem = "Em andamento";
+
+
         <div class="card" style="opacity:@opacidade">
-            <h2 class="card-header title">@viagem.NomeViagem <button class="btn-exibir-despesas" @onclick="() =>  VerDetalhes(viagem.Id)"><FeatherList Size="24" Color="#000" StrokeWidth="1.7f" /></button></h2>
+            <h2 class="card-header title">@viagem.NomeViagem <button class="btn-exibir-despesas" title="Detalhes da viagem" @onclick="() => VerDetalhes(viagem.Id)"><FeatherList Size="24" Color="#000" StrokeWidth="1.7f" /></button></h2>
             <div>
-                <h4 class="card-title">Status da viagem: @viagem.StatusViagem</h4>
+                <h4 class="card-title">Status da viagem: @statusViagem</h4>
                 <hr />
-                <h5 class="card-subtitle">Informações sobre a viagem:</h5>
-                <ul>
-                    <li class="card-text">Descrição da viagem: @descricao</li>
-                    <li class="card-text">De: @viagem.DataInicial</li>
-                    <li class="card-text">Até: @viagem.DataFinal</li>
-                    <li>Adiantamento incial: @viagem.Adiantamento</li>
-                </ul>
+                <!--<h5 class="card-subtitle">Informações sobre a viagem:</h5>-->
+                <p class="card-subtitle">Descrição da viagem: @descricao</p>
                 <hr />
-                <h5 style="font-weight:bold">Informações sobre o funcionário:</h5>
                 <ul>
-                    <li class="card-text">Nome: @viagem.Funcionario.Nome @viagem.Funcionario.Sobrenome</li>
-                    <li class="card-text">Matrícula: @viagem.Funcionario.Matricula</li>
-                    <li class="card-text">CPF: @viagem.Funcionario.CPF</li>
+                    <li class="card-text">De: @viagem.DataInicial.ToString("dd/MM/yyyy")</li>
+                    <li class="card-text">Até: @viagem.DataFinal.ToString("dd/MM/yyyy")</li>
+                    <!--<li>Adiantamento incial: @viagem.Adiantamento</li>-->
                 </ul>
+                @if (viagem.StatusViagem == StatusViagem.EmAndamento)
+                {
+                    <div class="dropup">
+                        <button class="btn-add-despesas round-button" title="Adicionar despesa" data-bs-toggle="dropdown" aria-expanded="false">
+                            <FeatherPlus Size="24" Color="#000" StrokeWidth="1.7f" />
+                        </button>
+                        <ul class="dropdown-menu">                            
+                            <li><a class="dropdown-item">Hospedagem</a></li>
+                            <li><a class="dropdown-item">Passagem</a></li>
+                        </ul>
+                    </div>
+                }
+
             </div>
         </div>
     }
 
 }
 @code {
+    private Dictionary<StatusViagem, string> OpacidadeStatus { get; set; } = new();
     protected override void OnInitialized()
     {
-        ViagemService.ViagensChanged += StateHasChanged;          
+        ViagemService.ViagensChanged += StateHasChanged;
+
+        OpacidadeStatus.Add(StatusViagem.Encerrada, "50%");
+        OpacidadeStatus.Add(StatusViagem.Cancelada, "50%");
+        OpacidadeStatus.Add(StatusViagem.Aberta, "100%");
+        OpacidadeStatus.Add(StatusViagem.EmAndamento, "100%");
     }
 
     public void Dispose()
@@ -58,8 +76,19 @@ else
         ViagemService.ViagensChanged -= StateHasChanged;
     }
 
-    private void VerDetalhes(int idViagem)
+    private async Task VerDetalhes(int idViagem)
     {
+        /*
+        if ((await ViagemService.ObterDespesas(idViagem)).Count() > 0)
+            NavigationManager.NavigateTo($"/viagens/{idViagem}");
+        else
+            await JSRuntime.InvokeVoidAsync("alert", "Adicione alguma despesa para a viagem primeiro!");
+        */
         NavigationManager.NavigateTo($"/viagens/{idViagem}");
+    }
+
+    private void AdicionarDespesa(int idViagem)
+    {
+        NavigationManager.NavigateTo($"/viagens/adicionar-despesa/{idViagem}");
     }
 }
