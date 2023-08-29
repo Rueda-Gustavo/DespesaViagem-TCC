@@ -13,6 +13,8 @@ namespace DespesaViagem.Infra.Interfaces
         //Diferente do método para obter todas as despesas da interface de IDespesasRepository, esse método irá retornar
         //todas as despesas referentes a viagem em questão, independente de qual tipo ela seja, Hospedagem, Passagem etc.
         Task<List<Despesa>> ObterTodasDepesas(int viagemId);
+        //Task<List<Despesa>> ObterDepesasPorPagina(int viagemId, int pagina, int despesasPorPagina);
+        Task<List<Despesa>> ObterDespesasPorTipo(int viagemId, TiposDespesas tipoDespesa);
         Task<List<Viagem?>> ObterViagemPorStatus(StatusViagem statusViagem);
         Task<List<DespesaPorCategoria>> ObterTotalDasDespesasPorCategoria(int viagemId);
         Task Insert(Viagem viagem);

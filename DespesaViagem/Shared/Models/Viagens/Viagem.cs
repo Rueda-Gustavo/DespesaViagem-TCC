@@ -121,6 +121,11 @@ namespace DespesaViagem.Shared.Models.Viagens
             AtualizarTotalDespesas();
         }
 
+        public void AtualizarDataFinal(DateTime dataFinal)
+        {
+
+        }
+
         public void IniciarViagem()
         {
             if (StatusViagem == StatusViagem.Encerrada || StatusViagem == StatusViagem.EmAndamento || StatusViagem == StatusViagem.Cancelada)

@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using DespesaViagem.Shared.DTOs.Despesas;
+using DespesaViagem.Shared.DTOs.Helpers;
 using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Core.Enums;
+using DespesaViagem.Shared.Models.Core.Helpers;
 using DespesaViagem.Shared.Models.Despesas;
 using DespesaViagem.Shared.Models.Viagens;
 
@@ -280,8 +282,8 @@ namespace DespesaViagem.Server.Mapping
         {
             MapperConfiguration config = new(cfg =>
             {
-                cfg.CreateMap<Viagem, ViagemDTO>()
-                .ForMember(dst => dst.Funcionario, opt => opt.Ignore());
+                cfg.CreateMap<Viagem, ViagemDTO>();
+                //.ForMember(dst => dst.Funcionario, opt => opt.Ignore());
                 //.ForMember(dst => dst.StatusViagem, opt => opt.MapFrom(src => src.StatusViagem.ToString()));
 
             });
@@ -313,5 +315,23 @@ namespace DespesaViagem.Server.Mapping
 
             return viagensDTO;
         }
+        /*
+        public static Funcionario ConverterDTO(FuncionarioDTO funcionarioDTO)
+        {            
+            MapperConfiguration config = new(cfg =>
+            {
+                cfg.CreateMap<FuncionarioDTO, Funcionario>()
+                //.ForMember(dst => dst.NomeDespesa, opt => opt.Ignore())
+                //.ForMember(dst => dst.Viagem, opt => opt.Ignore())
+                //.ForMember(dst => dst.Endereco, opt => opt.Ignore())
+                //.ForMember(dst => dst.TotalDespesa, opt => opt.Ignore());
+                ;
+            });
+
+            Mapper mapper = new(config);
+
+            return mapper.Map<Funcionario>(funcionarioDTO);
+        }
+        */
     }
 }

@@ -9,7 +9,7 @@ namespace DespesaViagem.Shared.DTOs.Despesas
         public virtual string NomeDespesa { get; set; } = string.Empty;        
         public virtual string DescricaoDespesa { get; set; } = string.Empty;        
         public virtual decimal TotalDespesa { get; set; }
-        public virtual DateTime DataDespesa { get; set; }
+        public virtual DateTime DataDespesa { get; set; } = DateTime.UtcNow;
         public DateTime DataDeCadastro { get; set; }
         //[JsonIgnore]
         public TiposDespesas TipoDespesa { get; set; }

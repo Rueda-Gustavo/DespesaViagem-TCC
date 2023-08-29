@@ -12,11 +12,11 @@ namespace DespesaViagem.Infra.Database
     {
         public DbSet<Viagem> Viagens { get; set; }
         public DbSet<Despesa> Despesas { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<DespesaHospedagem> DespesasHospedagem { get; set; }
         public DbSet<DespesaDeslocamento> DespesasDeslocamento { get; set; }
         public DbSet<DespesaAlimentacao> DespesasAlimentacao { get; set; }
         public DbSet<DespesaPassagem> DespesasPassagem { get; set; }
-
 
         public DbSet<Endereco> Enderecos { get; set; }
         public DbSet<Funcionario> Funcionarios { get; set; }
@@ -26,6 +26,10 @@ namespace DespesaViagem.Infra.Database
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Despesa>().HasKey(k => k.Id);
+
+            modelBuilder.Entity<Despesa>()
+                   .Property(p => p.DataDeCadastro)
+                   .HasColumnType("datetime");
 
             modelBuilder.Entity<DespesaHospedagem>()
                 .HasBaseType<Despesa>();

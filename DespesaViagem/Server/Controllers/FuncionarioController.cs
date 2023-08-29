@@ -23,25 +23,30 @@ namespace DespesaViagem.Server.Controllers
             Result<Funcionario> result = await _funcionarioService.Alterar(funcionario);
 
             if (result.IsFailure)
-                return BadRequest(result.Value);
+                return BadRequest(result.Error);
 
             funcionario = result.Value;
 
             return Ok(funcionario);
         }
 
-        [HttpPost]
-        public async Task<ActionResult> AdicionarFuncionario(Funcionario funcionario)
+        [HttpPost("cadastrar")]
+        public async Task<ActionResult> AdicionarFuncionario(CadastroUsuario request)
         {
-            Result<Funcionario> result = await _funcionarioService.Adicionar(funcionario);
+            Result<Funcionario> result = await _funcionarioService.Adicionar(
+                new Funcionario
+                {
+                    NomeCompleto = request.NomeCompleto,
+                    CPF = request.CPF,
+                    Matricula = request.Matricula ?? string.Empty,                    
+                    Username = request.Username
+                }, request.Password);
 
             if (result.IsFailure)
-                return BadRequest(result.Value);
+                return BadRequest(new ServiceResponse<Funcionario> { Message = result.Error, Sucesso = false });            
 
-            funcionario = result.Value;
-
-            return Ok(funcionario);
-        }        
+            return Ok(new ServiceResponse<Funcionario> { Conteudo = result.Value });
+        }
     }
 }
 

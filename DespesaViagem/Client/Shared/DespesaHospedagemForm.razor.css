@@ -1,4 +1,9 @@
-﻿/* Estilos para o overlay */
+﻿.close {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+/* Estilos para o overlay */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -30,11 +35,7 @@
 }
 
 /* Estilos para o botão de fechar o modal */
-.close {
-    background: none;
-    border: none;
-    cursor: pointer;
-}
+
 
 /* Estilos para os campos do formulário */
 .form-group {

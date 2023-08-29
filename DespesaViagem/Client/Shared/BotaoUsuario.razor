@@ -1,0 +1,29 @@
+﻿<div class="btn-group dropdown">
+    <button @onclick="ToggleMenuUsuario"
+            @onfocusout="EsconderMenuUsuario"
+            class="btn btn-secondary dropdown-toggle botao-usuario mx-3">
+        <i class="oi oi-person"></i>
+    </button>
+    <div class="dropdown-menu dropdown-menu-right @CssClassBotaoUsuario">
+        <a href="/cadastro" class="dropdown-item" style="max-width: 7.5rem;">Cadastrar</a>
+    </div>
+
+</div>
+
+
+@code {
+    private bool mostrarMenuUsuario = false;
+
+    private string CssClassBotaoUsuario => mostrarMenuUsuario ? "show-menu" : string.Empty;
+
+    private void ToggleMenuUsuario()
+    {
+        mostrarMenuUsuario = !mostrarMenuUsuario;
+    }
+
+    private async Task EsconderMenuUsuario()
+    {
+        await Task.Delay(200);
+        mostrarMenuUsuario = false;
+    }
+}

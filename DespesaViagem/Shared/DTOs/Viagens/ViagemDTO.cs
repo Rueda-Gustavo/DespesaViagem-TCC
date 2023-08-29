@@ -1,4 +1,5 @@
-﻿using DespesaViagem.Shared.Models.Core.Enums;
+﻿using DespesaViagem.Shared.DTOs.Helpers;
+using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
 using DespesaViagem.Shared.Models.Despesas;
 using System.Text.Json.Serialization;
@@ -15,8 +16,8 @@ namespace DespesaViagem.Shared.DTOs.Viagens
         public DateTime DataFinal { get; set; }
         public decimal TotalDespesas { get; set; }        
         public StatusViagem StatusViagem { get; set; }
-        [JsonIgnore]
-        public Funcionario Funcionario { get; set; } = new Funcionario();        
+        //[JsonIgnore]
+        //public FuncionarioDTO Funcionario { get; set; } = new FuncionarioDTO();
         public int IdFuncionario { get; set; }
     }
 }

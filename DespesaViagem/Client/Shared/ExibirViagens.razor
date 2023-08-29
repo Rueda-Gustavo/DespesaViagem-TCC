@@ -14,7 +14,7 @@ else
         string descricao = viagem.DescricaoViagem;
         string opacidade = OpacidadeStatus.GetValueOrDefault(viagem.StatusViagem) ?? string.Empty;
         string statusViagem = viagem.StatusViagem.ToString();
-        if (viagem.DescricaoViagem.Length > 60)
+        if (descricao.Length > 60)
             descricao = descricao.Substring(0, 60) + "...";
         /*
         if (viagem.StatusViagem == StatusViagem.Aberta || viagem.StatusViagem == StatusViagem.EmAndamento)
@@ -26,7 +26,6 @@ else
 
 
         if (viagem.StatusViagem == StatusViagem.EmAndamento) statusViagem = "Em andamento";
-
 
         <div class="card" style="opacity:@opacidade">
             <h2 class="card-header title">@viagem.NomeViagem <button class="btn-exibir-despesas" title="Detalhes da viagem" @onclick="() => VerDetalhes(viagem.Id)"><FeatherList Size="24" Color="#000" StrokeWidth="1.7f" /></button></h2>
@@ -43,12 +42,14 @@ else
                 </ul>
                 @if (viagem.StatusViagem == StatusViagem.EmAndamento)
                 {
-                    <div class="dropup">
+                    <div class="dropup-center dropup">
                         <button class="btn-add-despesas round-button" title="Adicionar despesa" data-bs-toggle="dropdown" aria-expanded="false">
                             <FeatherPlus Size="24" Color="#000" StrokeWidth="1.7f" />
                         </button>
-                        <ul class="dropdown-menu">                            
-                            <li><a class="dropdown-item">Hospedagem</a></li>
+                        <ul class="dropdown-menu">                                                        
+                            <li><a class="dropdown-item">Alimentação</a></li>
+                            <li><a class="dropdown-item">Deslocamento</a></li>
+                            <li><a class="dropdown-item" href="/viagens/adicionar-despesa/@viagem.Id?TipoDespesa=Hospedagem">Hospedagem</a></li>
                             <li><a class="dropdown-item">Passagem</a></li>
                         </ul>
                     </div>
@@ -84,7 +85,7 @@ else
         else
             await JSRuntime.InvokeVoidAsync("alert", "Adicione alguma despesa para a viagem primeiro!");
         */
-        NavigationManager.NavigateTo($"/viagens/{idViagem}");
+        NavigationManager.NavigateTo($"/viagens/{idViagem}/1");
     }
 
     private void AdicionarDespesa(int idViagem)

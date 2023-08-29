@@ -3,6 +3,7 @@ using CSharpFunctionalExtensions;
 using DespesaViagem.Infra.Interfaces;
 using DespesaViagem.Services.Interfaces;
 using DespesaViagem.Shared.Models.Core.Helpers;
+using System.Security.Cryptography;
 
 namespace DespesaViagem.Services.Services
 {
@@ -23,7 +24,7 @@ namespace DespesaViagem.Services.Services
 
             if (!funcionarios.Any())
                 return Result.Failure<IEnumerable<Funcionario>>("Não foram encontrados funcionários.");
-            
+
 
             return Result.Success(funcionarios);
         }
@@ -32,16 +33,16 @@ namespace DespesaViagem.Services.Services
         {
             //_ = int.TryParse(id, out int idFuncionario);
 
-            if(id > 0)
+            if (id > 0)
             {
                 Funcionario funcionario = await _funcionarioRepository.ObterPorId(id);
                 if (funcionario is null)
                     return Result.Failure<Funcionario>("Funcionário não encontrado.");
 
-                return Result.Success(funcionario); 
+                return Result.Success(funcionario);
             }
 
-            return Result.Failure<Funcionario>("Especifique um id válido!!");            
+            return Result.Failure<Funcionario>("Especifique um id válido!!");
         }
 
         public async Task<Result<Funcionario>> ObterPorCPF(string CPF)
@@ -64,19 +65,23 @@ namespace DespesaViagem.Services.Services
             return Result.Success(funcionarios);
         }
 
-        public async Task<Result<Funcionario>> Adicionar(Funcionario funcionario)
+        public async Task<Result<Funcionario>> Adicionar(Funcionario funcionario, string password)
         {
+
             if (await FuncionarioJaExiste(funcionario))
                 return Result.Failure<Funcionario>("Funcionário já cadastrado.");
 
-            funcionario.Gestor = await _gestorRepository.ObterPorId(funcionario.Gestor.Id);
+            //funcionario.Gestor = await _gestorRepository.ObterPorId(funcionario.Gestor.Id);
 
-            funcionario.PasswordHash
-                = BCrypt.Net.BCrypt.HashPassword(funcionario.PasswordHash);
+            CriarPasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+
+            funcionario.PasswordHash = passwordHash;
+            funcionario.PasswordSalt = passwordSalt;
 
             await _funcionarioRepository.Insert(funcionario);
             return Result.Success(funcionario);
         }
+
 
         public async Task<Result<Funcionario>> Alterar(Funcionario funcionario)
         {
@@ -87,7 +92,7 @@ namespace DespesaViagem.Services.Services
 
             await _funcionarioRepository.Update(funcionario);
             return Result.Success(funcionario);
-        }              
+        }
 
         public async Task<Result<Funcionario>> Remover(int id)
         {
@@ -100,12 +105,26 @@ namespace DespesaViagem.Services.Services
         }
 
         private async Task<bool> FuncionarioJaExiste(Funcionario funcionario)
-        {          
-            if ((await _funcionarioRepository.ObterPorFiltro(funcionario.CPF)).Any() || await _funcionarioRepository.ObterPorId(funcionario.Id) is not null)
+        {
+
+            if (await _funcionarioRepository.UsuarioJaExiste(funcionario.CPF) ||
+                await _funcionarioRepository.UsuarioJaExiste(funcionario.Username) ||
+                (funcionario.Matricula is not null && await _funcionarioRepository.FuncionarioJaExiste(funcionario.Matricula)))
             {
                 return true;
             }
+
+            funcionario.Matricula = null;
+
             return false;
+        }
+
+        private void CriarPasswordHash(string passoword, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            using HMACSHA512 hmac = new();
+            passwordSalt = hmac.Key;
+            passwordHash = hmac
+                .ComputeHash(System.Text.Encoding.UTF8.GetBytes(passoword));
         }
     }
 }

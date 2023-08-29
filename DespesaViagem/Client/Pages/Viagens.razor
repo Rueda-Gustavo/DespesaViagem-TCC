@@ -1,18 +1,48 @@
 ﻿@page "/viagens"
+@inject NavigationManager NavigationManager
 @inject IViagemService ViagemService
+@implements IDisposable
 
-<h3>Viagens</h3>
+<h3>Viagens</h3> <br/>
+<button class="btn btn-add-viagem" @onclick="AbrirFormulario">
+    Adicionar<FeatherPlus Size="24" Color="#fff" StrokeWidth="2.0f" />
+</button>
+<div class="d-flex card-container-viagens">    
+    <div class="card-container" style="flex-wrap:wrap">
 
-
-<div class="card-container" style="flex-wrap:wrap">
-    <ExibirViagens />
+        <ExibirViagens />
+    </div>
+    
+    @if (FormularioAberto)
+    {
+        <div class="modal-overlay">
+            <h3 class="card-title">Adicionar Viagem</h3>
+            <div class="modal-content">
+                <ViagemForm IdViagem="0" FormularioFechado="FecharFormulario"/>
+            </div>
+        </div>
+    }
 </div>
+
 
 @code {
     private IEnumerable<Viagem> TodasViagens { get; set; } = new List<Viagem>();
 
+    private bool FormularioAberto = false;
+
     protected override async Task OnInitializedAsync()
     {
         await ViagemService.GetViagens();
+        ViagemService.ViagensChanged += StateHasChanged;
+
     }
+
+    public void Dispose()
+    {
+        ViagemService.ViagensChanged -= StateHasChanged;
+    }
+
+    private void AbrirFormulario() => FormularioAberto = true;
+
+    private void FecharFormulario() => FormularioAberto = false;
 }

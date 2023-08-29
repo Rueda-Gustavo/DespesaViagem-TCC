@@ -11,7 +11,9 @@ namespace DespesaViagem.Services.Interfaces
         Task<Result<List<ViagemDTO>>> ObterTodasViagens();
         Task<Result<ViagemDTO>> ObterViagemPorId(int id);
         Task<Result<List<ViagemDTO>>> ObterViagemPorFiltro(string filtro);        
-        Task<Result<List<DespesaDTO>>> ObterTodasDespesas(int id);
+        Task<Result<List<DespesaDTO>>> ObterTodasDespesas(int idViagem);
+        Task<DespesasPorPagina> ObterDespesasPorPagina(int idViagem, int pagina);
+        Task<DespesasPorPagina> ObterTodasDespesasPaginadasPorTipo(int idViagem, int pagina, string stringTipoDespesa);
         Task<List<DespesaPorCategoria>> ObterTotalDasDespesasPorCategoria(int viagemId);
         Task<Result<List<ViagemDTO>>> ObterViagemPorStatus(StatusViagem statusViagem);      
         Task<Result<ViagemDTO>> AdicionarViagem(ViagemDTO viagemDTO);

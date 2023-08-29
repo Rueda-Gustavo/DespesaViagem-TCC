@@ -9,13 +9,14 @@ namespace DespesaViagem.Shared.Models.Despesas
     {
         [ForeignKey("Viagem")]
         public int Id { get; protected set; }
-        [Column(TypeName = "varchar(30)")]
+        [Column(TypeName = "varchar(1000)")]
         public virtual string NomeDespesa { get; protected set; } = string.Empty;
-        [Column(TypeName = "varchar(200)")]
+        [Column(TypeName = "varchar(max)")]
         public virtual string DescricaoDespesa { get; protected set; } = string.Empty;
         [Column(TypeName = "decimal(10,2)")]
-        public virtual decimal TotalDespesa { get; protected set; }
+        public virtual decimal TotalDespesa { get; protected set; }        
         public virtual DateTime DataDespesa { get; protected set; }
+        [Column(TypeName = "datetime")]
         public DateTime DataDeCadastro { get; } = DateTime.Now;
         [Column(TypeName = "varchar(20)")]
         public TiposDespesas TipoDespesa { get; protected set; }

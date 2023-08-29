@@ -8,7 +8,7 @@ namespace DespesaViagem.Shared.Models.Core.Helpers
     public class Funcionario : Usuario
     {
         [Column(TypeName = "varchar(30)")]
-        public string Matricula { get; set; } = string.Empty;
+        public string? Matricula { get; set; } = string.Empty;
         [Column(TypeName = "varchar(15)")]        
         //public int IdGestor { get; set; }
         //[JsonIgnore]

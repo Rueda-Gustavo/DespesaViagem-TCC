@@ -24,7 +24,7 @@ namespace DespesaViagem.Server.Controllers
             Result<IEnumerable<DespesaDeslocamento>> result = await _despesasService.ObterTodasDespesas(idViagem);
 
             if (result.IsFailure)
-                return BadRequest(result);
+                return BadRequest(result.Error);
 
             List<DespesaDeslocamentoDTO> despesas = MappingDTOs.ConverterDTO(result.Value.ToList());
 
@@ -37,7 +37,7 @@ namespace DespesaViagem.Server.Controllers
             Result<DespesaDeslocamento> result = await _despesasService.ObterDespesaPorId(id);
 
             if (result.IsFailure)
-                return BadRequest(result.Value);
+                return BadRequest(result.Error);
 
             DespesaDeslocamentoDTO despesa = MappingDTOs.ConverterDTO(result.Value);
 
@@ -50,7 +50,7 @@ namespace DespesaViagem.Server.Controllers
             Result<IEnumerable<DespesaDeslocamento>> result = await _despesasService.ObterDespesasPorFiltro(filtro, idViagem);
 
             if (result.IsFailure)
-                return BadRequest(result);
+                return BadRequest(result.Error);
 
             List<DespesaDeslocamentoDTO> despesas = MappingDTOs.ConverterDTO(result.Value.ToList());
 
@@ -66,7 +66,7 @@ namespace DespesaViagem.Server.Controllers
             Result<DespesaDeslocamento> result = await _despesasService.AdicionarDespesa(despesa);
 
             if (result.IsFailure)
-                return BadRequest();
+                return BadRequest(result.Error);
 
             despesa = result.Value;
 
@@ -81,7 +81,7 @@ namespace DespesaViagem.Server.Controllers
             Result<DespesaDeslocamento> result = await _despesasService.AlterarDespesa(despesa);
 
             if (result.IsFailure)
-                return BadRequest();
+                return BadRequest(result.Error);
 
             despesa = result.Value;
 

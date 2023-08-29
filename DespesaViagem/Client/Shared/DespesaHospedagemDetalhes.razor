@@ -1,0 +1,109 @@
+﻿@inject IDespesasService<DespesaHospedagemDTO> DespesaHospedagemService
+@inject IEnderecoService EnderecoService
+@implements IDisposable
+
+@if (Despesa is null)
+{
+    <h3>Carregando despesa...</h3>
+}
+else
+{
+    <div class="container container-despesas-detalhes">
+        <h3 style="margin:40px 0 40px 0">Despesa com @Despesa.TipoDespesa</h3>
+        <div class="card-container" style="flex-wrap:wrap; height: 50vh;">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mt-1 pt-1">
+                        @Despesa.NomeDespesa
+                        @if (StatusDaViagem == StatusViagem.EmAndamento.ToString() || StatusDaViagem == StatusViagem.Aberta.ToString())
+                        {
+                            <button class="btn pt-0 btn-edit" @onclick="AbrirFormulario"><FeatherEdit Size="24" Color="#000" StrokeWidth="1.9f" /></button>
+                        }
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="card-body-item">
+                        <strong>Descrição: </strong>@Despesa.DescricaoDespesa
+                    </div>
+                    <div class="card-body-item mt-2">
+                        <strong>Data: </strong>@Despesa.DataDespesa
+                    </div>
+                    <div class="card-body-item">
+                        <strong>Diária: </strong>R$@Despesa.ValorDiaria
+                    </div>
+                    <div class="card-body-item">
+                        <strong>Quantidade de dias: </strong>@Despesa.QuantidadeDias
+                    </div>
+                    <hr />
+                    <div class="card-subtitle">
+                        <strong>Endereço</strong>
+                    </div>
+
+                    <div class="card-body-item">
+                        <strong>Logradouro: </strong>@Endereco.Logradouro, n° @Endereco.NumeroCasa
+                    </div>
+                    <div class="card-body-item">
+                        <strong>CEP: </strong>@Endereco.CEP
+                    </div>
+                    <div class="card-body-item">
+                        <strong>Cidade / Estado: </strong>@Endereco.Cidade / @Endereco.Estado
+                    </div>
+                    <div class="card-body-item total-despesa">
+                        <strong>Total: </strong> R$ @Despesa.TotalDespesa
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@if (FormularioAberto)
+{
+    <div class="modal-overlay">
+        <div class="modal-content">
+            <DespesaHospedagemForm IdDespesa=IdDespesa FormularioFechado="FecharFormulario" />
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int IdDespesa { get; set; }
+    [Parameter]
+    public string StatusDaViagem { get; set; } = string.Empty;
+
+    private DespesaHospedagemDTO Despesa { get; set; } = new();
+    private Endereco Endereco { get; set; } = new();
+
+    private bool FormularioAberto { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        DespesaHospedagemService.DespesasChanged += StateHasChanged;
+
+        //Helper.InicializarApresentacaoDespesas();
+
+        await GetDespesaHospedagem();
+    }
+
+    public void Dispose()
+    {
+        DespesaHospedagemService.DespesasChanged -= StateHasChanged;
+    }
+
+    private void AbrirFormulario() => FormularioAberto = true;
+
+    private async Task FecharFormulario()
+    {
+        FormularioAberto = false;
+        await GetDespesaHospedagem();
+    }
+
+    private async Task GetDespesaHospedagem()
+    {
+        await DespesaHospedagemService.GetDespesa(IdDespesa);
+        Despesa = DespesaHospedagemService.Despesa;
+
+        await EnderecoService.GetEndereco(Despesa.IdEndereco);
+        Endereco = EnderecoService.Endereco;
+    }
+}

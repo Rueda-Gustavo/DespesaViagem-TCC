@@ -65,17 +65,20 @@ namespace DespesaViagem.Infra.Migrations
                     b.Property<string>("CPF")
                         .HasColumnType("varchar(15)");
 
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasColumnType("varchar(50)");
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Sobrenome")
+                    b.Property<string>("NomeCompleto")
                         .IsRequired()
                         .HasColumnType("varchar(1000)");
+
+                    b.Property<byte[]>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("PasswordSalt")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("TipoDeUsuario")
                         .IsRequired()
@@ -102,19 +105,22 @@ namespace DespesaViagem.Infra.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("DataDeCadastro")
+                        .HasColumnType("datetime");
+
                     b.Property<DateTime>("DataDespesa")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DescricaoDespesa")
                         .IsRequired()
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<int>("IdViagem")
                         .HasColumnType("int");
 
                     b.Property<string>("NomeDespesa")
                         .IsRequired()
-                        .HasColumnType("varchar(30)");
+                        .HasColumnType("varchar(1000)");
 
                     b.Property<string>("TipoDespesa")
                         .IsRequired()
@@ -154,7 +160,6 @@ namespace DespesaViagem.Infra.Migrations
 
                     b.Property<string>("DescricaoViagem")
                         .IsRequired()
-                        .HasMaxLength(200)
                         .IsUnicode(false)
                         .HasColumnType("varchar(3000)");
 
@@ -163,7 +168,7 @@ namespace DespesaViagem.Infra.Migrations
 
                     b.Property<string>("NomeViagem")
                         .IsRequired()
-                        .HasMaxLength(40)
+                        .HasMaxLength(1000)
                         .IsUnicode(false)
                         .HasColumnType("varchar(200)");
 

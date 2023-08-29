@@ -1,18 +1,43 @@
 ﻿@page "/counter"
+@inject IJSRuntime JSRuntime
 
-<PageTitle>Counter</PageTitle>
 
-<h1>Counter</h1>
-
-<p role="status">Current count: @currentCount</p>
-
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
 @code {
-    private int currentCount = 0;
+    /*
+    private bool isCardVisible = true;
+    private bool isButtonVisible = false;
 
-    private void IncrementCount()
+    private void ToggleCardVisibility()
     {
-        currentCount++;
+        isCardVisible = !isCardVisible;
     }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if ((await TelaMenor()))
+        {
+            isCardVisible = false;
+            isButtonVisible = true;
+        }
+    }
+
+    private async Task<bool> TelaMenor()
+    {
+        return await JSRuntime.InvokeAsync<bool>("telaMenor");
+    }
+
+    [JSInvokable]
+    public async Task ScreenSizeChanged()
+    {
+        if ((await TelaMenor()))
+        {
+            isCardVisible = false;
+            isButtonVisible = true;
+        }
+        Console.WriteLine("Redimensionando tela.");
+        StateHasChanged();
+    }
+    */
 }
+

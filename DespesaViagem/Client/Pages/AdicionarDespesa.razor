@@ -1,8 +1,52 @@
 ﻿@page "/viagens/adicionar-despesa/{idViagem:int}"
+@inject NavigationManager NavigationManager
 
-<h3>AdicionarDespesa</h3>
+@if (TipoDespesa == string.Empty)
+{
+    <span>Por favor, aguarde...</span>
+}
+else
+{
+    if (DespesasComponentes.TryGetValue(TipoDespesa, out var DespesaComponent))
+    {
+        <div class="d-flex flex-wrap" style="flex-direction:column; align-content:center;">
+            <h3 class="card-title">Adicionar despesa com @TipoDespesa</h3>
+            <div class="modal-content">
+                @DespesaComponent
+            </div>
+        </div>
+    }
+}
 
 @code {
     [Parameter]
     public int IdViagem { get; set; }
+    [Parameter]
+    public string TipoDespesa { get; set; }
+
+    private Dictionary<string, RenderFragment> DespesasComponentes = new();
+
+    protected override void OnInitialized()
+    {
+        string tipoDespesa = NavigationManager.Uri.Split('?').LastOrDefault()?.Split('=')?.LastOrDefault() ?? string.Empty;
+        TipoDespesa = HttpUtility.UrlDecode(tipoDespesa); //Essa linha formata a string. Por exemplo na Url o valor fica como Alimenta%C3%A7%C3%A3o mas essa linha deixa com o valor correto, Alimentação
+
+        PopularDictionaries();
+    }
+
+    private void PopularDictionaries()
+    {
+        DespesasComponentes.Add("Hospedagem", builder =>
+        {
+            builder.OpenComponent(0, typeof(DespesaHospedagemForm));
+            builder.AddAttribute(1, "IdDespesa", 0);
+            builder.AddAttribute(2, "FormularioFechado", EventCallback.Factory.Create(this, () =>
+            {
+                NavigationManager.NavigateTo($"/viagens/{IdViagem}/1");
+            }));
+            builder.CloseComponent();
+        });
+    }
 }
+
+

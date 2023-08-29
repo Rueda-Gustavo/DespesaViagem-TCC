@@ -1,7 +1,9 @@
 ﻿using DespesaViagem.Client.Services.Interfaces;
 using DespesaViagem.Shared.DTOs.Despesas;
 using DespesaViagem.Shared.DTOs.Viagens;
+using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
+using DespesaViagem.Shared.Models.Viagens;
 using System.Net.Http.Json;
 
 namespace DespesaViagem.Client.Services.ViagemService
@@ -14,6 +16,7 @@ namespace DespesaViagem.Client.Services.ViagemService
         //private readonly ILogger<ViagemService> _logger;
 
         public List<ViagemDTO> Viagens { get; set; } = new List<ViagemDTO>();
+
         public string Mensagem { get; set; } = "Carregando viagens...";
 
         public ViagemService(HttpClient httpClient/*, ILogger<ViagemService> logger*/)
@@ -102,6 +105,43 @@ namespace DespesaViagem.Client.Services.ViagemService
             return despesas;
         }
 
+        public async Task<DespesasPorPagina> ObterDespesasPorPagina(int idViagem, int pagina)
+        {
+            DespesasPorPagina despesas = await _httpClient
+                .GetFromJsonAsync<DespesasPorPagina>($"api/Viagem/ObterDespesasPorPagina/{idViagem}/{pagina}")
+                ?? new DespesasPorPagina();
+
+            if (despesas is null)
+            {
+                Console.WriteLine("Despesas não encontradas.");
+                return despesas;
+            }
+
+            Console.WriteLine("Sucesso - ViagemService - Client");
+            ViagensChanged.Invoke();
+
+            return despesas;                      
+        }
+
+        public async Task<DespesasPorPagina> ObterTodasDespesasPaginadasPorTipo(int idViagem, int pagina, string tipoDespesa)
+        {
+            DespesasPorPagina despesas = await _httpClient
+                .GetFromJsonAsync<DespesasPorPagina>($"api/Viagem/ObterTodasDespesasPaginadasPorTipo/{idViagem}/{pagina}/{tipoDespesa}")
+                ?? new DespesasPorPagina();
+
+            if (despesas is null)
+            {
+                Console.WriteLine("Despesas não encontradas.");
+                return despesas;
+            }
+
+            Console.WriteLine("Sucesso - ViagemService - Client");
+            ViagensChanged.Invoke();
+
+            return despesas;
+        }
+
+
         public async Task<List<DespesaPorCategoria>> ObterTotalDespesasPorCategoria(int idViagem)
         {
             List<DespesaPorCategoria> despesas = await _httpClient
@@ -116,8 +156,8 @@ namespace DespesaViagem.Client.Services.ViagemService
 
             Console.WriteLine("Sucesso - ViagemService - Client");
             return despesas;
-
         }        
     }
 }
+
 

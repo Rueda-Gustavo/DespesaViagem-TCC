@@ -22,7 +22,7 @@ namespace DespesaViagem.Server.Controllers
             Result<Gestor> result = await _gestorService.Alterar(gestor);
 
             if (result.IsFailure)
-                return BadRequest(result.Value);
+                return BadRequest(result.Error);
 
             gestor = result.Value;
 
@@ -35,7 +35,7 @@ namespace DespesaViagem.Server.Controllers
             Result<Gestor> result = await _gestorService.Adicionar(gestor);
 
             if (result.IsFailure)
-                return BadRequest(result.Value);
+                return BadRequest(result.Error);
 
             gestor = result.Value;
 

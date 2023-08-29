@@ -39,8 +39,24 @@ namespace DespesaViagem.Infra.Repositories
         {
             return await _context.Funcionarios
             .Include(f => f.Gestor)
-            .Where(funcionario => funcionario.CPF.Contains(filtro) || funcionario.Nome.Contains(filtro) || funcionario.Sobrenome.Contains(filtro) || funcionario.Matricula.Contains(filtro))
+            .Where(funcionario => funcionario.CPF.ToLower().Contains(filtro.ToLower()) || 
+                                  funcionario.NomeCompleto.ToLower().Contains(filtro.ToLower()) || 
+                                  funcionario.Matricula.ToLower().Contains(filtro.ToLower()) ||
+                                  funcionario.Username.ToLower().Contains(filtro.ToLower()))
             .ToListAsync();
+        }
+
+        public async Task<bool> UsuarioJaExiste(string filtro)
+        {
+            return await _context.Usuarios
+                .AnyAsync(usuario => usuario.Username.ToLower().Equals(filtro.ToLower()) ||
+                                     usuario.CPF.ToLower().Equals(filtro.ToLower()));            
+        }
+
+        public async Task<bool> FuncionarioJaExiste(string filtro)
+        {
+            return await _context.Funcionarios
+                .AnyAsync(funcionario => funcionario.Matricula.ToLower().Equals(filtro.ToLower()));
         }
 
         public async Task Insert(Funcionario funcionario)

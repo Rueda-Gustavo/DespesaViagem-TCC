@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DespesaViagem.Infra.Repositories
 {
-    public class ViagemRepository : IViagemRepository
+    public class ViagemRepository : IViagemRepository 
     {
         private readonly DespesaViagemContext _context;
 
@@ -22,6 +22,7 @@ namespace DespesaViagem.Infra.Repositories
             return await _context.Viagens
                 .Include(f => f.Funcionario)
                 .Include(d => d.Despesas)
+                .OrderByDescending(viagem => viagem.Id)
                 .ToListAsync();
         }
         public async Task<Viagem> ObterPorId(int id)
@@ -54,8 +55,30 @@ namespace DespesaViagem.Infra.Repositories
         {
             return await _context.Despesas
                 .Where(despesa => despesa.Viagem.Id == viagemId)
+                .OrderByDescending(despesa => despesa.Id)
                 .ToListAsync();
         }
+
+        public async Task<List<Despesa>> ObterDespesasPorTipo(int viagemId, TiposDespesas tipoDespesa)
+        {
+            List<Despesa> despesas = await _context.Despesas
+               .Where(d => d.IdViagem == viagemId && d.TipoDespesa == tipoDespesa)
+               .ToListAsync();
+
+            return despesas;
+        }
+        /*
+        public async Task<List<Despesa>> ObterDepesasPorPagina(int viagemId, int pagina, int despesasPorPagina)
+        {
+            List<Despesa> despesas = await _context.Despesas
+                .Where(d => d.IdViagem == viagemId)
+                .Skip((pagina - 1) * despesasPorPagina)
+                .Take(despesasPorPagina)
+                .ToListAsync();
+
+            return despesas;
+        }
+        */
 
         public async Task<List<DespesaPorCategoria>> ObterTotalDasDespesasPorCategoria(int viagemId)
         {
@@ -101,5 +124,7 @@ namespace DespesaViagem.Infra.Repositories
             _context.Remove(viagem);
             await _context.SaveChangesAsync();
         }
+
+
     }
 }

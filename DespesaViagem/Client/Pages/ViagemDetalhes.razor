@@ -1,39 +1,74 @@
-﻿@page "/viagens/{idViagem:int}"
+﻿@page "/viagens/{idViagem:int}/{pagina:int}"
+@page "/viagens/{idViagem:int}/{pagina:int}/{tipoDespesa}"
 @inject IViagemService ViagemService
+@inject NavigationManager NavigationManager
+@implements IDisposable
 
 <h3>Detalhes da viagem</h3>
+<a href="/viagens" class="btn btn-outline-primary">Voltar</a>
+<div class="container" style="margin: 0 0;">
+    <div class="d-flex">
+        <div class="form-inline mb-3">
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Filtro
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="btn btn-outline-secondary dropdown-item" href="/viagens/@IdViagem/1/Alimentação">Alimentação</a></li>
+                    <li><a class="btn btn-outline-secondary dropdown-item" href="/viagens/@IdViagem/1/Deslocamento">Deslocamento</a></li>
+                    <li><a class="btn btn-outline-secondary dropdown-item" href="/viagens/@IdViagem/1/Hospedagem">Hospedagem</a></li>
+                    <li><a class="btn btn-outline-secondary dropdown-item" href="/viagens/@IdViagem/1/Passagem">Passagem</a></li>
+                    <li class="dropdown-divider"></li>
+                    <li><a class="btn btn-outline-secondary dropdown-item" href="/viagens/@IdViagem/@Pagina/">Limpar filtro</a></li>
+                </ul>
+            </div>
+        </div>        
+        <!--<button class="btn btn-outline-secondary mb-3 mx-2" @onclick="LimparFiltro">Limpar Filtro</button>-->
+    </div>
 
-<div class="container mt-4">
     <div class="row">
-        <div class="col-md-8 border-end">
-            <div class="lista-despesas">
+        <div class="col-8">
+            <div class="lista-despesas justify-content-xxl-start">
                 <!-- Grid com as Despesas -->
-                @if (!Despesas.Any())
+                @if (!DespesasPorPagina.Despesas.Any())
                 {
-                    <span>Nenhuma despesa foi cadastrada, <a href="/viagens/adicionar-despesa/@IdViagem">clique aqui</a> para cadastrar uma nova despesa.</span>
+                    <span>Nenhuma despesa foi cadastrada, volte para cadastrar uma nova despesa.</span>
                 }
 
-                @foreach (var despesa in Despesas)
+                @foreach (var despesa in DespesasPorPagina.Despesas)
                 {
-                    CoresDespesas.TryGetValue(despesa.TipoDespesa, out string? corDespesa);
-                    <div class="list-group m-2">
-                        <a href="/viagens/@IdViagem/@despesa.Id?TipoDespesa=@despesa.TipoDespesa.ToString()" class="list-group-item list-group-item-action" aria-current="true" style="border: 2px solid @corDespesa">
+                    CoresBordasDespesas.TryGetValue(despesa.TipoDespesa, out string? corBordaDespesa);
+                    CoresFundosDespesas.TryGetValue(despesa.TipoDespesa, out string? corFundoDespesa);
+                    string nome = despesa.NomeDespesa.Length > 34 ? despesa.NomeDespesa.Substring(0, 34) + "..." : despesa.NomeDespesa;
+                    string descricao = despesa.DescricaoDespesa.Length > 38 ? despesa.DescricaoDespesa.Substring(0, 38) + "..." : despesa.DescricaoDespesa;
+
+                    <div class="list-group m-2 despesa-box-shadow">
+                        <a href="/viagens/@IdViagem/DetalhesDespesa/@despesa.Id?TipoDespesa=@despesa.TipoDespesa.ToString()" class="list-group-item list-group-item-action" aria-current="true" style="width: 360px; border: 2px solid @corBordaDespesa; background-color:@corFundoDespesa">
                             <small style="opacity: 70%">@despesa.TipoDespesa.ToString()</small>
                             <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">@despesa.NomeDespesa</h5>
+                                <h5 class="mb-1">@nome</h5>
                             </div>
-                            <p class="mb-1">@despesa.DescricaoDespesa</p>
+                            <p class="mb-1" style="max-width: 330px;">@descricao</p>
                             <p class="mb-1">Data da despesa: @despesa.DataDespesa</p>
-                            <p class="mb-1">R$@despesa.TotalDespesa</p>
+                            <p class="mb-1"><strong>R$@despesa.TotalDespesa</strong></p>
                         </a>
                     </div>
                 }
-                <!----------------------->
             </div>
+            @if (DespesasPorPagina.QuantidadeDePaginas > 1)
+            {
+                @for (int i = 1; i <= DespesasPorPagina.QuantidadeDePaginas; i++)
+                {
+                    <a class="btn
+                    @(i == DespesasPorPagina.PaginaAtual ? "btn-secondary" : "btn-outline-secondary")
+                    page-selection"
+                       href="/viagens/@IdViagem/@i/@TipoDespesa">@i</a>
+                }
+            }
         </div>
 
         <!-- Card da Viagem -->
-        <div class="col border-start">
+        <div class="col">
             <div class="card-viagem m-2">
                 <button class="btn pt-0 btn-edit-viagem" @onclick="AbrirFormulario"><FeatherEdit Size="24" Color="#000" StrokeWidth="1.9f" /></button>
                 <div class="card-header-viagem">
@@ -43,7 +78,7 @@
                     <span class="status-viagem">Viagem: @Status</span>
                     <p class="card-text">Descrição: @Viagem.DescricaoViagem</p>
                     <ul>
-                        <li class="card-text">Funcionário: @Funcionario.Nome @Funcionario.Sobrenome</li>
+                        <li class="card-text">Funcionário: @Funcionario.NomeCompleto</li>
                         <li class="card-text">Matrícula: @Funcionario.Matricula</li>
                         <li class="card-text">CPF: @Funcionario.CPF</li>
                     </ul>
@@ -53,7 +88,6 @@
                     <div class="card-subtitle">
                         <span class="card-text">
                             Adiantamento incial: R$@Viagem.Adiantamento <br />
-                            Ajuda de custos: R$ <br />
                             Total das despesas: R$@Viagem.TotalDespesas <br />
                             <strong>Subtotal: R$@Subtotal</strong>
                         </span>
@@ -94,20 +128,35 @@
             </div>
         </div>
 
-
-        <!----------------------->
     </div>
 </div>
+
+@if (FormularioAberto)
+{
+    <div class="modal-overlay">
+        <div class="modal-content">
+            <ViagemForm IdViagem="IdViagem" FormularioFechado="FecharFormulario" />
+        </div>
+    </div>
+}
 
 @code {
     [Parameter]
     public int IdViagem { get; set; }
+    [Parameter]
+    public int Pagina { get; set; }
+    [Parameter]
+    public string? TipoDespesa { get; set; } = null;
     private ViagemDTO Viagem { get; set; } = new();
     private Funcionario Funcionario { get; set; } = new();
-    private List<DespesaDTO> Despesas { get; set; } = new();
+    //private List<DespesaDTO> Despesas { get; set; } = new();
     private string Status { get; set; } = string.Empty;
-    private Dictionary<TiposDespesas, string> CoresDespesas = new();
+    //private int TotalDePaginas { get; set; } = 0;
+    //private int PaginaAtual { get; set; } = 1;
+    private Dictionary<TiposDespesas, string> CoresBordasDespesas = new();
+    private Dictionary<TiposDespesas, string> CoresFundosDespesas = new();
     private List<DespesaPorCategoria> DespesasPorCategoria = new();
+    private DespesasPorPagina DespesasPorPagina = new() { PaginaAtual = 1, QuantidadeDePaginas = 0 };
 
     private bool FormularioAberto = false;
     private bool ResumoDespesasAberto = false;
@@ -116,6 +165,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        ViagemService.ViagensChanged += StateHasChanged;
+
         Viagem = await ViagemService.GetViagem(IdViagem);
 
         if (Viagem.StatusViagem == StatusViagem.EmAndamento)
@@ -129,10 +180,34 @@
         PopularDictionaryCores();
         DespesasPorCategoria = await ViagemService.ObterTotalDespesasPorCategoria(IdViagem);
     }
+    protected override async Task OnParametersSetAsync()
+    {
+        await ObterDespesas();
+    }
+
+
+    public void Dispose()
+    {
+        ViagemService.ViagensChanged -= StateHasChanged;
+    }
 
     private async Task ObterDespesas()
     {
+        /*
         Despesas = await ViagemService.ObterDespesas(Viagem.Id);
+        TotalDePaginas = 0;
+        PaginaAtual = 1;
+        */
+        if (TipoDespesa is not null)
+        {
+            DespesasPorPagina = await ViagemService.ObterTodasDespesasPaginadasPorTipo(IdViagem, Pagina, TipoDespesa);
+        }
+        else
+        {
+            DespesasPorPagina = await ViagemService.ObterDespesasPorPagina(IdViagem, Pagina);
+        }
+
+
     }
 
     private async Task ObterFuncionario()
@@ -155,11 +230,21 @@
 
     private void HandleViagem() => Console.WriteLine("Teste viagem.");
 
+    private void LimparFiltro()
+    {
+        NavigationManager.NavigateTo($"/viagens/{IdViagem}/{Pagina}/");
+    }
+
     private void PopularDictionaryCores()
     {
-        CoresDespesas.Add(TiposDespesas.Alimentação, "#27ea11");
-        CoresDespesas.Add(TiposDespesas.Deslocamento, "#f8b410");
-        CoresDespesas.Add(TiposDespesas.Passagem, "#1848e5");
-        CoresDespesas.Add(TiposDespesas.Hospedagem, "#a500c6");
+        CoresBordasDespesas.Add(TiposDespesas.Alimentação, "#27ea11");
+        CoresBordasDespesas.Add(TiposDespesas.Deslocamento, "#f8b410");
+        CoresBordasDespesas.Add(TiposDespesas.Passagem, "#1848e5");
+        CoresBordasDespesas.Add(TiposDespesas.Hospedagem, "#a500c6");
+
+        CoresFundosDespesas.Add(TiposDespesas.Alimentação, "#e6ffe4");
+        CoresFundosDespesas.Add(TiposDespesas.Deslocamento, "#fff5e1");
+        CoresFundosDespesas.Add(TiposDespesas.Passagem, "#dbe3ff");
+        CoresFundosDespesas.Add(TiposDespesas.Hospedagem, "#fae3ff");
     }
 }

@@ -20,6 +20,7 @@ namespace DespesaViagem.Services.Services
         private readonly IDespesaRepository _despesaRepository;
         private readonly IFuncionarioRepository _funcionarioRepository;
 
+        private readonly float _despesasPorPagina = 6f;
         public ViagemService(IViagemRepository viagemRepository,
             IDespesaRepository despesaRepository, IFuncionarioRepository funcionarioRepository)
         {
@@ -89,12 +90,51 @@ namespace DespesaViagem.Services.Services
             return Result.Success(viagensDTO);
         }
 
-        public async Task<Result<List<DespesaDTO>>> ObterTodasDespesas(int id)
+        public async Task<Result<List<DespesaDTO>>> ObterTodasDespesas(int idViagem)
         {
-            List<Despesa> despesas = await _viagemRepository.ObterTodasDepesas(id);
+            List<Despesa> despesas = await _viagemRepository.ObterTodasDepesas(idViagem);
             List<DespesaDTO> despesasDTO = MappingDTOs.ConverterDTO(despesas);
             return Result.Success(despesasDTO);
         }
+
+        public async Task<DespesasPorPagina> ObterDespesasPorPagina(int idViagem, int pagina)
+        {
+            double quantidadeDePaginas = Math.Ceiling((await _viagemRepository.ObterTodasDepesas(idViagem)).Count / _despesasPorPagina);
+            List<Despesa> despesas = await _viagemRepository.ObterTodasDepesas(idViagem);
+            despesas = despesas
+                .Skip((pagina - 1) * (int)_despesasPorPagina)
+                .Take((int)_despesasPorPagina)
+                .ToList();
+
+            //List<Despesa> despesas = await _viagemRepository.ObterDepesasPorPagina(idViagem, pagina, (int) despesasPorPagina);
+
+            return new DespesasPorPagina()
+            {
+                Despesas = MappingDTOs.ConverterDTO(despesas),
+                PaginaAtual = pagina,
+                QuantidadeDePaginas = (int)quantidadeDePaginas
+            };
+        }
+
+        public async Task<DespesasPorPagina> ObterTodasDespesasPaginadasPorTipo(int idViagem, int pagina, string stringTipoDespesa)
+        {            
+            TiposDespesas tipoDespesa = ConverterStringParaEnumTipoDespesa(stringTipoDespesa);
+            double quantidadeDePaginas = Math.Ceiling((await _viagemRepository.ObterDespesasPorTipo(idViagem, tipoDespesa)).Count / _despesasPorPagina);
+            List<Despesa> despesas = await _viagemRepository.ObterDespesasPorTipo(idViagem, tipoDespesa);
+            despesas = despesas
+                .Skip((pagina - 1) * (int)_despesasPorPagina)
+                .Take((int)_despesasPorPagina)
+                .ToList();
+
+            return new DespesasPorPagina()
+            {
+                Despesas = MappingDTOs.ConverterDTO(despesas),
+                PaginaAtual = pagina,
+                QuantidadeDePaginas = (int)quantidadeDePaginas
+            };
+
+        }
+
 
         public async Task<List<DespesaPorCategoria>> ObterTotalDasDespesasPorCategoria(int viagemId)
         {
@@ -117,12 +157,12 @@ namespace DespesaViagem.Services.Services
 
             viagem.VerificarDataInicialeFinal();
 
-            Funcionario funcinonario = await _funcionarioRepository.ObterPorId(viagem.IdFuncionario);
+            Funcionario funcionario = await _funcionarioRepository.ObterPorId(viagem.IdFuncionario);
 
-            if (funcinonario is null)
+            if (funcionario is null)
                 return Result.Failure<ViagemDTO>("Funcionário não encontrado!");
 
-            viagem.AdicionarFuncionario(funcinonario);
+            viagem.AdicionarFuncionario(funcionario);
 
             await _viagemRepository.Insert(viagem);
 
@@ -283,6 +323,18 @@ namespace DespesaViagem.Services.Services
             }
 
             return viagens;
+        }
+
+        private static TiposDespesas ConverterStringParaEnumTipoDespesa(string tipoDespesa)
+        {
+            return tipoDespesa switch
+            {
+                "Hospedagem" => TiposDespesas.Hospedagem,
+                "Deslocamento" => TiposDespesas.Deslocamento,
+                "Alimentação" => TiposDespesas.Alimentação,
+                "Passagem" => TiposDespesas.Passagem,
+                _ => throw new Exception("Valor não é valido para tipo de despesa"),
+            };
         }
     }
 }

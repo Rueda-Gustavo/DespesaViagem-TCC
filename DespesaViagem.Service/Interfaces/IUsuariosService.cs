@@ -14,6 +14,5 @@ namespace DespesaViagem.Services.Interfaces
         Task<Result<T>> ObterPorId(int id);
         Task<Result<IEnumerable<T>>> ObterPorFiltro(string filtro);
         Task<Result<T>> Remover(int id);
-
     }
 }

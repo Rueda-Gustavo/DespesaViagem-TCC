@@ -1,0 +1,18 @@
+﻿.show-menu {
+    margin: 2.5rem 0 0 -5.5rem;
+    padding-right: 2.5rem;
+    display: block;
+    text-align: center;
+}
+
+.botao-usuario {
+    margin-left: .5em;
+}
+
+top-row a {
+    margin-left: 0;
+}
+
+dropdown-item:hover {
+    background-color: white;
+}

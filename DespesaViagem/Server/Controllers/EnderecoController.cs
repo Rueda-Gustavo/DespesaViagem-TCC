@@ -23,7 +23,7 @@ namespace DespesaViagem.Server.Controllers
             Result<IEnumerable<Endereco>> result = await _enderecoService.ObterTodosEnderecos();
 
             if (result.IsFailure)
-                return BadRequest(result.Value);
+                return BadRequest(result.Error);
 
             return Ok(result.Value.ToList());
         }
@@ -35,7 +35,7 @@ namespace DespesaViagem.Server.Controllers
             Result<IEnumerable<Endereco>> result = await _enderecoService.ObterEnderecoPorFiltro(filtro);
 
             if (result.IsFailure)
-                return BadRequest(result.Value);
+                return BadRequest(result.Error);
 
             IEnumerable<Endereco> enderecos = result.Value.ToList();
 
@@ -48,7 +48,7 @@ namespace DespesaViagem.Server.Controllers
             Result<Endereco> result = await _enderecoService.ObterEnderecoPorId(id);
 
             if (result.IsFailure)
-                return BadRequest(result.Value);
+                return BadRequest(result.Error);
 
             Endereco endereco = result.Value;
 
@@ -61,7 +61,7 @@ namespace DespesaViagem.Server.Controllers
             Result<Endereco> result = await _enderecoService.AlterarEndereco(endereco);
 
             if (result.IsFailure)
-                return BadRequest(result.Value);
+                return BadRequest(result.Error);
 
             endereco = result.Value;
 
@@ -74,7 +74,7 @@ namespace DespesaViagem.Server.Controllers
             Result<Endereco> result = await _enderecoService.AdicionarEndereco(endereco);
 
             if (result.IsFailure)
-                return BadRequest(result.Value);
+                return BadRequest(result.Error);
 
             endereco = result.Value;
 
@@ -87,7 +87,7 @@ namespace DespesaViagem.Server.Controllers
             Result<Endereco> result = await _enderecoService.RemoverEndereco(id);
 
             if (result.IsFailure)
-                return BadRequest(result.Value);
+                return BadRequest(result.Error);
 
             Endereco endereco = result.Value;
 

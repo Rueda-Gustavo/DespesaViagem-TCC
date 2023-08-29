@@ -11,7 +11,7 @@ namespace DespesaViagem.Server.Controllers
     [ApiController]
     public class UsuariosController<T> : Controller where T : class
     {
-        IUsuariosService<T> _usuariosService;
+        private readonly IUsuariosService<T> _usuariosService;
 
         public UsuariosController(IUsuariosService<T> usuariosService)
         {
@@ -24,7 +24,7 @@ namespace DespesaViagem.Server.Controllers
             Result<IEnumerable<T>> result = await _usuariosService.ObterTodos();
 
             if (result.IsFailure)
-                return BadRequest(result.Value);
+                return BadRequest(result.Error);
 
             return Ok(result.Value.ToList());
         }
@@ -37,7 +37,7 @@ namespace DespesaViagem.Server.Controllers
             Result<IEnumerable<T>> result = await _usuariosService.ObterPorFiltro(filtro);
 
             if (result.IsFailure)
-                return BadRequest(result.Value);
+                return BadRequest(result.Error);
 
             IEnumerable<T> usuarios = result.Value.ToList();
 
@@ -50,7 +50,7 @@ namespace DespesaViagem.Server.Controllers
             Result<T> result = await _usuariosService.ObterPorId(id);
 
             if (result.IsFailure)
-                return BadRequest(result.Value);
+                return BadRequest(result.Error);
 
             T usuario = result.Value;
 
@@ -63,7 +63,7 @@ namespace DespesaViagem.Server.Controllers
             Result<T> result = await _usuariosService.Remover(id);
 
             if (result.IsFailure)
-                return BadRequest(result.Value);
+                return BadRequest(result.Error);
 
             T usuario = result.Value;
 

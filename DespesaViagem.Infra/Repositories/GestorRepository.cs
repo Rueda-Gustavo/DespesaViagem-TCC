@@ -40,8 +40,16 @@ namespace DespesaViagem.Infra.Repositories
         {
             return await _context.Gestores
                 
-                .Where(Gestor => Gestor.CPF.Contains(filtro) || Gestor.Nome.Contains(filtro) || Gestor.Sobrenome.Contains(filtro))
+                .Where(Gestor => Gestor.CPF.Contains(filtro) || 
+                                 Gestor.NomeCompleto.Contains(filtro))
                 .ToListAsync();
+        }
+
+        public async Task<bool> UsuarioJaExiste(string filtro)
+        {
+            return await _context.Usuarios
+                .AnyAsync(usuario => usuario.Username.ToLower().Equals(filtro.ToLower()) ||
+                                     usuario.CPF.ToLower().Equals(filtro.ToLower()));
         }
 
         public async Task Insert(Gestor Gestor)

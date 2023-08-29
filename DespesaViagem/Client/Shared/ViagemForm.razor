@@ -1,0 +1,131 @@
+﻿@inject IViagemService ViagemService
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+
+<div class="modal-header">
+    <h5 class="modal-title">
+        @if (Adicionar)
+        {
+            <span>Adicionar</span>
+        }
+        else
+        {
+            <span>Editar</span>
+        } Viagem
+    </h5>
+    <button type="button" class="close" @onclick="FecharFormulario">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+    <form @onsubmit="HandleViagem">
+        <div class="form-group row">
+            <div class="col">
+                <label for="NomeViagem">Nome da Viagem</label>
+                <input id="NomeViagem" class="form-control" @bind="Viagem.NomeViagem" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col">
+                <label for="DescricaoViagem">Descrição da Viagem</label>
+                <textarea id="DescricaoViagem" class="form-control" @bind="Viagem.DescricaoViagem" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col">
+                <label for="DataInicial">Data Inicial</label>
+                <input id="DataInicial" type="date" class="form-control" @bind="Viagem.DataInicial" />
+            </div>
+            <div class="col">
+                <label for="DataFinal">Data Final</label>
+                <input id="DataFinal" type="date" class="form-control" @bind="Viagem.DataFinal" />
+            </div>
+            <div class="col">
+                <label for="Adiantamento">Adiantamento</label>
+                <input id="Adiantamento" class="form-control" onkeypress="$(this).inputmask('currency')" @bind-value="Viagem.Adiantamento" />
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col">
+                <label for="Nome">Nome</label>
+                <input id="Nome" class="form-control" @bind-value="Funcionario.NomeCompleto" readonly />
+            </div>            
+            <div class="form-group row">
+
+                <div class="col">
+                <label for="Username">Username</label>
+                    <input id="Username" class="form-control" @bind-value="Funcionario.Username" readonly />
+            </div>
+                <div class="col">
+                <label for="CPF">CPF</label>
+                    <input id="CPF" class="form-control" @bind-value="Funcionario.CPF" readonly />
+            </div>
+                <div class="col">
+                <label for="Matricula">Matrícula</label>
+                    <input id="Matricula" class="form-control" @bind-value="Funcionario.Matricula" readonly />
+            </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            @if (Adicionar)
+            {
+                <span>Salvar</span>
+            }
+            else
+            {
+                <span>Editar</span>
+            }
+        </button>
+    </form>
+
+</div>
+
+@code {
+    [Parameter]
+    public int IdViagem { get; set; } = 0;
+    private bool Adicionar = true;
+    [Parameter]
+    public EventCallback FormularioFechado { get; set; }
+
+    private ViagemDTO Viagem { get; set; } = new();
+
+    private Funcionario Funcionario = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Funcionario = await ViagemService.GetFuncionario(13);
+
+        ViagemService.ViagensChanged += StateHasChanged;
+        if (IdViagem > 0)
+        {
+            Adicionar = false;
+            await GetViagem();
+        }
+    }
+
+    public void Dispose()
+    {
+        ViagemService.ViagensChanged -= StateHasChanged;
+    }
+
+    private async Task FecharFormulario()
+    {
+        await FormularioFechado.InvokeAsync();
+    }
+
+    private async Task GetViagem()
+    {
+        Viagem = await ViagemService.GetViagem(IdViagem);
+        Funcionario = await ViagemService.GetFuncionario(Viagem.IdFuncionario);
+    }
+
+    private async Task HandleViagem()
+    {
+        await JSRuntime.InvokeVoidAsync("alert", "Dados salvos com sucesso!");
+        await FecharFormulario();
+    }
+
+}

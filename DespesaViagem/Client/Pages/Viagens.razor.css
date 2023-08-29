@@ -1,7 +1,26 @@
 ﻿.card-container {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap ;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    /*height: 100vh;*/
+    align-content: flex-start;
+    margin-top: 100px;
 }
+
+.card-container-viagens {    
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+
+.btn-add-viagem {
+    color: #fff;
+    background-color: #0fa825;    
+}
+
+    .btn-add-viagem:hover {
+        background-color: #00de64;
+        border-color: #31ff00
+    }

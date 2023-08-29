@@ -20,7 +20,7 @@ namespace DespesaViagem.Server.Controllers
         {
             _configuration = configuration;
         }
-
+        /*
         [HttpPost("register")]
         public ActionResult<Usuario> Register(UsuarioDTO request)
         {
@@ -52,11 +52,11 @@ namespace DespesaViagem.Server.Controllers
 
             return Ok(token);
         }
-
+        */
 
         private string CreateToken(Usuario usuario)
         {
-            List<Claim> claims = new List<Claim>()
+            List<Claim> claims = new()
             {
                 new Claim(ClaimTypes.Name, usuario.Username)
             };

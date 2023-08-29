@@ -23,7 +23,7 @@ namespace DespesaViagem.Server.Controllers
             Result<IEnumerable<T>> result = await _despesasService.ObterTodasDespesas(idViagem);
 
             if (result.IsFailure)
-                return BadRequest(result);
+                return BadRequest(result.Error);
 
             IEnumerable<T> despesas = result.Value.ToList();
 
@@ -36,7 +36,7 @@ namespace DespesaViagem.Server.Controllers
             Result<T> result = await _despesasService.ObterDespesaPorId(id);
 
             if (result.IsFailure)
-                return BadRequest(result.Value);
+                return BadRequest(result.Error);
 
             return Ok(result.Value);
         }
@@ -47,7 +47,7 @@ namespace DespesaViagem.Server.Controllers
             Result<IEnumerable<T>> result = await _despesasService.ObterDespesasPorFiltro(filtro, idViagem);
 
             if (result.IsFailure)
-                return BadRequest(result);
+                return BadRequest(result.Error);
 
             IEnumerable<T> despesa = result.Value.ToList();
 
