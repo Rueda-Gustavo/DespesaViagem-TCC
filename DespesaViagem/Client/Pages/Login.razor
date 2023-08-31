@@ -1,10 +1,54 @@
 ﻿@page "/login"
-@inject IFuncionarioService FuncionarioService
+@inject IUsuarioService UsuarioService
+@inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 
-<h3>Login</h3>
+<PageTitle>Login</PageTitle>
+
+<div class="container-xl d-flex flex-column align-items-center flex-wrap">
+    <h3>Login</h3>
+    <EditForm Model="usuario" OnValidSubmit="HandleLogin">
+        <DataAnnotationsValidator />
+        <div class="mb-3">
+            <label for="username">Username</label>
+            <InputText id="username" @bind-Value="usuario.Username" class="form-control"></InputText>
+            <ValidationMessage For="@(() => usuario.Username)" />
+        </div>
+
+        <div class="mb-3">
+            <label for="username">Senha</label>
+            <InputText id="password" @bind-Value="usuario.Password" class="form-control" type="password"></InputText>
+            <ValidationMessage For="@(() => usuario.Password)" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Login</button>
+        <div class="mt-3 text-danger">
+            <span>@mensagemErro</span>
+        </div>
+    </EditForm>
+</div>
+
 
 @code {
+    private LoginUsuario usuario = new();
 
+    string mensagemErro = string.Empty;
+
+    private async Task HandleLogin()
+    {
+        ServiceResponse<string> resultadoLogin = await UsuarioService.Login(usuario);
+        if (resultadoLogin.Sucesso)
+        {
+            mensagemErro = string.Empty;
+
+            await LocalStorage.SetItemAsync("tokenJwt", resultadoLogin.Conteudo);
+            NavigationManager.NavigateTo("");
+        }
+        else
+        {
+            mensagemErro = resultadoLogin.Mensagem;
+        }
+
+    }
 }

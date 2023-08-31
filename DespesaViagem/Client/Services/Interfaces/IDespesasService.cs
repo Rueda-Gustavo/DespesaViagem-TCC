@@ -1,7 +1,7 @@
 ﻿using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Despesas;
 
-namespace DespesaViagem.Client.Services.DespesasService
+namespace DespesaViagem.Client.Services.Interfaces
 {
     public interface IDespesasService<T> where T : class
     {

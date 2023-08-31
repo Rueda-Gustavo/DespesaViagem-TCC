@@ -1,7 +1,8 @@
-﻿using DespesaViagem.Shared.DTOs.Despesas;
+﻿using DespesaViagem.Client.Services.Interfaces;
+using DespesaViagem.Shared.DTOs.Despesas;
 using System.Net.Http.Json;
 
-namespace DespesaViagem.Client.Services.DespesasService
+namespace DespesaViagem.Client.Services.Services
 {
     public class DespesaDeslocamentoService : IDespesasService<DespesaDeslocamentoDTO>
     {

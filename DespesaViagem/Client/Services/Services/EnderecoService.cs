@@ -1,10 +1,11 @@
 ﻿using DespesaViagem.Client.Pages;
+using DespesaViagem.Client.Services.Interfaces;
 using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Core.Helpers;
 using System.Net.Http;
 using System.Net.Http.Json;
 
-namespace DespesaViagem.Client.Services.EnderecoService
+namespace DespesaViagem.Client.Services.Services
 {
     public class EnderecoService : IEnderecoService
     {
@@ -36,6 +37,6 @@ namespace DespesaViagem.Client.Services.EnderecoService
             Console.WriteLine("Sucesso - EnderecoService - Client");
         }
 
-      
+
     }
 }

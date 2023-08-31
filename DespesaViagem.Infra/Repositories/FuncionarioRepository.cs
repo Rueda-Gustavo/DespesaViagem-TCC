@@ -46,13 +46,6 @@ namespace DespesaViagem.Infra.Repositories
             .ToListAsync();
         }
 
-        public async Task<bool> UsuarioJaExiste(string filtro)
-        {
-            return await _context.Usuarios
-                .AnyAsync(usuario => usuario.Username.ToLower().Equals(filtro.ToLower()) ||
-                                     usuario.CPF.ToLower().Equals(filtro.ToLower()));            
-        }
-
         public async Task<bool> FuncionarioJaExiste(string filtro)
         {
             return await _context.Funcionarios

@@ -7,7 +7,6 @@ namespace DespesaViagem.Infra.Interfaces
         Task<IEnumerable<T>> ObterTodos();
         Task<T> ObterPorId(int id);
         Task<IEnumerable<T>> ObterPorFiltro(string filtro);
-        Task<bool> UsuarioJaExiste(string filtro);
         Task Insert(T usuario);
         Task Update(T usuario);
         Task Delete(T usuario);

@@ -11,11 +11,15 @@ namespace DespesaViagem.Services.Services
     {
         private readonly IFuncionarioRepository _funcionarioRepository;
         private readonly IGestorRepository _gestorRepository;
+        private readonly IUsuarioRepository _usuarioRepository;
 
-        public FuncionarioService(IFuncionarioRepository funcionarioRepository, IGestorRepository gestorRepository)
+        public FuncionarioService(IFuncionarioRepository funcionarioRepository, 
+                                  IGestorRepository gestorRepository,
+                                  IUsuarioRepository usuarioRepository)
         {
             _funcionarioRepository = funcionarioRepository;
             _gestorRepository = gestorRepository;
+            _usuarioRepository = usuarioRepository;
         }
 
         public async Task<Result<IEnumerable<Funcionario>>> ObterTodos()
@@ -107,8 +111,8 @@ namespace DespesaViagem.Services.Services
         private async Task<bool> FuncionarioJaExiste(Funcionario funcionario)
         {
 
-            if (await _funcionarioRepository.UsuarioJaExiste(funcionario.CPF) ||
-                await _funcionarioRepository.UsuarioJaExiste(funcionario.Username) ||
+            if (await _usuarioRepository.UsuarioJaExiste(funcionario.CPF) ||
+                await _usuarioRepository.UsuarioJaExiste(funcionario.Username) ||
                 (funcionario.Matricula is not null && await _funcionarioRepository.FuncionarioJaExiste(funcionario.Matricula)))
             {
                 return true;

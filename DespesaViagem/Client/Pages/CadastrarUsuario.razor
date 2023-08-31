@@ -53,20 +53,20 @@
 
     string mensagemErro = string.Empty;
 
-    private async void HandleCadastro()
+    private async Task HandleCadastro()
     {
         var result = await FuncionarioService.Cadastrar(usuario);
-        if (!result.Sucesso)
-        {
-            mensagemErro = result.Message;
-            //await JSRuntime.InvokeVoidAsync("alert", $"Erro! {result.Message}");
-        }
-        else
+        if (result.Sucesso)
         {
             mensagemErro = string.Empty;
             Console.WriteLine($"Cadastrar usuario com {usuario.Username}.");
             await JSRuntime.InvokeVoidAsync("alert", "Dados salvos com sucesso!");
-            NavigationManager.NavigateTo("/");
+            NavigationManager.NavigateTo("/login");
+        }
+        else
+        {
+            mensagemErro = result.Mensagem;
+            //await JSRuntime.InvokeVoidAsync("alert", $"Erro! {result.Message}");            
         }
     }
 }
