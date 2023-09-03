@@ -48,25 +48,37 @@
         </div>
     </EditForm>
 </div>
+@if (carregando)
+{
+    <div class="modal-overlay">
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+            </div>
+        </div>
+    </div>
+}
 @code {
     CadastroUsuario usuario = new();
 
-    string mensagemErro = string.Empty;
+    private string mensagemErro = string.Empty;
+    private bool carregando = false;
 
     private async Task HandleCadastro()
     {
+        carregando = true;
         var result = await FuncionarioService.Cadastrar(usuario);
+        carregando = false;
         if (result.Sucesso)
         {
             mensagemErro = string.Empty;
-            Console.WriteLine($"Cadastrar usuario com {usuario.Username}.");
-            await JSRuntime.InvokeVoidAsync("alert", "Dados salvos com sucesso!");
+            //Console.WriteLine($"Cadastrar usuario com {usuario.Username}.");
+            //await JSRuntime.InvokeVoidAsync("alert", "Dados salvos com sucesso!");
             NavigationManager.NavigateTo("/login");
         }
         else
         {
             mensagemErro = result.Mensagem;
-            //await JSRuntime.InvokeVoidAsync("alert", $"Erro! {result.Message}");            
+            //await JSRuntime.InvokeVoidAsync("alert", $"Erro! {result.Message}");
         }
     }
 }

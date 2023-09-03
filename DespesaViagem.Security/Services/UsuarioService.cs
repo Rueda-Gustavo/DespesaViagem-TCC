@@ -72,31 +72,5 @@ namespace DespesaViagem.Services.Services
 
             return jwt;
         }
-
-        public async Task<Result<bool>> TrocarSenha(int idUsuario, string newPassword)
-        {
-            Usuario? usuario = await _usuarioRepository.ObterUsuario(idUsuario);
-            if (usuario is null)
-            {
-                return Result.Failure<bool>("Usuário não encontrado!");
-            }
-
-            CriarPasswordHash(newPassword, out byte[] passwordHash, out byte[] passwordSalt);
-
-            usuario.PasswordHash = passwordHash;
-            usuario.PasswordSalt = passwordSalt;
-
-            await _usuarioRepository.Update(usuario);
-
-            return Result.Success(true);
-        }
-
-        public static void CriarPasswordHash(string passoword, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            using HMACSHA512 hmac = new();
-            passwordSalt = hmac.Key;
-            passwordHash = hmac
-                .ComputeHash(Encoding.UTF8.GetBytes(passoword));
-        }
     }
 }

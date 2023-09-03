@@ -25,5 +25,22 @@ namespace DespesaViagem.Infra.Repositories
             return await _context.Usuarios
                 .FirstOrDefaultAsync(u => u.Username.ToLower().Equals(username.ToLower()));
         }
+
+        public async Task<Usuario?> ObterUsuario(int idUsuario)
+        {
+            return await _context.Usuarios
+                .FirstOrDefaultAsync(u => u.Id.Equals(idUsuario));
+        }
+
+        public async Task Update(Usuario usuario)
+        {
+            var usuarioNaMemoria = _context.Set<Usuario>().Find(usuario.Id);
+
+            if (usuarioNaMemoria != null)
+                _context.Entry(usuarioNaMemoria).State = EntityState.Detached;
+
+            _context.Update(usuario);
+            await _context.SaveChangesAsync();
+        }
     }
 }

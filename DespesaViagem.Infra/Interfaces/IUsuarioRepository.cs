@@ -6,5 +6,7 @@ namespace DespesaViagem.Infra.Interfaces
     {
         Task<bool> UsuarioJaExiste(string filtro);
         Task<Usuario?> ObterUsuario(string username);
+        Task<Usuario?> ObterUsuario(int idUsuario);
+        Task Update(Usuario usuario); 
     }
 }

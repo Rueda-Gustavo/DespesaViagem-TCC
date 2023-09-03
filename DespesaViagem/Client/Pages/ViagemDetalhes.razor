@@ -13,6 +13,7 @@
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Filtro
                 </button>
+                <button class="btn btn-primary d-xl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasResponsive" aria-controls="offcanvasResponsive">Detalhes da viagem</button>
                 <ul class="dropdown-menu">
                     <li><a class="btn btn-outline-secondary dropdown-item" href="/viagens/@IdViagem/1/Alimentação">Alimentação</a></li>
                     <li><a class="btn btn-outline-secondary dropdown-item" href="/viagens/@IdViagem/1/Deslocamento">Deslocamento</a></li>
@@ -22,12 +23,12 @@
                     <li><a class="btn btn-outline-secondary dropdown-item" href="/viagens/@IdViagem/@Pagina/">Limpar filtro</a></li>
                 </ul>
             </div>
-        </div>        
+        </div>
         <!--<button class="btn btn-outline-secondary mb-3 mx-2" @onclick="LimparFiltro">Limpar Filtro</button>-->
     </div>
 
     <div class="row">
-        <div class="col-8">
+        <div class="col-xl-8">
             <div class="lista-despesas justify-content-xxl-start">
                 <!-- Grid com as Despesas -->
                 @if (!DespesasPorPagina.Despesas.Any())
@@ -69,67 +70,76 @@
 
         <!-- Card da Viagem -->
         <div class="col">
-            <div class="card-viagem m-2">
-                <button class="btn pt-0 btn-edit-viagem" @onclick="AbrirFormulario"><FeatherEdit Size="24" Color="#000" StrokeWidth="1.9f" /></button>
-                <div class="card-header-viagem">
-                    <h5 class="card-title-viagem">@Viagem.NomeViagem</h5>
+            <div class="offcanvas-xl offcanvas-end" tabindex="-1" id="offcanvasResponsive" aria-labelledby="offcanvasResponsiveLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasResponsiveLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasResponsive" aria-label="Close"></button>
                 </div>
-                <div class="card-body">
-                    <span class="status-viagem">Viagem: @Status</span>
-                    <p class="card-text">Descrição: @Viagem.DescricaoViagem</p>
-                    <ul>
-                        <li class="card-text">Funcionário: @Funcionario.NomeCompleto</li>
-                        <li class="card-text">Matrícula: @Funcionario.Matricula</li>
-                        <li class="card-text">CPF: @Funcionario.CPF</li>
-                    </ul>
-                    <span class="card-text">Período: @Viagem.DataInicial.ToString("dd/MM/yyyy") até @Viagem.DataFinal.ToString("dd/MM/yyyy")</span>
+                <div class="offcanvas-body">
+                    <div class="col">
+                        <div class="row">
+                            <div class="card-viagem m-2">
 
-                    <hr />
-                    <div class="card-subtitle">
-                        <span class="card-text">
-                            Adiantamento incial: R$@Viagem.Adiantamento <br />
-                            Total das despesas: R$@Viagem.TotalDespesas <br />
-                            <strong>Subtotal: R$@Subtotal</strong>
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card-viagem m-2 resumo-despesas" type="button" data-bs-toggle="collapse" data-bs-target="#resumoDespesas" aria-expanded="false" aria-controls="resumoDespesas" @onclick="ToggleMenuResumoDespesas">
-                    <span>
-                        Mostrar resumo das despesas
-                        <i class="resumo-despesas-btn">
-                            @if (!ResumoDespesasAberto)
-                            {
-                                <FeatherChevronDown Size="24" Color="#000" StrokeWidth="1.9f" />
-                            }
-                            else
-                            {
-                                <FeatherChevronUp Size="24" Color="#000" StrokeWidth="1.9f" />
-                            }
-                        </i>
-                    </span>
-                    <div class="collapse" id="resumoDespesas">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item"></li>
-                            @foreach (var despesa in DespesasPorCategoria)
-                            {
-                                <li class="list-group-item">
-                                    @despesa.TipoDespesa.ToString() - R$@despesa.TotalDespesa
-                                </li>
-                            }
-                            <li class="list-group-item">
-                                <strong>Total: R$@Viagem.TotalDespesas</strong>
-                            </li>
-                        </ul>
+                                <div class="card-header-viagem">
+                                    <h5 class="card-title-viagem">@Viagem.NomeViagem</h5>
+                                </div>
+                                <div class="card-body p-3">
+                                    <span class="status-viagem">Viagem: @Status</span>
+                                    <p class="card-text">Descrição: @Viagem.DescricaoViagem</p>
+                                    <ul>
+                                        <li class="card-text">Funcionário: @Funcionario.NomeCompleto</li>
+                                        <li class="card-text">Matrícula: @Funcionario.Matricula</li>
+                                        <li class="card-text">CPF: @Funcionario.CPF</li>
+                                    </ul>
+                                    <span class="card-text">Período: @Viagem.DataInicial.ToString("dd/MM/yyyy") até @Viagem.DataFinal.ToString("dd/MM/yyyy")</span>
 
+                                    <hr />
+                                    <div class="card-subtitle">
+                                        <span class="card-text">
+                                            Adiantamento incial: R$@Viagem.Adiantamento <br />
+                                            Total das despesas: R$@Viagem.TotalDespesas <br />
+                                            <strong>Subtotal: R$@Subtotal</strong>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="card-viagem m-2" type="button" data-bs-toggle="collapse" data-bs-target="#resumoDespesas" aria-expanded="false" aria-controls="resumoDespesas" @onclick="ToggleMenuResumoDespesas">
+                                <div class="accordion accordion-flush" id="accordionTotalDespesasPorCategoria">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed resumo-despesas-btn" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                                Mostrar resumo das despesas
+                                            </button>
+                                        </h2>
+                                        <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionTotalDespesasPorCategoria">
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item"></li>
+                                                @foreach (var despesa in DespesasPorCategoria)
+                                                {
+                                                    <li class="list-group-item">
+                                                        @despesa.TipoDespesa.ToString() - R$@despesa.TotalDespesa
+                                                    </li>
+                                                }
+                                                <li class="list-group-item">
+                                                    <strong>Total: R$@Viagem.TotalDespesas</strong>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 </div>
+
+
+
 
 @if (FormularioAberto)
 {

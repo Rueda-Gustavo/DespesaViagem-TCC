@@ -1,9 +1,7 @@
-﻿using Azure.Core;
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Infra.Interfaces;
 using DespesaViagem.Services.Interfaces;
 using DespesaViagem.Shared.Models.Core.Helpers;
-using System.Security.Cryptography;
 
 namespace DespesaViagem.Services.Services
 {
@@ -77,7 +75,7 @@ namespace DespesaViagem.Services.Services
 
             //funcionario.Gestor = await _gestorRepository.ObterPorId(funcionario.Gestor.Id);
 
-            CriarPasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+            UsuarioService.CriarPasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
 
             funcionario.PasswordHash = passwordHash;
             funcionario.PasswordSalt = passwordSalt;
@@ -85,7 +83,6 @@ namespace DespesaViagem.Services.Services
             await _funcionarioRepository.Insert(funcionario);
             return Result.Success(funcionario);
         }
-
 
         public async Task<Result<Funcionario>> Alterar(Funcionario funcionario)
         {
@@ -123,12 +120,6 @@ namespace DespesaViagem.Services.Services
             return false;
         }
 
-        private void CriarPasswordHash(string passoword, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            using HMACSHA512 hmac = new();
-            passwordSalt = hmac.Key;
-            passwordHash = hmac
-                .ComputeHash(System.Text.Encoding.UTF8.GetBytes(passoword));
-        }
+
     }
 }

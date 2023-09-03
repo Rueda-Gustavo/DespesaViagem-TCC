@@ -1,3 +1,4 @@
+global using Microsoft.AspNetCore.Components.Authorization;
 using Blazored.LocalStorage;
 using DespesaViagem.Client;
 using DespesaViagem.Client.Services.Interfaces;
@@ -19,7 +20,10 @@ builder.Services.AddScoped<IDespesasService<DespesaPassagemDTO>, DespesaPassagem
 builder.Services.AddScoped<IEnderecoService, EnderecoService>();
 builder.Services.AddScoped<IFuncionarioService, FuncionarioService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
-//builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddOptions();
+builder.Services.AddAuthorizationCore();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 
 
 await builder.Build().RunAsync();

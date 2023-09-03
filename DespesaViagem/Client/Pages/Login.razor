@@ -2,6 +2,7 @@
 @inject IUsuarioService UsuarioService
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJSRuntime JSRuntime
 
 <PageTitle>Login</PageTitle>
@@ -28,22 +29,47 @@
         </div>
     </EditForm>
 </div>
-
-
+@if (carregando)
+{
+    <div class="modal-overlay">
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+}
 @code {
     private LoginUsuario usuario = new();
 
-    string mensagemErro = string.Empty;
+    private string mensagemErro = string.Empty;
+    private string returnUrl = string.Empty;
+
+    private bool carregando = false;
+
+    protected override void OnInitialized()
+    {
+        Uri uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        if(QueryHelpers.ParseQuery(uri.Query).TryGetValue("returnUrl", out StringValues url))
+        {            
+            returnUrl = url.ToString();
+        }
+    }
 
     private async Task HandleLogin()
     {
+        carregando = true;        
         ServiceResponse<string> resultadoLogin = await UsuarioService.Login(usuario);
+        carregando = false;
+
         if (resultadoLogin.Sucesso)
         {
             mensagemErro = string.Empty;
 
             await LocalStorage.SetItemAsync("tokenJwt", resultadoLogin.Conteudo);
-            NavigationManager.NavigateTo("");
+            await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            //await JSRuntime.InvokeVoidAsync("alert", "Sucesso no login!");
+            NavigationManager.NavigateTo(returnUrl);
         }
         else
         {
