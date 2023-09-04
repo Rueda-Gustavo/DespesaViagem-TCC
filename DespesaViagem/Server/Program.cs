@@ -1,5 +1,7 @@
 using DespesaViagem.Infra;
 using DespesaViagem.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +10,21 @@ builder.Services.AddControllersWithViews();
 builder.Services
     .AddDespesaViagemInfra(builder.Configuration)
     .AddDespesaViagemService();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = 
+                new SymmetricSecurityKey(System.Text.Encoding.UTF8
+                .GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+    });
 
 builder.Services.AddRazorPages();
 
@@ -39,6 +56,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapControllers();

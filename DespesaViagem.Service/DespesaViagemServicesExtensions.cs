@@ -18,7 +18,7 @@ namespace DespesaViagem.Services
             service.AddScoped<IDespesasService<DespesaAlimentacao>, DespesaAlimentacaoService>();
             service.AddScoped<IDespesasService<DespesaDeslocamento>, DespesaDeslocamentoService>();
             service.AddScoped<IDespesasService<DespesaPassagem>, DespesaPassagemService>();
-            service.AddScoped<IAuthService, AuthService>();
+            service.AddScoped<IUsuarioService, UsuarioService>();
 
             return service;
         }

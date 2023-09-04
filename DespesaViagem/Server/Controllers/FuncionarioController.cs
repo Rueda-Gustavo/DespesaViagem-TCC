@@ -11,6 +11,7 @@ namespace DespesaViagem.Server.Controllers
     public class FuncionarioController : UsuariosController<Funcionario>
     {
         private readonly IFuncionarioService _funcionarioService;
+        
 
         public FuncionarioController(IFuncionarioService funcionarioService) : base(funcionarioService)
         {
@@ -43,9 +44,9 @@ namespace DespesaViagem.Server.Controllers
                 }, request.Password);
 
             if (result.IsFailure)
-                return BadRequest(new ServiceResponse<Funcionario> { Message = result.Error, Sucesso = false });            
+                return BadRequest(new ServiceResponse<int> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(new ServiceResponse<Funcionario> { Conteudo = result.Value });
+            return Ok(new ServiceResponse<int> { Conteudo = result.Value.Id, Mensagem = "Usuário cadastrado com sucesso." } );
         }
     }
 }

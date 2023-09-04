@@ -77,7 +77,7 @@ else
         ViagemService.ViagensChanged -= StateHasChanged;
     }
 
-    private async Task VerDetalhes(int idViagem)
+    private void VerDetalhes(int idViagem)
     {
         /*
         if ((await ViagemService.ObterDespesas(idViagem)).Count() > 0)

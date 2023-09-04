@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BCrypt.Net" Version="0.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.9">
       <PrivateAssets>all</PrivateAssets>
@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\DespesaViagem.Infra\DespesaViagem.Infra.csproj" />
-    <ProjectReference Include="..\..\DespesaViagem.Security\DespesaViagem.Security.csproj" />
     <ProjectReference Include="..\..\DespesaViagem.Service\DespesaViagem.Services.csproj" />
     <ProjectReference Include="..\Client\DespesaViagem.Client.csproj" />
     <ProjectReference Include="..\Shared\DespesaViagem.Shared.csproj" />

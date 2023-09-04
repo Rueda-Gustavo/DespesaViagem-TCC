@@ -1,0 +1,12 @@
+﻿@page "/perfil"
+@attribute [Authorize]
+
+<AuthorizeView>
+    <h3>Perfil</h3>
+
+    <h3>Você está logado como <i>@context.User.Identity.Name</i></h3>
+</AuthorizeView>
+
+@code {
+
+}

@@ -1,6 +1,6 @@
 ﻿.card-viagem {
-    max-width: 28rem;
-    min-width: 20rem;
+    max-width: 22rem;  
+    min-width: 19rem;
     background: #fff;
     border: 0.5px solid #1639a357;
     border-radius: 5px;
@@ -68,10 +68,10 @@
     padding: 8px 9px 5px 10px;
     min-height: 30px;
     color: #000;
-    position: absolute;
+    position: relative;
     /*margin-left: 18rem;*/
     align-self:end;
-    margin: 0.5rem 1rem 0 0;
+    margin: 0.5rem 1rem -2.5rem 0;
 }
 
     .btn-edit-viagem:hover {
@@ -79,8 +79,8 @@
         border: 2px solid #575757;
     }
 
-.resumo-despesas {
-    align-items: center;
+.resumo-despesas {    
+    border-radius: 20px;
 }
 
 .seta {
@@ -91,15 +91,8 @@
     border-top: 5px solid black;
     margin-right: 5px;
 }
-/*
-.resumo-despesas-btn {
-    margin-left: 5px;
-    padding: 1px 3px 1.5px 3px;
-    cursor: pointer;
+
+.resumo-despesas-btn {    
+    max-height: 20px;
 }
 
-.resumo-despesas-btn:hover {
-    background-color: #d9d9d9;
-    border-radius: 20%;
-}
-*/
