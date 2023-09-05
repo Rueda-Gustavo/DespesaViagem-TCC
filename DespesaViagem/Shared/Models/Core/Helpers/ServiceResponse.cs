@@ -1,6 +1,6 @@
 ﻿namespace DespesaViagem.Shared.Models.Core.Helpers
 {
-    public class ServiceResponse<T> where T : class
+    public class ServiceResponse<T>
     {
         public T? Conteudo { get; set; }
         public bool Sucesso { get; set; } = true;
