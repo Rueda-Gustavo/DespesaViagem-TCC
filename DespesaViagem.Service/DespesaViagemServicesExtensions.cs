@@ -2,6 +2,8 @@
 using DespesaViagem.Services.Interfaces;
 using DespesaViagem.Shared.Models.Despesas;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+
 
 namespace DespesaViagem.Services
 {
@@ -9,6 +11,7 @@ namespace DespesaViagem.Services
     {
         public static IServiceCollection AddDespesaViagemService(this IServiceCollection service)
         {
+          
             service.AddScoped<IEnderecoService, EnderecoService>();
             service.AddScoped<IGestorService, GestorService>();
             service.AddScoped<IFuncionarioService, FuncionarioService>();

@@ -30,7 +30,7 @@ namespace DespesaViagem.Client.Services.ViagemService
             var response = await _httpClient
                .GetFromJsonAsync<List<ViagemDTO>>("api/Viagem");
 
-            if (response == null || !response.Any())
+            if (response is null || !response.Any())
                 Mensagem = "Nenhuma viagem encontrada!";
             else
             {
@@ -45,7 +45,7 @@ namespace DespesaViagem.Client.Services.ViagemService
             var response = await _httpClient
                 .GetFromJsonAsync<ViagemDTO>($"api/Viagem/{idViagem}");
 
-            if (response == null)
+            if (response is null)
             {
                 Mensagem = "Nenhuma viagem encontrada!";
                 return new ViagemDTO();

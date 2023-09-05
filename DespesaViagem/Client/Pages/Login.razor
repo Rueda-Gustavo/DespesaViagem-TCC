@@ -5,6 +5,28 @@
 
 <h3>Login</h3>
 
+        <div class="mb-3">
+            <label for="password">Senha</label>
+            <InputText id="password" @bind-Value="usuario.Password" class="form-control" type="password"></InputText>
+            <ValidationMessage For="@(() => usuario.Password)" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Login</button>
+        <div class="mt-3 text-danger">
+            <span>@mensagemErro</span>
+        </div>
+    </EditForm>
+</div>
+@if (carregando)
+{
+    <div class="modal-overlay">
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+}
 @code {
 
 }

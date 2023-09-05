@@ -2,17 +2,11 @@
 @inject IJSRuntime JSRuntime
 @implements IDisposable
 
+<PageTitle>@AdicionarOuEditar - Viagem</PageTitle>
 
 <div class="modal-header">
     <h5 class="modal-title">
-        @if (Adicionar)
-        {
-            <span>Adicionar</span>
-        }
-        else
-        {
-            <span>Editar</span>
-        } Viagem
+        <span>@AdicionarOuEditar Viagem</span>         
     </h5>
     <button type="button" class="close" @onclick="FecharFormulario">
         <span aria-hidden="true">&times;</span>
@@ -70,14 +64,7 @@
             </div>
         </div>
         <button type="submit" class="btn btn-primary">
-            @if (Adicionar)
-            {
-                <span>Salvar</span>
-            }
-            else
-            {
-                <span>Editar</span>
-            }
+            <span>@AdicionarOuEditar</span>                                                            
         </button>
     </form>
 
@@ -86,17 +73,19 @@
 @code {
     [Parameter]
     public int IdViagem { get; set; } = 0;
-    private bool Adicionar = true;
+
     [Parameter]
     public EventCallback FormularioFechado { get; set; }
 
     private ViagemDTO Viagem { get; set; } = new();
-
     private Funcionario Funcionario = new();
+    private bool Adicionar = true;
+    private string AdicionarOuEditar = "Adicionar";
 
     protected override async Task OnInitializedAsync()
     {
-        Funcionario = await ViagemService.GetFuncionario(13);
+        
+        Funcionario = await ViagemService.GetFuncionario(13);                     
 
         ViagemService.ViagensChanged += StateHasChanged;
         if (IdViagem > 0)
@@ -104,6 +93,8 @@
             Adicionar = false;
             await GetViagem();
         }
+
+        if (!Adicionar) AdicionarOuEditar = "Editar";
     }
 
     public void Dispose()
