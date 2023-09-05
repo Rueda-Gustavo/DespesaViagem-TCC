@@ -4,6 +4,6 @@
     {
         public T? Conteudo { get; set; }
         public bool Sucesso { get; set; } = true;
-        public string Message { get; set; } = string.Empty;
+        public string Mensagem { get; set; } = string.Empty;
     }
 }

@@ -6,7 +6,7 @@ using DespesaViagem.Shared.Models.Core.Helpers;
 using DespesaViagem.Shared.Models.Viagens;
 using System.Net.Http.Json;
 
-namespace DespesaViagem.Client.Services.ViagemService
+namespace DespesaViagem.Client.Services.Services
 {
     public class ViagemService : IViagemService
     {
@@ -54,7 +54,7 @@ namespace DespesaViagem.Client.Services.ViagemService
             {
                 Console.WriteLine("Sucesso - ViagemService - Client");
                 return response;
-            }           
+            }
         }
 
         public async Task<Funcionario> GetFuncionario(string CPF)
@@ -70,7 +70,7 @@ namespace DespesaViagem.Client.Services.ViagemService
             }
 
             Console.WriteLine("Sucesso - ViagemService - Client");
-            return funcionario;                                                
+            return funcionario;
         }
 
         public async Task<Funcionario> GetFuncionario(int idFuncionario)
@@ -120,7 +120,7 @@ namespace DespesaViagem.Client.Services.ViagemService
             Console.WriteLine("Sucesso - ViagemService - Client");
             ViagensChanged.Invoke();
 
-            return despesas;                      
+            return despesas;
         }
 
         public async Task<DespesasPorPagina> ObterTodasDespesasPaginadasPorTipo(int idViagem, int pagina, string tipoDespesa)
@@ -156,7 +156,7 @@ namespace DespesaViagem.Client.Services.ViagemService
 
             Console.WriteLine("Sucesso - ViagemService - Client");
             return despesas;
-        }        
+        }
     }
 }
 

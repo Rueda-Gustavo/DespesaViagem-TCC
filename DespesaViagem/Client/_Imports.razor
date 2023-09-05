@@ -9,17 +9,21 @@
 @using Microsoft.JSInterop
 @using DespesaViagem.Client
 @using DespesaViagem.Client.Shared
-@using DespesaViagem.Client.Services.ViagemService
-@using DespesaViagem.Client.Services.DespesasService;
+@using DespesaViagem.Client.Services.Services
+@using DespesaViagem.Client.Services.Interfaces
 @using DespesaViagem.Shared.Models.Viagens
-@using DespesaViagem.Shared.DTOs.Viagens;
+@using DespesaViagem.Shared.DTOs.Viagens
 @using DespesaViagem.Shared.Models.Core.Helpers
 @using DespesaViagem.Shared.Models.Core.Enums
-@using DespesaViagem.Shared.Models.Despesas;
-@using DespesaViagem.Shared.DTOs.Despesas;
-@using DespesaViagem.Client.Services.Interfaces;
-@using System.Web;
-@using DespesaViagem.Client.Services.EnderecoService;
-@using DespesaViagem.Client.Services.AuthService;
+@using DespesaViagem.Shared.Models.Despesas
+@using DespesaViagem.Shared.DTOs.Despesas
+@using System.Web
+@using Blazored.LocalStorage
+@using CSharpFunctionalExtensions
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.Extensions.Primitives
+
 
 

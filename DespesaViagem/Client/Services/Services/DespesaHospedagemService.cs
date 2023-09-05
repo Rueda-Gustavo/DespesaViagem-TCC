@@ -1,8 +1,9 @@
-﻿using DespesaViagem.Shared.DTOs.Despesas;
+﻿using DespesaViagem.Client.Services.Interfaces;
+using DespesaViagem.Shared.DTOs.Despesas;
 using DespesaViagem.Shared.Models.Despesas;
 using System.Net.Http.Json;
 
-namespace DespesaViagem.Client.Services.DespesasService
+namespace DespesaViagem.Client.Services.Services
 {
     public class DespesaHospedagemService : IDespesasService<DespesaHospedagemDTO>
     {
@@ -15,7 +16,7 @@ namespace DespesaViagem.Client.Services.DespesasService
 
         public DespesaHospedagemService(HttpClient httpClient)
         {
-            _httpClient = httpClient;            
+            _httpClient = httpClient;
         }
 
         public Task AtualizarDespesa(DespesaHospedagemDTO Despesa)

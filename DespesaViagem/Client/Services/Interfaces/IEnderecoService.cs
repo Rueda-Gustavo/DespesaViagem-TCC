@@ -1,6 +1,6 @@
 ﻿using DespesaViagem.Shared.Models.Core.Helpers;
 
-namespace DespesaViagem.Client.Services.EnderecoService
+namespace DespesaViagem.Client.Services.Interfaces
 {
     public interface IEnderecoService
     {

@@ -1,9 +1,8 @@
+global using Microsoft.AspNetCore.Components.Authorization;
+using Blazored.LocalStorage;
 using DespesaViagem.Client;
-using DespesaViagem.Client.Services.AuthService;
-using DespesaViagem.Client.Services.DespesasService;
-using DespesaViagem.Client.Services.EnderecoService;
 using DespesaViagem.Client.Services.Interfaces;
-using DespesaViagem.Client.Services.ViagemService;
+using DespesaViagem.Client.Services.Services;
 using DespesaViagem.Shared.DTOs.Despesas;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -20,6 +19,11 @@ builder.Services.AddScoped<IDespesasService<DespesaDeslocamentoDTO>, DespesaDesl
 builder.Services.AddScoped<IDespesasService<DespesaPassagemDTO>, DespesaPassagemService>();
 builder.Services.AddScoped<IEnderecoService, EnderecoService>();
 builder.Services.AddScoped<IFuncionarioService, FuncionarioService>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddOptions();
+builder.Services.AddAuthorizationCore();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 
 
 await builder.Build().RunAsync();

@@ -1,8 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
-using DespesaViagem.Infra.Interfaces;
 using DespesaViagem.Services.Interfaces;
-using DespesaViagem.Services.Services;
-using DespesaViagem.Shared.Models.Core.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DespesaViagem.Server.Controllers
@@ -11,12 +8,14 @@ namespace DespesaViagem.Server.Controllers
     [ApiController]
     public class UsuariosController<T> : Controller where T : class
     {
-        private readonly IUsuariosService<T> _usuariosService;
+        private readonly IUsuariosService<T> _usuariosService;        
 
         public UsuariosController(IUsuariosService<T> usuariosService)
         {
-            _usuariosService = usuariosService;
+            _usuariosService = usuariosService;            
         }
+
+
 
         [HttpGet]
         public async Task<ActionResult> ObterTodos()
