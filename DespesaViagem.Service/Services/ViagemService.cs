@@ -29,9 +29,9 @@ namespace DespesaViagem.Services.Services
             _funcionarioRepository = funcionarioRepository;
         }
 
-        public async Task<Result<List<ViagemDTO>>> ObterTodasViagens()
+        public async Task<Result<List<ViagemDTO>>> ObterTodasViagens(int idFuncionario)
         {
-            List<Viagem> viagens = await _viagemRepository.ObterTodos();
+            List<Viagem> viagens = await _viagemRepository.ObterTodos(idFuncionario);
 
             if (!viagens.Any())
                 return Result.Failure<List<ViagemDTO>>("Não existem viagens cadastradas.");

@@ -25,6 +25,7 @@ else
 
         if (viagem.StatusViagem == StatusViagem.EmAndamento) statusViagem = "Em andamento";
 
+        
         <div class="card" style="opacity:@opacidade">
             <h2 class="card-header title">@viagem.NomeViagem <button class="btn-exibir-despesas" title="Detalhes da viagem" @onclick="() => VerDetalhes(viagem.Id)"><FeatherList Size="24" Color="#000" StrokeWidth="1.7f" /></button></h2>
             <div>

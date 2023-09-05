@@ -5,6 +5,7 @@ using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace DespesaViagem.Server.Controllers
 {
@@ -24,7 +25,11 @@ namespace DespesaViagem.Server.Controllers
         [HttpGet]
         public async Task<ActionResult> ObterTodasViagens()
         {
-            Result<List<ViagemDTO>> viagens = await _viagemService.ObterTodasViagens();
+            string idUsuario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
+
+            Result<List<ViagemDTO>> viagens = await _viagemService.ObterTodasViagens(int.Parse(idUsuario)); //Ideia para que seja possível mostrar todas as viagens dos funcionários do gestor ou somente as viagens do próprio funcionário
+
+            //Result<List<ViagemDTO>> viagens = await _viagemService.ObterTodasViagens();
 
             if (viagens.IsFailure) return BadRequest(viagens.Error);
 

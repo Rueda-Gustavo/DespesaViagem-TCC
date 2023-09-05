@@ -1,5 +1,6 @@
 ﻿@inject IViagemService ViagemService
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @implements IDisposable
 
 <PageTitle>@AdicionarOuEditar - Viagem</PageTitle>
@@ -84,8 +85,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        
-        Funcionario = await ViagemService.GetFuncionario(13);                     
+        AuthenticationState usuarioLogado = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        Claim? claimNameIdentifier = usuarioLogado.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+        _ = int.TryParse(claimNameIdentifier.Value, out int idFuncionario);
+        Console.WriteLine("Id do usuário logado: {0}", idFuncionario);
+        Funcionario = await ViagemService.GetFuncionario(idFuncionario);         
 
         ViagemService.ViagensChanged += StateHasChanged;
         if (IdViagem > 0)

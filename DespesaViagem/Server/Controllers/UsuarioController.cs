@@ -46,7 +46,7 @@ namespace DespesaViagem.Server.Controllers
         [HttpPost("trocar-senha"), Authorize]
         public async Task<ActionResult<ServiceResponse<bool>>> TrocarSenha([FromBody] string newPassword)
         {
-            string? idUsuario = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string idUsuario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
             
             Result<bool> response = await _usuarioService.TrocarSenha(int.Parse(idUsuario), newPassword);            
 

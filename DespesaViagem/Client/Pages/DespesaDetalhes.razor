@@ -4,24 +4,25 @@
 @inject IDespesasService<DespesaDeslocamentoDTO> DespesaDeslocamentoService
 @inject IViagemService ViagemService
 @inject NavigationManager NavigationManager
+@attribute [Authorize]
 
 <PageTitle>Detalhes - Despesa</PageTitle>
 
 <a href="/viagens/@IdViagem/1" class="btn btn-outline-primary">Voltar</a>
 
-@if (TipoDespesa == string.Empty)
-{
-    <span>@Mensagem</span>
-}
-else
-{    
-    if(DespesasComponentes.TryGetValue(TipoDespesa, out var DespesaComponent))
+<AuthorizeView>
+    @if (TipoDespesa == string.Empty)
     {
-        @DespesaComponent
+        <span>@Mensagem</span>
     }
-}
-
-
+    else
+    {
+        if (DespesasComponentes.TryGetValue(TipoDespesa, out var DespesaComponent))
+        {
+            @DespesaComponent
+        }
+    }
+</AuthorizeView>
 
 @code {
     [Parameter]
@@ -38,7 +39,7 @@ else
     private string Mensagem { get; set; } = "Carregando despesa ...";
 
     protected override async Task OnInitializedAsync()
-    {        
+    {
         string tipoDespesa = NavigationManager.Uri.Split('?').LastOrDefault()?.Split('=')?.LastOrDefault() ?? string.Empty;
         TipoDespesa = HttpUtility.UrlDecode(tipoDespesa); //Essa linha formata a string. Por exemplo na Url o valor fica como Alimenta%C3%A7%C3%A3o mas essa linha deixa com o valor correto, Alimentação
         Viagem = await ViagemService.GetViagem(IdViagem);
@@ -74,13 +75,15 @@ else
 
     private void PopularDictionaries()
     {
-        DespesasComponentes.Add("Hospedagem", builder => { 
+        DespesasComponentes.Add("Hospedagem", builder =>
+        {
             builder.OpenComponent(0, typeof(DespesaHospedagemDetalhes));
             builder.AddAttribute(1, "IdDespesa", IdDespesa);
             builder.AddAttribute(2, "StatusDaViagem", Viagem.StatusViagem.ToString());
-            builder.CloseComponent(); });
+            builder.CloseComponent();
+        });
 
-        
+
         //DespesasComponentes.Add("Deslocamento", builder => { builder.OpenComponent<DespesaDeslocamentoForm>(0); builder.CloseComponent(); });
         //DespesasComponentes.Add("Passagem", builder => { builder.OpenComponent<DespesaPassagemForm>(0); builder.CloseComponent(); });
         //DespesasComponentes.Add("Alimentacao", builder => { builder.OpenComponent<DespesaAlimentacaoForm>(0); builder.CloseComponent(); });

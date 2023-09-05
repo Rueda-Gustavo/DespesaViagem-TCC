@@ -1,24 +1,26 @@
 ﻿@page "/viagens/adicionar-despesa/{idViagem:int}"
 @inject NavigationManager NavigationManager
-
+@attribute [Authorize]
 <PageTitle>Adicionar - Despesa</PageTitle>
 
-@if (TipoDespesa == string.Empty)
-{
-    <span>Por favor, aguarde...</span>
-}
-else
-{
-    if (DespesasComponentes.TryGetValue(TipoDespesa, out var DespesaComponent))
+<AuthorizeView>
+    @if (TipoDespesa == string.Empty)
     {
-        <div class="d-flex flex-wrap" style="flex-direction:column; align-content:center;">
-            <h3 class="card-title">Adicionar despesa com @TipoDespesa</h3>
-            <div class="modal-content">
-                @DespesaComponent
-            </div>
-        </div>
+        <span>Por favor, aguarde...</span>
     }
-}
+    else
+    {
+        if (DespesasComponentes.TryGetValue(TipoDespesa, out var DespesaComponent))
+        {
+            <div class="d-flex flex-wrap" style="flex-direction:column; align-content:center;">
+                <h3 class="card-title">Adicionar despesa com @TipoDespesa</h3>
+                <div class="modal-content">
+                    @DespesaComponent
+                </div>
+            </div>
+        }
+    }
+</AuthorizeView>
 
 @code {
     [Parameter]

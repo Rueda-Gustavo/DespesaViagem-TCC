@@ -17,9 +17,10 @@ namespace DespesaViagem.Infra.Repositories
         => _context = context;
 
 
-        public async Task<List<Viagem>> ObterTodos()
+        public async Task<List<Viagem>> ObterTodos(int idFuncionario)
         {
             return await _context.Viagens
+                .Where(v => v.IdFuncionario == idFuncionario)
                 .Include(f => f.Funcionario)
                 .Include(d => d.Despesas)
                 .OrderByDescending(viagem => viagem.Id)

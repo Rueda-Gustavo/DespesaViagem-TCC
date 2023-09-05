@@ -56,6 +56,10 @@ namespace DespesaViagem.Infra.Database
                         .Property(u => u.CPF)
                         .IsRequired(false);
 
+            modelBuilder.Entity<Usuario>()
+                        .HasIndex(u => u.Username)
+                        .IsUnique(true);                        
+
             modelBuilder.Entity<Endereco>().HasKey(k => k.Id);
 
             modelBuilder.Entity<Funcionario>()
