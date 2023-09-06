@@ -86,8 +86,9 @@
     protected override async Task OnInitializedAsync()
     {
         AuthenticationState usuarioLogado = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        Claim? claimNameIdentifier = usuarioLogado.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
-        _ = int.TryParse(claimNameIdentifier.Value, out int idFuncionario);
+        var claimNameIdentifier = usuarioLogado.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+        _ = int.TryParse(claimNameIdentifier, out int idFuncionario);
         Console.WriteLine("Id do usuário logado: {0}", idFuncionario);
         Funcionario = await ViagemService.GetFuncionario(idFuncionario);         
 
