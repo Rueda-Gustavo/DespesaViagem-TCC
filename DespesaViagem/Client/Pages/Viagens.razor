@@ -2,6 +2,7 @@
 @inject NavigationManager NavigationManager
 @inject IViagemService ViagemService
 @inject IGestorService GestorService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @implements IDisposable
 @attribute [Authorize]
 
@@ -55,12 +56,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await ObterListaFuncionarios();
-        //if (IdFuncionario == 0)
+        var usuario = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        string tipoDeUsuario = usuario.User.FindFirst(ClaimTypes.Role).Value.ToString() ?? string.Empty;
+        if(tipoDeUsuario == "Gestor")
+            await ObterListaFuncionarios();
+        
         await ViagemService.GetViagens();
-            /*else
-            await ViagemService.GetViagens(IdFuncionario);*/
-
+            
         ViagemService.ViagensChanged += StateHasChanged;
     }
 
