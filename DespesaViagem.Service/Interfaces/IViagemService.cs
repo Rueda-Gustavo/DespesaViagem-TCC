@@ -8,7 +8,7 @@ namespace DespesaViagem.Services.Interfaces
 {
     public interface IViagemService
     {
-        Task<Result<List<ViagemDTO>>> ObterTodasViagens(int idFuncionario);
+        Task<Result<List<ViagemDTO>>> ObterTodasViagens(int idFuncionario);        
         Task<Result<ViagemDTO>> ObterViagemPorId(int id);
         Task<Result<List<ViagemDTO>>> ObterViagemPorFiltro(string filtro);        
         Task<Result<List<DespesaDTO>>> ObterTodasDespesas(int idViagem);

@@ -8,5 +8,6 @@ namespace DespesaViagem.Services.Interfaces
         Task<Result<Gestor>> ObterPorCPF(string CPF);
         Task<Result<Gestor>> Adicionar(Gestor gestor);
         Task<Result<Gestor>> Alterar(Gestor gestor);
+        Task<Result<IEnumerable<Funcionario>>> ObterListaFuncionarios(int gestorId);
     }
 }

@@ -35,9 +35,26 @@ namespace DespesaViagem.Client.Services.Services
             else
             {
                 Viagens = response;
+                Console.WriteLine("Sucesso - ViagemService - Client");
+                ViagensChanged.Invoke();
             }
-            Console.WriteLine("Sucesso - ViagemService - Client");
-            ViagensChanged.Invoke();
+        }
+
+        public async Task GetViagens(int idFuncionario)
+        {
+            var response = await _httpClient
+                .GetFromJsonAsync<List<ViagemDTO>>($"api/Viagem");
+
+            if (response is null || !response.Any())            
+                Mensagem = "Nenhuma viagem encontrada!";                            
+            else
+            {                
+                Viagens = response
+                    .Where(v => v.IdFuncionario == idFuncionario).ToList();
+
+                Console.WriteLine("Sucesso - ViagemService - Client");
+                ViagensChanged.Invoke();
+            }
         }
 
         public async Task<ViagemDTO> GetViagem(int idViagem)

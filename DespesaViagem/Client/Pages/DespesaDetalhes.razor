@@ -10,19 +10,19 @@
 
 <a href="/viagens/@IdViagem/1" class="btn btn-outline-primary">Voltar</a>
 
-<AuthorizeView>
-    @if (TipoDespesa == string.Empty)
+
+@if (TipoDespesa == string.Empty)
+{
+    <span>@Mensagem</span>
+}
+else
+{
+    if (DespesasComponentes.TryGetValue(TipoDespesa, out var DespesaComponent))
     {
-        <span>@Mensagem</span>
+        @DespesaComponent
     }
-    else
-    {
-        if (DespesasComponentes.TryGetValue(TipoDespesa, out var DespesaComponent))
-        {
-            @DespesaComponent
-        }
-    }
-</AuthorizeView>
+}
+
 
 @code {
     [Parameter]

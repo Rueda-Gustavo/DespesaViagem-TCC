@@ -3,24 +3,24 @@
 @attribute [Authorize]
 <PageTitle>Adicionar - Despesa</PageTitle>
 
-<AuthorizeView>
-    @if (TipoDespesa == string.Empty)
+
+@if (TipoDespesa == string.Empty)
+{
+    <span>Por favor, aguarde...</span>
+}
+else
+{
+    if (DespesasComponentes.TryGetValue(TipoDespesa, out var DespesaComponent))
     {
-        <span>Por favor, aguarde...</span>
-    }
-    else
-    {
-        if (DespesasComponentes.TryGetValue(TipoDespesa, out var DespesaComponent))
-        {
-            <div class="d-flex flex-wrap" style="flex-direction:column; align-content:center;">
-                <h3 class="card-title">Adicionar despesa com @TipoDespesa</h3>
-                <div class="modal-content">
-                    @DespesaComponent
-                </div>
+        <div class="d-flex flex-wrap" style="flex-direction:column; align-content:center;">
+            <h3 class="card-title">Adicionar despesa com @TipoDespesa</h3>
+            <div class="modal-content">
+                @DespesaComponent
             </div>
-        }
+        </div>
     }
-</AuthorizeView>
+}
+
 
 @code {
     [Parameter]

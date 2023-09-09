@@ -25,8 +25,9 @@ else
 
         if (viagem.StatusViagem == StatusViagem.EmAndamento) statusViagem = "Em andamento";
 
-        
+
         <div class="card" style="opacity:@opacidade">
+            <small class="nome-funcionario">@viagem.Funcionario.NomeCompleto</small>
             <h2 class="card-header title">@viagem.NomeViagem <button class="btn-exibir-despesas" title="Detalhes da viagem" @onclick="() => VerDetalhes(viagem.Id)"><FeatherList Size="24" Color="#000" StrokeWidth="1.7f" /></button></h2>
             <div>
                 <h4 class="card-title">Status da viagem: @statusViagem</h4>
@@ -42,10 +43,12 @@ else
                 @if (viagem.StatusViagem == StatusViagem.EmAndamento)
                 {
                     <div class="dropup-center dropup">
-                        <button class="btn-add-despesas round-button" title="Adicionar despesa" data-bs-toggle="dropdown" aria-expanded="false">
-                            <FeatherPlus Size="24" Color="#000" StrokeWidth="1.7f" />
-                        </button>
-                        <ul class="dropdown-menu">                                                        
+                        <AuthorizeView Roles="Funcionario">
+                            <button class="btn-add-despesas round-button" title="Adicionar despesa" data-bs-toggle="dropdown" aria-expanded="false">
+                                <FeatherPlus Size="24" Color="#000" StrokeWidth="1.7f" />
+                            </button>
+                        </AuthorizeView>
+                        <ul class="dropdown-menu">
                             <li><a class="dropdown-item">Alimentação</a></li>
                             <li><a class="dropdown-item">Deslocamento</a></li>
                             <li><a class="dropdown-item" href="/viagens/adicionar-despesa/@viagem.Id?TipoDespesa=Hospedagem">Hospedagem</a></li>
@@ -53,13 +56,12 @@ else
                         </ul>
                     </div>
                 }
-
             </div>
         </div>
     }
 
 }
-@code {
+@code { 
     private Dictionary<StatusViagem, string> OpacidadeStatus { get; set; } = new();
     protected override void OnInitialized()
     {

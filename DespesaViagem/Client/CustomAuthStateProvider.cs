@@ -37,6 +37,12 @@ namespace DespesaViagem.Client
                     await _localStorageService.RemoveItemAsync(tokenJwt);
                     identity = new ClaimsIdentity();
                 }
+
+                if (TokenExpirado(identity))
+                {
+                    await _localStorageService.RemoveItemAsync(tokenJwt);
+                    identity = new ClaimsIdentity();
+                }
             }
 
             ClaimsPrincipal usuario = new(identity);
@@ -62,10 +68,22 @@ namespace DespesaViagem.Client
             string payload = tokenJwt.Split('.')[1];
             byte[] jsonBytes = ParseBase64WithoutPadding(payload);
             Dictionary<string, object>? keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
-            
+
             var claims = keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString()));
 
             return claims;
+        }
+
+        private bool TokenExpirado(ClaimsIdentity identity)
+        {
+
+            var validadeToken = identity.FindFirst("exp");
+            if (validadeToken is null || !long.TryParse(validadeToken.Value, out long validade))
+            {
+                return true;
+            }
+
+            return DateTimeOffset.FromUnixTimeSeconds(validade) <= DateTime.UtcNow;
         }
     }
 }

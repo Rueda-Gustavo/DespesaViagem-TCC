@@ -21,6 +21,11 @@
     margin-bottom: 1rem;
 }
 
+.nome-funcionario {
+    margin-top: -40px;
+    position: absolute;
+}
+
 .card-title {
     font-size: 1.3rem;
     font-weight: bold;

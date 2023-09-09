@@ -56,3 +56,11 @@
     display: flex;
     justify-content: space-between;
 }
+
+.form-despesa {
+    padding: 1rem 1rem 1rem 1rem;
+}
+
+.container-despesas-detalhes{
+    max-width: 300vh;
+}

@@ -1,51 +1,86 @@
 ﻿@page "/viagens"
 @inject NavigationManager NavigationManager
 @inject IViagemService ViagemService
+@inject IGestorService GestorService
 @implements IDisposable
 @attribute [Authorize]
 
 <PageTitle>Viagens</PageTitle>
 
-<AuthorizeView>
-    <h3>Viagens</h3> <br />
 
+<h3>Viagens</h3>
+<br />
+<AuthorizeView Roles="Funcionario">
     <button class="btn btn-add-viagem" @onclick="AbrirFormulario">
         Adicionar<FeatherPlus Size="24" Color="#fff" StrokeWidth="2.0f" />
     </button>
-
-
-    <div class="d-flex card-container-viagens">
-        <div class="card-container" style="flex-wrap:wrap">
-            <ExibirViagens />
-        </div>
-
-        @if (FormularioAberto)
-        {
-            <div class="modal-overlay">
-                <h3 class="card-title">Adicionar Viagem</h3>
-                <div class="modal-content">
-                    <ViagemForm IdViagem="0" FormularioFechado="FecharFormulario" />
-                </div>
-            </div>
-        }
-    </div>
 </AuthorizeView>
 
-@code {
-    private IEnumerable<Viagem> TodasViagens { get; set; } = new List<Viagem>();
+<AuthorizeView Roles="Gestor, Administrador">
+    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Filtro
+    </button>
+    <ul class="dropdown-menu">
+        @foreach(var funcionario in Funcionarios)
+        {
+            <li><button @onclick="(() => ObterDespesasFuncionario(funcionario.Id))" class="btn btn-outline-secondary dropdown-item">@funcionario.NomeCompleto</button></li>
+        }        
+        <li class="dropdown-divider"></li>
+        <li><button @onclick="(() => ObterDespesasFuncionario(0))" class="btn btn-outline-secondary dropdown-item">Limpar filtro</button></li>
+    </ul>
+</AuthorizeView>
 
+<div class="d-flex card-container-viagens">
+    <div class="card-container" style="flex-wrap:wrap">
+        <ExibirViagens />
+    </div>
+
+    @if (FormularioAberto)
+    {
+        <div class="modal-overlay">
+            <h3 class="card-title">Adicionar Viagem</h3>
+            <div class="modal-content">
+                <ViagemForm IdViagem="0" FormularioFechado="FecharFormulario" />
+            </div>
+        </div>
+    }
+</div>
+
+
+@code {
+    private IEnumerable<Viagem> TodasViagens { get; set; } = new List<Viagem>();    
     private bool FormularioAberto = false;
+
+    private List<Funcionario> Funcionarios = new();
 
     protected override async Task OnInitializedAsync()
     {
+        await ObterListaFuncionarios();
+        //if (IdFuncionario == 0)
         await ViagemService.GetViagens();
-        ViagemService.ViagensChanged += StateHasChanged;
+            /*else
+            await ViagemService.GetViagens(IdFuncionario);*/
 
+        ViagemService.ViagensChanged += StateHasChanged;
     }
 
     public void Dispose()
     {
         ViagemService.ViagensChanged -= StateHasChanged;
+    }
+
+    private async Task ObterListaFuncionarios()
+    {
+        Funcionarios = await GestorService.ObterListaDeFuncionarios();
+        Console.WriteLine(Funcionarios.Count);        
+    }
+
+    private async Task ObterDespesasFuncionario(int idFuncionario)
+    {  
+        if(idFuncionario == 0)
+            await ViagemService.GetViagens();
+        else
+            await ViagemService.GetViagens(idFuncionario);
     }
 
     private void AbrirFormulario() => FormularioAberto = true;

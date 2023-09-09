@@ -300,8 +300,8 @@ namespace DespesaViagem.Server.Mapping
         {
             MapperConfiguration config = new(cfg =>
             {
-                cfg.CreateMap<Viagem, ViagemDTO>()
-                .ForMember(dst => dst.StatusViagem, opt => opt.MapFrom(src => src.StatusViagem.ToString()));
+                cfg.CreateMap<Viagem, ViagemDTO>();
+                //.ForMember(dst => dst.StatusViagem, opt => opt.MapFrom(src => src.StatusViagem.ToString()));
             });
 
             Mapper mapper = new(config);

@@ -8,9 +8,12 @@ namespace DespesaViagem.Services.Services
     public class GestorService : IGestorService
     {
         private readonly IGestorRepository _gestorRepository;
-        public GestorService(IGestorRepository GestorRepository)
+        private readonly IFuncionarioRepository _funcionarioRepository;
+
+        public GestorService(IGestorRepository GestorRepository, IFuncionarioRepository funcionarioRepository)
         {
             _gestorRepository = GestorRepository;
+            _funcionarioRepository = funcionarioRepository;
         }
 
         public async Task<Result<IEnumerable<Gestor>>> ObterTodos()
@@ -22,6 +25,16 @@ namespace DespesaViagem.Services.Services
 
 
             return Result.Success(gestores);
+        }
+
+        public async Task<Result<IEnumerable<Funcionario>>> ObterListaFuncionarios(int gestorId)
+        {
+            IEnumerable<Funcionario> funcionarios = await _funcionarioRepository.ObterFuncionariosPorGestor(gestorId);
+
+            if (!funcionarios.Any())
+                return Result.Failure<IEnumerable<Funcionario>>("Não foram encontrados funcionarios.");
+
+            return Result.Success(funcionarios);
         }
 
         public async Task<Result<Gestor>> ObterPorId(int id)

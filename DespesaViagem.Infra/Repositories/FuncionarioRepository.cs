@@ -28,6 +28,13 @@ namespace DespesaViagem.Infra.Repositories
                 .FirstOrDefaultAsync(f => f.Id == id);
         }
 
+        public async Task<IEnumerable<Funcionario>> ObterFuncionariosPorGestor(int gestorId)
+        {
+            return await _context.Funcionarios
+                .Include(f => f.Gestor)
+                .Where(f => f.Gestor.Id == gestorId).ToListAsync();
+        }
+
         public async Task<Funcionario> ObterPorCPF(string CPF)
         {
             return await _context.Funcionarios

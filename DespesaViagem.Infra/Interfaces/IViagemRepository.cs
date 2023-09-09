@@ -8,6 +8,8 @@ namespace DespesaViagem.Infra.Interfaces
     public interface IViagemRepository
     {
         Task<List<Viagem>> ObterTodos(int idFuncionario);
+        Task<List<Viagem>> ObterTodosGestor(int idGestor);
+
         Task<Viagem> ObterPorId(int id);
         Task<List<Viagem>> ObterPorFiltro(string filtro);
         //Diferente do método para obter todas as despesas da interface de IDespesasRepository, esse método irá retornar

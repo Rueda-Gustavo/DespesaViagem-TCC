@@ -19,19 +19,37 @@ namespace DespesaViagem.Services.Services
         private readonly IViagemRepository _viagemRepository;
         private readonly IDespesaRepository _despesaRepository;
         private readonly IFuncionarioRepository _funcionarioRepository;
-
+        private readonly IUsuarioRepository _usuarioRepository;
         private readonly float _despesasPorPagina = 6f;
         public ViagemService(IViagemRepository viagemRepository,
-            IDespesaRepository despesaRepository, IFuncionarioRepository funcionarioRepository)
+            IDespesaRepository despesaRepository, 
+            IFuncionarioRepository funcionarioRepository,
+            IUsuarioRepository usuarioRepository)
         {
             _viagemRepository = viagemRepository;
             _despesaRepository = despesaRepository;
             _funcionarioRepository = funcionarioRepository;
+            _usuarioRepository = usuarioRepository;
         }
 
-        public async Task<Result<List<ViagemDTO>>> ObterTodasViagens(int idFuncionario)
+        public async Task<Result<List<ViagemDTO>>> ObterTodasViagens(int idUsuario)
         {
-            List<Viagem> viagens = await _viagemRepository.ObterTodos(idFuncionario);
+            Usuario? usuario = await _usuarioRepository.ObterUsuario(idUsuario);
+
+            if (usuario is null)
+                return Result.Failure<List<ViagemDTO>>("Usuário não encontrado.");
+
+            List<Viagem> viagens;
+
+            if (usuario.TipoDeUsuario == RolesUsuario.Gestor)
+            {
+                viagens = await _viagemRepository.ObterTodosGestor(idUsuario);
+            }
+            else
+            {
+                viagens = await _viagemRepository.ObterTodos(idUsuario);
+            }
+            
 
             if (!viagens.Any())
                 return Result.Failure<List<ViagemDTO>>("Não existem viagens cadastradas.");
@@ -40,6 +58,7 @@ namespace DespesaViagem.Services.Services
 
             return Result.Success(viagensDTO);
         }
+
 
         public async Task<Result<ViagemDTO>> ObterViagemPorId(int idViagem)
         {

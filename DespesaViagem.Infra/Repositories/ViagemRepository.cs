@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DespesaViagem.Infra.Repositories
 {
-    public class ViagemRepository : IViagemRepository 
+    public class ViagemRepository : IViagemRepository
     {
         private readonly DespesaViagemContext _context;
 
@@ -25,6 +25,19 @@ namespace DespesaViagem.Infra.Repositories
                 .Include(d => d.Despesas)
                 .OrderByDescending(viagem => viagem.Id)
                 .ToListAsync();
+        }
+
+        //Esse método irá retornar todas as viagens dos funcionários que estão na equipe do gestor que está logado
+        public async Task<List<Viagem>> ObterTodosGestor(int idGestor)
+        {
+            return await _context.Viagens
+                .Include(f => f.Funcionario)
+                .Join(_context.Funcionarios,
+                viagem => viagem.IdFuncionario,
+                funcionario => funcionario.Id,
+                (viagem, funcionario) => new { Viagem = viagem, Funcionario = funcionario})
+                .Where(f => f.Funcionario.Gestor.Id == idGestor)
+                .Select(v => v.Viagem).ToListAsync();            
         }
         public async Task<Viagem> ObterPorId(int id)
         {

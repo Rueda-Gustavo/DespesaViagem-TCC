@@ -3,6 +3,8 @@ using DespesaViagem.Services.Interfaces;
 using DespesaViagem.Shared.Models.Core.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Numerics;
+using System.Security.Claims;
 
 namespace DespesaViagem.Server.Controllers
 {
@@ -24,9 +26,7 @@ namespace DespesaViagem.Server.Controllers
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
-            gestor = result.Value;
-
-            return Ok(gestor);
+            return Ok(result.Value);
         }
 
         [HttpPost]
@@ -35,11 +35,23 @@ namespace DespesaViagem.Server.Controllers
             Result<Gestor> result = await _gestorService.Adicionar(gestor);
 
             if (result.IsFailure)
-                return BadRequest(result.Error);
+                return BadRequest(result.Error);            
 
-            gestor = result.Value;
+            return Ok(result.Value);
+        }
 
-            return Ok(gestor);
+        [HttpGet("lista-funcionarios")]
+        public async Task<ActionResult> ObterListaFuncionario()
+        {
+            string idGestor = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
+
+            Result<IEnumerable<Funcionario>> result = await _gestorService.ObterListaFuncionarios(int.Parse(idGestor));
+
+            if (result.IsFailure)
+                return BadRequest(result.Error);            
+
+            return Ok(result.Value);
+
         }
     }
 }

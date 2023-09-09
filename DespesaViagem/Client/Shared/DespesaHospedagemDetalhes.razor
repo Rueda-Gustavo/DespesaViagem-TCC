@@ -1,5 +1,6 @@
 ﻿@inject IDespesasService<DespesaHospedagemDTO> DespesaHospedagemService
 @inject IEnderecoService EnderecoService
+@inject IJSRuntime JSRuntime
 @implements IDisposable
 
 @if (Despesa is null)
@@ -22,7 +23,7 @@ else
                     </h4>
                 </div>
                 <div class="card-body">
-                    <div class="card-body-item">
+                    <div class="card-body-item overflow-auto" style="max-height:150px;">
                         <strong>Descrição: </strong>@Despesa.DescricaoDespesa
                     </div>
                     <div class="card-body-item mt-2">
@@ -56,6 +57,8 @@ else
         </div>
     </div>
 }
+
+
 @if (FormularioAberto)
 {
     <div class="modal-overlay">
@@ -70,6 +73,8 @@ else
     public int IdDespesa { get; set; }
     [Parameter]
     public string StatusDaViagem { get; set; } = string.Empty;
+
+    private bool Adicionar = false;
 
     private DespesaHospedagemDTO Despesa { get; set; } = new();
     private Endereco Endereco { get; set; } = new();
@@ -105,5 +110,9 @@ else
 
         await EnderecoService.GetEndereco(Despesa.IdEndereco);
         Endereco = EnderecoService.Endereco;
+    }
+    private async Task HandleDespesa()
+    {
+        await JSRuntime.InvokeVoidAsync("alert", "Dados salvos com sucesso!");
     }
 }
