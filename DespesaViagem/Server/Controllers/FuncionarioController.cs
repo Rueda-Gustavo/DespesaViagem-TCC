@@ -24,14 +24,12 @@ namespace DespesaViagem.Server.Controllers
             Result<Funcionario> result = await _funcionarioService.Alterar(funcionario);
 
             if (result.IsFailure)
-                return BadRequest(result.Error);
+                return BadRequest(result.Error);            
 
-            funcionario = result.Value;
-
-            return Ok(funcionario);
+            return Ok(result.Value);
         }
 
-        [HttpPost("cadastrar")]
+        [HttpPost]
         public async Task<ActionResult> AdicionarFuncionario(CadastroUsuario request)
         {
             Result<Funcionario> result = await _funcionarioService.Adicionar(

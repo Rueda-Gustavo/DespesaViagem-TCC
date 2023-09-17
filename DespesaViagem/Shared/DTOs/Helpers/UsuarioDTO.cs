@@ -8,7 +8,7 @@ namespace DespesaViagem.Shared.DTOs.Helpers
         public string NomeCompleto { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
         public string CPF { get; set; } = string.Empty;        
-        public byte[] PasswordHash { get; set; }
-        public byte[] PasswordSalt { get; set; }        
+        //public byte[] PasswordHash { get; set; }
+        //public byte[] PasswordSalt { get; set; }        
     }
 }

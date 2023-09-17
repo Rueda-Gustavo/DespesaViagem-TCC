@@ -57,7 +57,7 @@ namespace DespesaViagem.Server.Controllers
             return Ok(despesas);
         }
 
-        [HttpPost("Novo")]
+        [HttpPost]
         public async Task<ActionResult> AdicionarDespesa(DespesaPassagemDTO despesaDTO)
         {
 
@@ -73,7 +73,7 @@ namespace DespesaViagem.Server.Controllers
             return Ok(despesa);
         }
 
-        [HttpPut("Atualizar")]
+        [HttpPut]
         public async Task<ActionResult> AtualizarDespesa(DespesaPassagemDTO despesaDTO)
         {
             DespesaPassagem despesa= MappingDTOs.ConverterDTO(despesaDTO);

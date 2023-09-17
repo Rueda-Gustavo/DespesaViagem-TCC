@@ -18,6 +18,7 @@ namespace DespesaViagem.Infra.Interfaces
         //Task<List<Despesa>> ObterDepesasPorPagina(int viagemId, int pagina, int despesasPorPagina);
         Task<List<Despesa>> ObterDespesasPorTipo(int viagemId, TiposDespesas tipoDespesa);
         Task<List<Viagem?>> ObterViagemPorStatus(StatusViagem statusViagem);
+        Task<List<Viagem?>> ObterViagemPorStatus(StatusViagem statusViagem, int idFuncionario);
         Task<List<DespesaPorCategoria>> ObterTotalDasDespesasPorCategoria(int viagemId);
         Task Insert(Viagem viagem);
         Task Update(Viagem viagem);

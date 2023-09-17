@@ -27,8 +27,10 @@ else
 
 
         <div class="card" style="opacity:@opacidade">
-            <small class="nome-funcionario">@viagem.Funcionario.NomeCompleto</small>
-            <h2 class="card-header title">@viagem.NomeViagem <button class="btn-exibir-despesas" title="Detalhes da viagem" @onclick="() => VerDetalhes(viagem.Id)"><FeatherList Size="24" Color="#000" StrokeWidth="1.7f" /></button></h2>
+            <AuthorizeView Roles="Gestor, Administrador">
+                <small class="nome-funcionario">@viagem.Funcionario.NomeCompleto</small>
+            </AuthorizeView>
+            <h2 class="card-header title">@viagem.NomeViagem <button class="btn-exibir-despesas" title="Detalhes da viagem" @onclick="() => VerDetalhesViagem(viagem.Id)"><FeatherList Size="24" Color="#000" StrokeWidth="1.7f" /></button></h2>
             <div>
                 <h4 class="card-title">Status da viagem: @statusViagem</h4>
                 <hr />
@@ -49,20 +51,35 @@ else
                             </button>
                         </AuthorizeView>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item">Alimentação</a></li>
-                            <li><a class="dropdown-item">Deslocamento</a></li>
-                            <li><a class="dropdown-item" href="/viagens/adicionar-despesa/@viagem.Id?TipoDespesa=Hospedagem">Hospedagem</a></li>
-                            <li><a class="dropdown-item">Passagem</a></li>
+                            <li><buttton class="dropdown-item" @onclick="(() => AbrirFormularioDespesa(TiposDespesas.Alimentação, viagem.Id))">Alimentação</buttton></li>
+                            <li><button class="dropdown-item" @onclick="(() => AbrirFormularioDespesa(TiposDespesas.Deslocamento, viagem.Id))">Deslocamento</button></li>
+                            <li><button class="dropdown-item" @onclick="(() => AbrirFormularioDespesa(TiposDespesas.Hospedagem, viagem.Id))">Hospedagem</button></li>
+                            <li><button class="dropdown-item" @onclick="(() => AbrirFormularioDespesa(TiposDespesas.Passagem, viagem.Id))">Passagem</button></li>
                         </ul>
                     </div>
                 }
             </div>
         </div>
     }
-
 }
-@code { 
+
+@if (FormularioDespesaAberto)
+{
+    <div class="modal-overlay" style="z-index:2000">
+        <div class="modal-content">
+            @DespesaForm
+        </div>
+    </div>
+}
+
+
+@code {
     private Dictionary<StatusViagem, string> OpacidadeStatus { get; set; } = new();
+
+    private bool FormularioDespesaAberto = false;
+
+    private RenderFragment? DespesaForm;
+
     protected override void OnInitialized()
     {
         ViagemService.ViagensChanged += StateHasChanged;
@@ -78,19 +95,66 @@ else
         ViagemService.ViagensChanged -= StateHasChanged;
     }
 
-    private void VerDetalhes(int idViagem)
+    private void VerDetalhesViagem(int idViagem)
     {
         /*
         if ((await ViagemService.ObterDespesas(idViagem)).Count() > 0)
             NavigationManager.NavigateTo($"/viagens/{idViagem}");
-        else
+            else
             await JSRuntime.InvokeVoidAsync("alert", "Adicione alguma despesa para a viagem primeiro!");
         */
+
         NavigationManager.NavigateTo($"/viagens/{idViagem}/1");
     }
 
+    /*    
     private void AdicionarDespesa(int idViagem)
-    {
+        {
         NavigationManager.NavigateTo($"/viagens/adicionar-despesa/{idViagem}");
     }
+    */
+
+    private void AbrirFormularioDespesa(TiposDespesas tipoDespesa, int idViagem)
+    {        
+        FormularioDespesaAberto = true;
+        switch (tipoDespesa)
+        {
+            case TiposDespesas.Hospedagem:
+                DespesaForm = ObterDespesaForm(typeof(DespesaHospedagemForm), idViagem, 0);
+                break;
+            case TiposDespesas.Deslocamento:
+                DespesaForm = ObterDespesaForm(typeof(DespesaDeslocamentoForm), idViagem, 0);
+                break;
+            case TiposDespesas.Alimentação:
+                DespesaForm = ObterDespesaForm(typeof(DespesaAlimentacaoForm), idViagem, 0);
+                break;
+            case TiposDespesas.Passagem:
+                DespesaForm = ObterDespesaForm(typeof(DespesaPassagemForm), idViagem, 0);
+                break;
+        }
+
+        FormularioDespesaAberto = true;
+    }
+
+    private void FecharFormularioDespesa()
+    {
+        FormularioDespesaAberto = false;
+        DespesaForm = null;
+    }
+    
+    public RenderFragment ObterDespesaForm(Type tipoDespesa, int idViagem, int idDespesa)
+    {
+        return builder =>
+        {
+            builder.OpenComponent(0, tipoDespesa);
+            builder.AddAttribute(1, "IdDespesa", idDespesa);
+            builder.AddAttribute(2, "IdViagem", idViagem);
+            builder.AddAttribute(3, "FormularioFechado", EventCallback.Factory.Create(this, () =>
+            {
+                FecharFormularioDespesa();
+            }));
+            builder.CloseComponent();
+        };
+    }
+    
 }

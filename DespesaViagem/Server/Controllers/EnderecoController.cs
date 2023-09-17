@@ -55,7 +55,7 @@ namespace DespesaViagem.Server.Controllers
             return Ok(endereco);
         }
 
-        [HttpPut("Atualizar")]
+        [HttpPut]
         public async Task<ActionResult> AlterarEndereco([FromBody] Endereco endereco)
         {
             Result<Endereco> result = await _enderecoService.AlterarEndereco(endereco);
@@ -68,7 +68,7 @@ namespace DespesaViagem.Server.Controllers
             return Ok(endereco);
         }
 
-        [HttpPost("Novo")]
+        [HttpPost]
         public async Task<ActionResult> AdicionarEndereco([FromBody] Endereco endereco)
         {
             Result<Endereco> result = await _enderecoService.AdicionarEndereco(endereco);
@@ -81,7 +81,7 @@ namespace DespesaViagem.Server.Controllers
             return Ok(endereco);
         }
 
-        [HttpDelete("Delete")]
+        [HttpDelete]
         public async Task<ActionResult> ExcluirEndereco(int id)
         {
             Result<Endereco> result = await _enderecoService.RemoverEndereco(id);

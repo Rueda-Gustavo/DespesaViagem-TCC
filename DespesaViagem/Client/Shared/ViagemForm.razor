@@ -46,27 +46,32 @@
         <div class="form-group row">
             <div class="col">
                 <label for="Nome">Nome</label>
-                <input id="Nome" class="form-control" @bind-value="Funcionario.NomeCompleto" readonly />
+                <input id="Nome" class="form-control" @bind-value="Viagem.Funcionario.NomeCompleto" readonly />
             </div>            
             <div class="form-group row">
 
                 <div class="col">
                 <label for="Username">Username</label>
-                    <input id="Username" class="form-control" @bind-value="Funcionario.Username" readonly />
+                    <input id="Username" class="form-control" @bind-value="Viagem.Funcionario.Username" readonly />
             </div>
                 <div class="col">
                 <label for="CPF">CPF</label>
-                    <input id="CPF" class="form-control" @bind-value="Funcionario.CPF" readonly />
+                    <input id="CPF" class="form-control" @bind-value="Viagem.Funcionario.CPF" readonly />
             </div>
                 <div class="col">
                 <label for="Matricula">Matrícula</label>
-                    <input id="Matricula" class="form-control" @bind-value="Funcionario.Matricula" readonly />
+                    <input id="Matricula" class="form-control" @bind-value="Viagem.Funcionario.Matricula" readonly />
             </div>
             </div>
         </div>
-        <button type="submit" class="btn btn-primary">
-            <span>@AdicionarOuEditar</span>                                                            
-        </button>
+        <div style="float:right;">
+            <button type="button" class="btn btn-secondary mx-2" @onclick="FecharFormulario">
+                <span>Cancelar</span>
+            </button>
+            <button type="submit" class="btn btn-primary">
+                <span>@AdicionarOuEditar</span>
+            </button>
+        </div>
     </form>
 
 </div>
@@ -79,7 +84,7 @@
     public EventCallback FormularioFechado { get; set; }
 
     private ViagemDTO Viagem { get; set; } = new();
-    private Funcionario Funcionario = new();
+    //private Funcionario Funcionario = new();
     private bool Adicionar = true;
     private string AdicionarOuEditar = "Adicionar";
 
@@ -90,7 +95,9 @@
 
         _ = int.TryParse(claimNameIdentifier, out int idFuncionario);
         Console.WriteLine("Id do usuário logado: {0}", idFuncionario);
-        Funcionario = await ViagemService.GetFuncionario(idFuncionario);         
+        
+        Viagem.IdFuncionario = idFuncionario;
+        Viagem.Funcionario = await ViagemService.GetFuncionario(idFuncionario);
 
         ViagemService.ViagensChanged += StateHasChanged;
         if (IdViagem > 0)
@@ -115,13 +122,16 @@
     private async Task GetViagem()
     {
         Viagem = await ViagemService.GetViagem(IdViagem);
-        Funcionario = await ViagemService.GetFuncionario(Viagem.IdFuncionario);
+        //Funcionario = await ViagemService.GetFuncionario(Viagem.IdFuncionario);
     }
 
     private async Task HandleViagem()
     {
+        if (Adicionar)
+            await ViagemService.AdicionarViagem(Viagem);
+        else
+            await ViagemService.AtualizarViagem(Viagem);
         await JSRuntime.InvokeVoidAsync("alert", "Dados salvos com sucesso!");
         await FecharFormulario();
     }
-
 }

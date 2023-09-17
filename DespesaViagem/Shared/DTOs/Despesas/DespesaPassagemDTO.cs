@@ -8,7 +8,7 @@ namespace DespesaViagem.Shared.DTOs.Despesas
         public string Companhia { get; set; } = string.Empty;
         public string Origem { get; set; } = string.Empty;
         public string Destino { get; set; } = string.Empty;
-        public DateTime DataHoraEmbarque { get; set; }
+        public DateTime DataHoraEmbarque { get; set; } = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
         public decimal Preco { get; set; }
     }
 }

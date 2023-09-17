@@ -1,0 +1,120 @@
+﻿@inject IDespesasService<DespesaAlimentacaoDTO> DespesaAlimentacaoService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+<PageTitle>@AdicionarOuEditar - Despesa com Alimentação</PageTitle>
+
+
+<div class="modal-header">
+    <h5 class="modal-title">@AdicionarOuEditar Despesa</h5>
+    <button type="button" class="close" @onclick="FecharFormulario">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+    <form @onsubmit="HandleDespesa">
+        <div class="form-group row">
+            <div class="col">
+                <label for="NomeDespesa">Nome da Despesa</label>
+                <input id="NomeDespesa" class="form-control" @bind="Despesa.NomeDespesa" />
+            </div>
+            <div class="col-auto">
+                <label for="DataDespesa">Data da Despesa</label>
+                <input id="DataDespesa" type="datetime-local" style="max-width:12rem" class="form-control" @bind="Despesa.DataDespesa" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col">
+                <label for="DescricaoDespesa">Descrição da Despesa</label>
+                <textarea id="DescricaoDespesa" class="form-control" @bind="Despesa.DescricaoDespesa" />
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col">
+                <label for="NomeEstabelecimento">Nome do estabelecimento</label>
+                <input id="NomeEstabelecimento" class="form-control" @bind="Despesa.NomeEstabelecimento" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-auto">
+                <label for="CNPJ">CNPJ</label>
+                <input id="CNPJ" class="form-control" @bind="Despesa.CNPJ" />
+            </div>
+            <div class="col-auto">
+                <label for="ValorRefeicao">Valor da Refeição</label>
+                <input id="ValorRefeicao" class="form-control" type="number" min="0.00" max="10000.00" step="0.01" style="max-width:5rem" @bind="Despesa.ValorRefeicao" />
+            </div>
+        </div>
+        <div style="float:right;">
+            <button type="button" class="btn btn-secondary mx-2" @onclick="FecharFormulario">
+                <span>Cancelar</span>
+            </button>
+            <button type="submit" class="btn btn-primary">
+                <span>@AdicionarOuEditar</span>
+            </button>
+        </div>
+    </form>
+</div>
+@code {
+    [Parameter]
+    public int IdDespesa { get; set; }
+    [Parameter]
+    public int IdViagem { get; set; }
+    private bool Adicionar = true;
+    private string AdicionarOuEditar = "Adicionar";
+
+
+    private DespesaAlimentacaoDTO Despesa { get; set; } = new();
+
+    [Parameter]
+    public EventCallback FormularioFechado { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        DespesaAlimentacaoService.DespesasChanged += StateHasChanged;
+        if (IdDespesa > 0)
+        {
+            Adicionar = false;
+            await GetDespesaHospedagem();
+        }
+
+        if (!Adicionar) AdicionarOuEditar = "Editar";
+    }
+
+    public void Dispose()
+    {
+        DespesaAlimentacaoService.DespesasChanged -= StateHasChanged;
+    }
+
+    private async Task FecharFormulario()
+    {
+        await FormularioFechado.InvokeAsync();
+    }
+
+    private async Task GetDespesaHospedagem()
+    {
+        var response = await DespesaAlimentacaoService.GetDespesa(IdDespesa);
+        if (!response.IsSuccess)
+            await JSRuntime.InvokeVoidAsync("alert", $"{response.Error}");
+
+        Despesa = response.Value;
+
+        //await EnderecoService.GetEndereco(Despesa.IdEndereco);
+        //Endereco = EnderecoService.Endereco;
+    }
+
+    private async Task HandleDespesa()
+    {
+        Despesa.IdViagem = IdViagem;
+        if (IdDespesa > 0)
+            await DespesaAlimentacaoService.AtualizarDespesa(Despesa);
+        else
+            await DespesaAlimentacaoService.AdicionarDespesa(Despesa);
+
+        await JSRuntime.InvokeVoidAsync("alert", $"Dados salvos com sucesso!\nIdViagem: {IdViagem}");
+        await FecharFormulario();
+    }
+}

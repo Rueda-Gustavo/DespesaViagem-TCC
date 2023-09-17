@@ -1,5 +1,6 @@
 ﻿using DespesaViagem.Shared.Models.Core.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace DespesaViagem.Shared.Models.Core.Helpers
 {
@@ -14,7 +15,9 @@ namespace DespesaViagem.Shared.Models.Core.Helpers
         public string CPF { get; set; } = string.Empty;
         [Column(TypeName = "varchar(20)")]
         public RolesUsuario TipoDeUsuario { get; protected set; }
+        
         public byte[] PasswordHash { get; set;}
+
         public byte[] PasswordSalt { get; set; }
         public DateTime DataCriacao { get; set; } = DateTime.Now;
     }

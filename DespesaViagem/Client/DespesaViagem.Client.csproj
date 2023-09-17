@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Shared\DespesaHospedagemForm.razor.css" />
+    <None Remove="Shared\DespesasForm\DespesaHospedagemForm.razor.css" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Shared\DespesaHospedagemForm.razor.css" />
+    <Content Include="Shared\DespesasForm\DespesaHospedagemForm.razor.css" />
   </ItemGroup>
 
   <ItemGroup>

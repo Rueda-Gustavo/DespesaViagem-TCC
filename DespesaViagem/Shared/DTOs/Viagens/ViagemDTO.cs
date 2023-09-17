@@ -8,16 +8,15 @@ namespace DespesaViagem.Shared.DTOs.Viagens
 {
     public class ViagemDTO
     {
-        public int Id { get; set; } = 0;
+        public int Id { get; set; } //= 0;
         public string NomeViagem { get; set; } = string.Empty;
         public string DescricaoViagem { get; set; } = string.Empty;
         public decimal Adiantamento { get; set; }
-        public DateTime DataInicial { get; set; }
-        public DateTime DataFinal { get; set; }
+        public DateTime DataInicial { get; set; } = DateTime.UtcNow;
+        public DateTime DataFinal { get; set; } = DateTime.UtcNow;
         public decimal TotalDespesas { get; set; }        
-        public StatusViagem StatusViagem { get; set; }
-        //[JsonIgnore]
-        public Funcionario Funcionario { get; set; } = new();
+        public StatusViagem StatusViagem { get; set; }        
+        public FuncionarioDTO Funcionario { get; set; } = new();
         public int IdFuncionario { get; set; }
     }
 }

@@ -41,12 +41,12 @@
                 {
                     CoresBordasDespesas.TryGetValue(despesa.TipoDespesa, out string? corBordaDespesa);
                     CoresFundosDespesas.TryGetValue(despesa.TipoDespesa, out string? corFundoDespesa);
-                    string nome = despesa.NomeDespesa.Length > 34 ? despesa.NomeDespesa.Substring(0, 34) + "..." : despesa.NomeDespesa;
+                    string nome = despesa.NomeDespesa.Length > 26 ? despesa.NomeDespesa.Substring(0, 26) + "..." : despesa.NomeDespesa;
                     string descricao = despesa.DescricaoDespesa.Length > 38 ? despesa.DescricaoDespesa.Substring(0, 38) + "..." : despesa.DescricaoDespesa;
 
                     <div class="list-group m-2 despesa-box-shadow">
                         <!--<a href="/viagens/@IdViagem/DetalhesDespesa/@despesa.Id?TipoDespesa=@despesa.TipoDespesa.ToString()" class="list-group-item list-group-item-action" aria-current="true" style="width: 360px; border: 2px solid @corBordaDespesa; background-color:@corFundoDespesa">-->
-                        <button @onclick="(() => DetalhesDaDespesa(despesa.TipoDespesa.ToString(), despesa.Id))" class="list-group-item list-group-item-action" aria-current="true" style="width: 360px; border: 2px solid @corBordaDespesa; background-color:@corFundoDespesa">
+                        <button @onclick="(() => AbrirFormularioDespesa(despesa.TipoDespesa, despesa.Id))" class="list-group-item list-group-item-action" aria-current="true" style="width: 360px; border: 2px solid @corBordaDespesa; background-color:@corFundoDespesa">
                             <small style="opacity: 70%">@despesa.TipoDespesa.ToString()</small>
                             <div class="d-flex w-100 justify-content-between">
                                 <h5 class="mb-1">@nome</h5>
@@ -83,7 +83,10 @@
                         <div class="row">
                             <div class="card-viagem m-2">
                                 <AuthorizeView Roles="Funcionario">
-                                    <button class="btn pt-0 btn-edit-viagem" @onclick="AbrirFormulario"><FeatherEdit Size="24" Color="#000" StrokeWidth="1.9f" /></button>
+                                    @if (Viagem.StatusViagem == StatusViagem.Aberta || Viagem.StatusViagem == StatusViagem.EmAndamento)
+                                    {
+                                        <button class="btn pt-0 btn-edit-viagem" @onclick="AbrirFormularioViagem"><FeatherEdit Size="24" Color="#000" StrokeWidth="1.9f" /></button>
+                                    }
                                 </AuthorizeView>
                                 <div class="card-header-viagem">
                                     <h5 class="card-title-viagem">@Viagem.NomeViagem</h5>
@@ -92,9 +95,9 @@
                                     <span class="status-viagem">Viagem: @Status</span>
                                     <p class="card-text">Descrição: @Viagem.DescricaoViagem</p>
                                     <ul>
-                                        <li class="card-text">Funcionário: @Funcionario.NomeCompleto</li>
-                                        <li class="card-text">Matrícula: @Funcionario.Matricula</li>
-                                        <li class="card-text">CPF: @Funcionario.CPF</li>
+                                        <li class="card-text">Funcionário: @Viagem.Funcionario.NomeCompleto</li>
+                                        <li class="card-text">Matrícula: @Viagem.Funcionario.Matricula</li>
+                                        <li class="card-text">CPF: @Viagem.Funcionario.CPF</li>
                                     </ul>
                                     <span class="card-text">Período: @Viagem.DataInicial.ToString("dd/MM/yyyy") até @Viagem.DataFinal.ToString("dd/MM/yyyy")</span>
 
@@ -110,7 +113,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="card-viagem m-2" type="button" data-bs-toggle="collapse" data-bs-target="#resumoDespesas" aria-expanded="false" aria-controls="resumoDespesas" @onclick="ToggleMenuResumoDespesas">
+                            <div class="card-viagem m-2" type="button" data-bs-toggle="collapse" data-bs-target="#resumoDespesas" aria-expanded="false" aria-controls="resumoDespesas">
                                 <div class="accordion accordion-flush" id="accordionTotalDespesasPorCategoria">
                                     <div class="accordion-item">
                                         <h2 class="accordion-header">
@@ -144,13 +147,21 @@
 </div>
 
 
-
-
-@if (FormularioAberto)
+@if (FormularioViagemAberto)
 {
     <div class="modal-overlay" style="z-index:2000">
         <div class="modal-content">
-            <ViagemForm IdViagem="IdViagem" FormularioFechado="FecharFormulario" />
+            <ViagemForm IdViagem="IdViagem" FormularioFechado="FecharFormularioViagem" />
+        </div>
+    </div>
+}
+
+
+@if (FormularioDespesaAberto)
+{
+    <div class="modal-overlay" style="z-index:2000">
+        <div class="modal-content">
+            @DespesaForm
         </div>
     </div>
 }
@@ -164,7 +175,7 @@
     [Parameter]
     public string? TipoDespesa { get; set; } = null;
     private ViagemDTO Viagem { get; set; } = new();
-    private Funcionario Funcionario { get; set; } = new();
+    //private Funcionario Funcionario { get; set; } = new();
     //private List<DespesaDTO> Despesas { get; set; } = new();
     private string Status { get; set; } = string.Empty;
     //private int TotalDePaginas { get; set; } = 0;
@@ -174,10 +185,12 @@
     private List<DespesaPorCategoria> DespesasPorCategoria = new();
     private DespesasPorPagina DespesasPorPagina = new() { PaginaAtual = 1, QuantidadeDePaginas = 0 };
 
-    private bool FormularioAberto = false;
-    private bool ResumoDespesasAberto = false;
+    private bool FormularioViagemAberto = false;
+    private bool FormularioDespesaAberto = false;
 
     private decimal Subtotal { get; set; } = 0m;
+
+    private RenderFragment? DespesaForm;
 
     protected override async Task OnInitializedAsync()
     {
@@ -189,13 +202,15 @@
             Status = "Em andamento";
         else
             Status = Viagem.StatusViagem.ToString();
-
+        
         await ObterDespesas();
         await ObterFuncionario();
         ObterSubtotal();
-        PopularDictionaryCores();
         DespesasPorCategoria = await ViagemService.ObterTotalDespesasPorCategoria(IdViagem);
+
+        PopularDictionaries();
     }
+
     protected override async Task OnParametersSetAsync()
     {
         await ObterDespesas();
@@ -222,13 +237,11 @@
         {
             DespesasPorPagina = await ViagemService.ObterDespesasPorPagina(IdViagem, Pagina);
         }
-
-
     }
 
     private async Task ObterFuncionario()
     {
-        Funcionario = await ViagemService.GetFuncionario(Viagem.IdFuncionario);
+        Viagem.Funcionario = await ViagemService.GetFuncionario(Viagem.IdFuncionario);
     }
 
     private void ObterSubtotal()
@@ -236,12 +249,11 @@
         Subtotal = Viagem.Adiantamento - Viagem.TotalDespesas;
     }
 
-    private void AbrirFormulario() => FormularioAberto = true;
-    private void FecharFormulario() => FormularioAberto = false;
-
-    private void ToggleMenuResumoDespesas()
+    private void AbrirFormularioViagem() => FormularioViagemAberto = true;
+    private async Task FecharFormularioViagem()
     {
-        ResumoDespesasAberto = !ResumoDespesasAberto;
+        FormularioViagemAberto = false;
+        Viagem = await ViagemService.GetViagem(IdViagem);        
     }
 
     private void HandleViagem() => Console.WriteLine("Teste viagem.");
@@ -250,14 +262,66 @@
     {
         NavigationManager.NavigateTo($"/viagens/{IdViagem}/{Pagina}/");
     }
+    /*
+    private void AbrirFormularioDespesa(int idDespesa, TiposDespesas tipoDespesa)
+                {
 
-    private void DetalhesDaDespesa(string tipoDespesa, int idDespesa)
-    {
-        Console.WriteLine(tipoDespesa);
-        NavigationManager.NavigateTo($"/viagens/{IdViagem}/DetalhesDespesa/{idDespesa}?TipoDespesa={tipoDespesa}");
+                switch (tipoDespesa)
+                {
+                case TiposDespesas.Hospedagem:
+                DespesaForm = ObterDespesaForm(idDespesa, typeof(DespesaHospedagemForm), IdViagem);
+        break;
+        }
+        //Console.WriteLine(tipoDespesa);
+        FormularioDespesaAberto = true;
+        //NavigationManager.NavigateTo($"/viagens/{IdViagem}/DetalhesDespesa/{idDespesa}?TipoDespesa={tipoDespesa}");
+    }
+    */
+    public void AbrirFormularioDespesa(TiposDespesas tipoDespesa, int idDespesa)
+    {        
+        switch (tipoDespesa)
+        {
+            case TiposDespesas.Hospedagem:
+                DespesaForm = ObterDespesaForm(typeof(DespesaHospedagemForm), IdViagem, idDespesa);
+                break;
+            case TiposDespesas.Deslocamento:
+                DespesaForm = ObterDespesaForm(typeof(DespesaDeslocamentoForm), IdViagem, idDespesa);
+                break;
+            case TiposDespesas.Alimentação:
+                DespesaForm = ObterDespesaForm(typeof(DespesaAlimentacaoForm), IdViagem, idDespesa);
+                break;
+            case TiposDespesas.Passagem:
+                DespesaForm = ObterDespesaForm(typeof(DespesaPassagemForm), IdViagem, idDespesa);
+                break;
+        }       
+
+        FormularioDespesaAberto = true;        
     }
 
-    private void PopularDictionaryCores()
+    public async Task FecharFormularioDespesa()
+    {        
+        FormularioDespesaAberto = false;
+        await ObterDespesas();
+        DespesaForm = null;
+    }
+
+    public RenderFragment ObterDespesaForm(Type tipoDespesa, int idViagem, int idDespesa)
+    {
+        return builder =>
+        {
+            builder.OpenComponent(0, tipoDespesa);
+            builder.AddAttribute(1, "IdDespesa", idDespesa);
+            builder.AddAttribute(2, "IdViagem", idViagem);
+            builder.AddAttribute(3, "FormularioFechado", EventCallback.Factory.Create(this, async () =>
+            {
+                await FecharFormularioDespesa();
+            }));
+            builder.CloseComponent();
+        };
+    }
+
+
+    private void PopularDictionaries()
     {
         CoresBordasDespesas.Add(TiposDespesas.Alimentação, "#27ea11");
         CoresBordasDespesas.Add(TiposDespesas.Deslocamento, "#f8b410");

@@ -1,5 +1,6 @@
 ﻿using DespesaViagem.Infra.Database;
 using DespesaViagem.Infra.Interfaces;
+using DespesaViagem.Shared.Models.Core.Helpers;
 using DespesaViagem.Shared.Models.Despesas;
 using Microsoft.EntityFrameworkCore;
 
@@ -47,7 +48,12 @@ namespace DespesaViagem.Infra.Repositories
 
             if (despesaNaMemoria != null)
                 _context.Entry(despesaNaMemoria).State = EntityState.Detached;
-            
+
+            var enderecoNaMemoria = _context.Set<Endereco>().Find(despesa.IdEndereco);
+
+            if (enderecoNaMemoria != null)
+                _context.Entry(enderecoNaMemoria).State = EntityState.Detached;
+
             _context.Update(despesa);
             await _context.SaveChangesAsync();
         }

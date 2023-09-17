@@ -15,7 +15,7 @@ namespace DespesaViagem.Client.Services.Services
 
         public async Task<ServiceResponse<int>> Cadastrar(CadastroUsuario request)
         {
-            var result = await _http.PostAsJsonAsync("api/funcionario/cadastrar", request);
+            var result = await _http.PostAsJsonAsync("api/funcionario", request);
             Console.WriteLine("Sucesso - FuncionarioService - Client");
 
             ServiceResponse<int> response = await result.Content.ReadFromJsonAsync<ServiceResponse<int>>() ?? new() { Sucesso = false } ;

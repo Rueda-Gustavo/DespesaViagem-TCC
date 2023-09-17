@@ -1,0 +1,125 @@
+﻿@inject IDespesasService<DespesaDeslocamentoDTO> DespesaDeslocamentoService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+<PageTitle>@AdicionarOuEditar - Despesa com Deslocamento</PageTitle>
+
+
+<div class="modal-header">
+    <h5 class="modal-title">@AdicionarOuEditar Despesa</h5>
+    <button type="button" class="close" @onclick="FecharFormulario">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+    <form @onsubmit="HandleDespesa">
+        <div class="form-group row">
+            <div class="col">
+                <label for="NomeDespesa">Nome da Despesa</label>
+                <input id="NomeDespesa" class="form-control" @bind="Despesa.NomeDespesa" />
+            </div>
+            <div class="col-auto">
+                <label for="DataDespesa">Data da Despesa</label>
+                <input id="DataDespesa" type="datetime-local" style="max-width:12rem" class="form-control" @bind="Despesa.DataDespesa" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col">
+                <label for="DescricaoDespesa">Descrição da Despesa</label>
+                <textarea id="DescricaoDespesa" class="form-control" @bind="Despesa.DescricaoDespesa" />
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-auto">
+                <label for="Placa">Placa</label>
+                <input id="Placa" class="form-control" style="max-width:6rem" @bind="Despesa.Placa" />
+            </div>
+            <div class="col">
+                <label for="Modelo">Modelo</label>
+                <input id="Modelo" class="form-control" @bind="Despesa.Modelo" />
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-auto">
+                <label for="Quilometragem">Distância (Km)</label>
+                <input id="Quilometragem" class="form-control" style="max-width:5rem" @bind="Despesa.Quilometragem" />
+            </div>
+            <div class="col-auto">
+                <label for="ValorPorQuilometro">Valor por Km</label>
+                <input id="ValorPorQuilometro" class="form-control" type="number" min="0.00" max="10000.00" step="0.01" style="max-width:5rem" @bind="Despesa.ValorPorQuilometro" />
+            </div>
+        </div>
+        <div style="float:right;">
+            <button type="button" class="btn btn-secondary mx-2" @onclick="FecharFormulario">
+                <span>Cancelar</span>
+            </button>
+            <button type="submit" class="btn btn-primary">
+                <span>@AdicionarOuEditar</span>
+            </button>
+        </div>
+    </form>
+</div>
+@code {
+    [Parameter]
+    public int IdDespesa { get; set; }
+    [Parameter]
+    public int IdViagem { get; set; }
+    private bool Adicionar = true;
+    private string AdicionarOuEditar = "Adicionar";
+
+
+    private DespesaDeslocamentoDTO Despesa { get; set; } = new();
+
+    [Parameter]
+    public EventCallback FormularioFechado { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        DespesaDeslocamentoService.DespesasChanged += StateHasChanged;
+        if (IdDespesa > 0)
+        {
+            Adicionar = false;
+            await GetDespesaHospedagem();
+        }
+
+        if (!Adicionar) AdicionarOuEditar = "Editar";
+    }
+
+    public void Dispose()
+    {
+        DespesaDeslocamentoService.DespesasChanged -= StateHasChanged;
+    }
+
+    private async Task FecharFormulario()
+    {
+        await FormularioFechado.InvokeAsync();
+    }
+
+    private async Task GetDespesaHospedagem()
+    {
+        var response = await DespesaDeslocamentoService.GetDespesa(IdDespesa);
+        if (!response.IsSuccess)
+            await JSRuntime.InvokeVoidAsync("alert", $"{response.Error}");
+
+        Despesa = response.Value;
+
+        //await EnderecoService.GetEndereco(Despesa.IdEndereco);
+        //Endereco = EnderecoService.Endereco;
+    }
+
+    private async Task HandleDespesa()
+    {
+        Despesa.IdViagem = IdViagem;
+        if (IdDespesa > 0)
+            await DespesaDeslocamentoService.AtualizarDespesa(Despesa);
+        else
+            await DespesaDeslocamentoService.AdicionarDespesa(Despesa);
+
+        await JSRuntime.InvokeVoidAsync("alert", $"Dados salvos com sucesso!\nIdViagem: {IdViagem}");
+        await FecharFormulario();
+    }
+}

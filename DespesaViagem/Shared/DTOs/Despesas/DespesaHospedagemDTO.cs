@@ -1,4 +1,5 @@
 ﻿using DespesaViagem.Shared.Models.Core.Enums;
+using DespesaViagem.Shared.Models.Core.Helpers;
 using System.Text.Json.Serialization;
 
 namespace DespesaViagem.Shared.DTOs.Despesas
@@ -15,6 +16,7 @@ namespace DespesaViagem.Shared.DTOs.Despesas
         //public int IdViagem { get; set; }
         public int QuantidadeDias { get; set; }
         public decimal ValorDiaria { get; set; }
+        public Endereco Endereco { get; set; } = new();
         public int IdEndereco { get; set; }
     }
 }

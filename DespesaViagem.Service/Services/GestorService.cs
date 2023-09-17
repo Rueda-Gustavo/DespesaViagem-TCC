@@ -10,9 +10,9 @@ namespace DespesaViagem.Services.Services
         private readonly IGestorRepository _gestorRepository;
         private readonly IFuncionarioRepository _funcionarioRepository;
 
-        public GestorService(IGestorRepository GestorRepository, IFuncionarioRepository funcionarioRepository)
+        public GestorService(IGestorRepository gestorRepository, IFuncionarioRepository funcionarioRepository)
         {
-            _gestorRepository = GestorRepository;
+            _gestorRepository = gestorRepository;
             _funcionarioRepository = funcionarioRepository;
         }
 

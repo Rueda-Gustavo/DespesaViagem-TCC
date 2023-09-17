@@ -163,7 +163,7 @@ namespace DespesaViagem.Services.Services
         }
 
 
-        public async Task<Result<ViagemDTO>> AdicionarViagem(ViagemDTO viagemDTO)
+        public async Task<Result<ViagemDTO>> AdicionarViagem(ViagemDTO viagemDTO, int idFuncionario)
         {
             viagemDTO.StatusViagem = StatusViagem.Aberta;
             Viagem viagem = MappingDTOs.ConverterDTO(viagemDTO);
@@ -171,7 +171,7 @@ namespace DespesaViagem.Services.Services
             if (viagem is null || viagemDTO.Id != 0) //Caso o Id não seja 0 irá dar erro na hora de adicionar a viagem
                 return Result.Failure<ViagemDTO>("Nenhuma viagem informada.");
 
-            if ((await ObterViagemAbertaOuEmAndamento()) is not null)
+            if ((await ObterViagemAbertaOuEmAndamento(idFuncionario)) is not null)
                 return Result.Failure<ViagemDTO>("Já existe uma viagem aberta ou em andamento.");
 
             viagem.VerificarDataInicialeFinal();
@@ -188,20 +188,22 @@ namespace DespesaViagem.Services.Services
             return Result.Success(viagemDTO);
         }
 
-        public async Task<Result<ViagemDTO>> AlterarViagem(ViagemDTO viagemDTO)
+        public async Task<Result<ViagemDTO>> AlterarViagem(ViagemDTO viagemDTO, int idFuncionario)
         {
             Viagem viagem = MappingDTOs.ConverterDTO(viagemDTO);
 
             if (viagem is null || viagemDTO.Id <= 0)
                 return Result.Failure<ViagemDTO>("Nenhuma viagem informada.");
 
-            Viagem? viagemAuxiliar = await ObterViagemAbertaOuEmAndamento();
+            Viagem? viagemAuxiliar = await ObterViagemAbertaOuEmAndamento(idFuncionario);
 
             if (viagemAuxiliar is null || viagemAuxiliar.Id != viagem.Id)
                 return Result.Failure<ViagemDTO>("Nenhuma viagem em Aberto ou Em Andamento, ou a viagem informada está Cancelada ou Encerrada.");
 
             if (viagemAuxiliar.Adiantamento != viagem.Adiantamento && viagemAuxiliar.StatusViagem != StatusViagem.Aberta)
                 return Result.Failure<ViagemDTO>("O Adiantamento incial não pode ser modificado.");
+
+            viagem.VerificarDataInicialeFinal();
 
             viagem.AdicionarFuncionario(await _funcionarioRepository.ObterPorId(viagemDTO.IdFuncionario));
 
@@ -235,9 +237,9 @@ namespace DespesaViagem.Services.Services
             return Result.Success(prestacaoDeContas);
         }
 
-        public async Task<Result<ViagemDTO>> IniciarViagem()
+        public async Task<Result<ViagemDTO>> IniciarViagem(int idFuncionario)
         {
-            var viagemAberta = await _viagemRepository.ObterViagemPorStatus(StatusViagem.Aberta);
+            var viagemAberta = await _viagemRepository.ObterViagemPorStatus(StatusViagem.Aberta, idFuncionario);
 
             if (viagemAberta is null || !viagemAberta.Any())
                 return Result.Failure<ViagemDTO>("Não há nenhuma viagem Aberta");
@@ -251,9 +253,9 @@ namespace DespesaViagem.Services.Services
             return Result.Success(viagemDTO);
         }
 
-        public async Task<Result<ViagemDTO>> EncerrarViagem()
+        public async Task<Result<ViagemDTO>> EncerrarViagem(int idFuncionario)
         {
-            Viagem? viagem = await ObterViagemAbertaOuEmAndamento();
+            Viagem? viagem = await ObterViagemAbertaOuEmAndamento(idFuncionario);
 
             if (viagem is null) return Result.Failure<ViagemDTO>("Nenhuma viagem Em Andamento ou Aberta.");
 
@@ -269,9 +271,9 @@ namespace DespesaViagem.Services.Services
             return Result.Success(viagemDTO);
         }
 
-        public async Task<Result<ViagemDTO>> CancelarViagem()
+        public async Task<Result<ViagemDTO>> CancelarViagem(int idFuncionario)
         {
-            Viagem? viagem = await ObterViagemAbertaOuEmAndamento();
+            Viagem? viagem = await ObterViagemAbertaOuEmAndamento(idFuncionario);
 
             if (viagem is null) return Result.Failure<ViagemDTO>("Nenhuma viagem Em Andamento ou Aberta.");
 
@@ -288,15 +290,14 @@ namespace DespesaViagem.Services.Services
         }
 
         //Verifica se já existe alguma viagem em andamento, caso não existe pode prosseguir com a criação.
-        private async Task<Viagem?> ObterViagemAbertaOuEmAndamento()
+        private async Task<Viagem?> ObterViagemAbertaOuEmAndamento(int idFuncionario)
         {
-            var viagem = await _viagemRepository.ObterViagemPorStatus(StatusViagem.Aberta);
+            var viagem = await _viagemRepository.ObterViagemPorStatus(StatusViagem.Aberta, idFuncionario);
             if (!viagem.Any())
-                viagem = await _viagemRepository.ObterViagemPorStatus(StatusViagem.EmAndamento);
+                viagem = await _viagemRepository.ObterViagemPorStatus(StatusViagem.EmAndamento, idFuncionario);
 
             if (!viagem.Any())
                 return null;
-
 
             return viagem.First();
         }
@@ -332,7 +333,7 @@ namespace DespesaViagem.Services.Services
 
             return viagem;
         }
-
+/*
         private async Task<List<Viagem>> AdicionarFuncionarioParaAViagem(List<Viagem> viagens)
         {
             foreach (var viagem in viagens)
@@ -343,7 +344,7 @@ namespace DespesaViagem.Services.Services
 
             return viagens;
         }
-
+*/
         private static TiposDespesas ConverterStringParaEnumTipoDespesa(string tipoDespesa)
         {
             return tipoDespesa switch

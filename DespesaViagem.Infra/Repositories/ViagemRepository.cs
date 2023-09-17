@@ -35,13 +35,14 @@ namespace DespesaViagem.Infra.Repositories
                 .Join(_context.Funcionarios,
                 viagem => viagem.IdFuncionario,
                 funcionario => funcionario.Id,
-                (viagem, funcionario) => new { Viagem = viagem, Funcionario = funcionario})
+                (viagem, funcionario) => new { Viagem = viagem, Funcionario = funcionario })
                 .Where(f => f.Funcionario.Gestor.Id == idGestor)
-                .Select(v => v.Viagem).ToListAsync();            
+                .Select(v => v.Viagem).ToListAsync();
         }
         public async Task<Viagem> ObterPorId(int id)
         {
             return await _context.Viagens
+                .Include(f => f.Funcionario)
                 .Include(v => v.Despesas)
                 .FirstOrDefaultAsync(viagem => viagem.Id == id);
 
@@ -54,6 +55,14 @@ namespace DespesaViagem.Infra.Repositories
             return await _context.Viagens
                 .Include(f => f.Funcionario)
                 .Where(viagem => viagem.StatusViagem == statusViagem)
+                .ToListAsync();
+        }
+
+        public async Task<List<Viagem?>> ObterViagemPorStatus(StatusViagem statusViagem, int idFuncionario)
+        {
+            return await _context.Viagens
+                .Include(f => f.Funcionario)
+                .Where(viagem => viagem.StatusViagem == statusViagem && viagem.IdFuncionario == idFuncionario)
                 .ToListAsync();
         }
 
@@ -124,10 +133,18 @@ namespace DespesaViagem.Infra.Repositories
 
         public async Task Update(Viagem viagem)
         {
+            /*
+            var funcionarioNaMemoria = _context.Set<Funcionario>().Find(viagem.Funcionario.Id);
+
+            if (funcionarioNaMemoria != null)
+                _context.Entry(funcionarioNaMemoria).State = EntityState.Detached;
+            */
             var viagemNaMemoria = _context.Set<Viagem>().Find(viagem.Id);
 
             if (viagemNaMemoria != null)
                 _context.Entry(viagemNaMemoria).State = EntityState.Detached;
+
+            //viagemNaMemoria = viagem;
 
             _context.Update(viagem);
             await _context.SaveChangesAsync();
@@ -138,7 +155,5 @@ namespace DespesaViagem.Infra.Repositories
             _context.Remove(viagem);
             await _context.SaveChangesAsync();
         }
-
-
     }
 }

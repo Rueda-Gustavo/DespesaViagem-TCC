@@ -58,20 +58,24 @@ namespace DespesaViagem.Server.Controllers
         }
 
 
-        [HttpPost("Novo")]
+        [HttpPost]
         public async Task<ActionResult> InserirViagem(ViagemDTO viagemDTO)
-        {            
-            Result<ViagemDTO> viagem = await _viagemService.AdicionarViagem(viagemDTO);
+        {
+            string idFuncionario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
+
+            Result<ViagemDTO> viagem = await _viagemService.AdicionarViagem(viagemDTO, int.Parse(idFuncionario));
 
             if (viagem.IsFailure) return BadRequest(viagem.Error);            
 
             return Ok(viagem.Value) ;
         }
 
-        [HttpPut("Atualizar")]
-        public async Task<ActionResult> AtualizarViagem(ViagemDTO viagemDTO)
+        [HttpPut]
+        public async Task<ActionResult> AtualizarViagem([FromBody] ViagemDTO viagemDTO)
         {
-            Result<ViagemDTO> viagem = await _viagemService.AlterarViagem(viagemDTO);
+            string idFuncionario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
+
+            Result<ViagemDTO> viagem = await _viagemService.AlterarViagem(viagemDTO, int.Parse(idFuncionario));
 
             if (viagem.IsFailure) return BadRequest(viagem.Error);
 
@@ -150,7 +154,9 @@ namespace DespesaViagem.Server.Controllers
         [HttpPatch("Iniciar")]
         public async Task<ActionResult> IniciarViagem()
         {
-            Result<ViagemDTO> viagem = await _viagemService.IniciarViagem();
+            string idFuncionario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
+
+            Result<ViagemDTO> viagem = await _viagemService.IniciarViagem(int.Parse(idFuncionario));
 
             if (viagem.IsFailure) return BadRequest(viagem.Error);            
 
@@ -160,7 +166,9 @@ namespace DespesaViagem.Server.Controllers
         [HttpPatch("Encerrar")]
         public async Task<ActionResult> EncerrarViagem()
         {
-            Result<ViagemDTO> viagem = await _viagemService.EncerrarViagem();
+            string idFuncionario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
+
+            Result<ViagemDTO> viagem = await _viagemService.EncerrarViagem(int.Parse(idFuncionario));
 
             if (viagem.IsFailure) return BadRequest(viagem.Error);            
 
@@ -170,7 +178,9 @@ namespace DespesaViagem.Server.Controllers
         [HttpPatch("Cancelar")]
         public async Task<ActionResult> CancelarViagem()
         {
-            Result<ViagemDTO> viagem = await _viagemService.CancelarViagem();
+            string idFuncionario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
+
+            Result<ViagemDTO> viagem = await _viagemService.CancelarViagem(int.Parse(idFuncionario));
 
             if (viagem.IsFailure) return BadRequest(viagem.Error);
 

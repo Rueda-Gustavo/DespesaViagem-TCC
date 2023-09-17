@@ -18,7 +18,7 @@ namespace DespesaViagem.Server.Controllers
             _despesasService = despesasService;
         }
 
-                [HttpGet]
+        [HttpGet]
         public async Task<ActionResult> ObterTodasDespesas(int idViagem)
         {
             Result<IEnumerable<DespesaAlimentacao>> result = await _despesasService.ObterTodasDespesas(idViagem);
@@ -57,7 +57,7 @@ namespace DespesaViagem.Server.Controllers
             return Ok(despesas);
         }
 
-        [HttpPost("Novo")]
+        [HttpPost]
         public async Task<ActionResult> AdicionarDespesa(DespesaAlimentacaoDTO despesaDTO)
         {
 
@@ -73,7 +73,7 @@ namespace DespesaViagem.Server.Controllers
             return Ok(despesa);
         }
 
-        [HttpPut("Atualizar")]
+        [HttpPut]
         public async Task<ActionResult> AtualizarDespesa(DespesaAlimentacaoDTO despesaDTO)
         {
             DespesaAlimentacao despesa = MappingDTOs.ConverterDTO(despesaDTO);

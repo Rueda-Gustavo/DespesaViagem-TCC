@@ -10,12 +10,12 @@
 }
 else
 {
-    if (DespesasComponentes.TryGetValue(TipoDespesa, out var DespesaComponent))
+    if (/*DespesasComponentes.TryGetValue(TipoDespesa, out var DespesaComponent)*/false)
     {
         <div class="d-flex flex-wrap" style="flex-direction:column; align-content:center;">
             <h3 class="card-title">Adicionar despesa com @TipoDespesa</h3>
             <div class="modal-content">
-                @DespesaComponent
+                @DespesaForm
             </div>
         </div>
     }
@@ -28,16 +28,39 @@ else
     [Parameter]
     public string TipoDespesa { get; set; }
 
-    private Dictionary<string, RenderFragment> DespesasComponentes = new();
+    private RenderFragment? DespesaForm;
+
+    private bool FormularioDespesaAberto = false;
+
+    //private Dictionary<string, RenderFragment> DespesasComponentes = new();
 
     protected override void OnInitialized()
     {
         string tipoDespesa = NavigationManager.Uri.Split('?').LastOrDefault()?.Split('=')?.LastOrDefault() ?? string.Empty;
         TipoDespesa = HttpUtility.UrlDecode(tipoDespesa); //Essa linha formata a string. Por exemplo na Url o valor fica como Alimenta%C3%A7%C3%A3o mas essa linha deixa com o valor correto, Alimentação
 
-        PopularDictionaries();
+        //PopularDictionaries();
     }
 
+    private void AbrirFormularioDespesa()
+    {
+        
+    }
+
+    private RenderFragment ObterDespesaForm(Type tipoDespesa)
+    {
+        return builder =>
+        {
+            builder.OpenComponent(0, tipoDespesa);
+            builder.AddAttribute(1, "IdDespesa", 0);
+            builder.AddAttribute(2, "FormularioFechado", EventCallback.Factory.Create(this, () =>
+            {
+                NavigationManager.NavigateTo($"/viagens/{IdViagem}/1");
+            }));
+            builder.CloseComponent();
+        };
+    }
+    /*
     private void PopularDictionaries()
     {
         DespesasComponentes.Add("Hospedagem", builder =>
@@ -51,6 +74,7 @@ else
             builder.CloseComponent();
         });
     }
+    */
 }
 
 

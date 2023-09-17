@@ -4,22 +4,26 @@
 @inject IJSRuntime JSRuntime
 @implements IDisposable
 
+<PageTitle>@AdicionarOuEditar - Despesa com Hospedagem</PageTitle>
 
-@if (!Adicionar)
-{
-    <div class="modal-header">
-        <h5 class="modal-title">Editar Despesa</h5>
-        <button type="button" class="close" @onclick="FecharFormulario">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-}
+
+<div class="modal-header">
+    <h5 class="modal-title">@AdicionarOuEditar Despesa</h5>
+    <button type="button" class="close" @onclick="FecharFormulario">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
 <div class="modal-body">
     <form @onsubmit="HandleDespesa">
         <div class="form-group row">
             <div class="col">
                 <label for="NomeDespesa">Nome da Despesa</label>
                 <input id="NomeDespesa" class="form-control" @bind="Despesa.NomeDespesa" />
+            </div>
+            <div class="col-auto">
+                <label for="DataDespesa">Data da Despesa</label>
+                <input id="DataDespesa" type="datetime-local" style="max-width:12rem" class="form-control" @bind="Despesa.DataDespesa" />
             </div>
         </div>
         <div class="form-group row">
@@ -31,59 +35,61 @@
         <div class="form-group row">
             <div class="col">
                 <label for="Logradouro">Logradouro</label>
-                <input id="Logradouro" class="form-control" @bind="Endereco.Logradouro" />
+                <input id="Logradouro" class="form-control" @bind="Despesa.Endereco.Logradouro" />
             </div>
             <div class="col-auto" style="max-width: 5rem">
                 <label for="NumeroCasa">Nº</label>
-                <input id="NumeroCasa" class="form-control" @bind="Endereco.NumeroCasa" />
+                <input id="NumeroCasa" class="form-control" @bind="Despesa.Endereco.NumeroCasa" />
             </div>
         </div>
         <div class="form-group row">
             <div class="col">
                 <label for="Cidade">Cidade</label>
-                <input id="Cidade" class="form-control" @bind="Endereco.Cidade" />
+                <input id="Cidade" class="form-control" @bind="Despesa.Endereco.Cidade" />
             </div>
             <div class="col">
                 <label for="Estado">Estado</label>
-                <input id="Estado" class="form-control" @bind="Endereco.Estado" />
+                <input id="Estado" class="form-control" @bind="Despesa.Endereco.Estado" />
             </div>
             <div class="col">
                 <label for="CEP">CEP</label>
-                <input id="CEP" class="form-control" onkeypress="$(this).mask('00000-000')" @bind-value="Endereco.CEP" />
+                <input id="CEP" class="form-control" onkeypress="$(this).mask('00000-000')" @bind-value="Despesa.Endereco.CEP" />
             </div>
         </div>
         <div class="form-group row">
             <div class="col-auto">
                 <label for="ValorDiaria">Diária</label>
-                <input id="ValorDiaria" class="form-control" style="max-width:6rem" @bind="Despesa.ValorDiaria" />
+                <input id="ValorDiaria" class="form-control" type="number" min="0.00" max="10000.00" step="0.01" style="max-width:6rem" @bind="Despesa.ValorDiaria" />
             </div>
             <div class="col-auto">
                 <label for="QuantidadeDias">Quantidade de dias</label>
                 <input id="QuantidadeDias" class="form-control" style="max-width:5rem" @bind="Despesa.QuantidadeDias" />
             </div>
         </div>
-        <button type="submit" class="btn btn-primary">
-            @if (Adicionar)
-            {
-                <span>Salvar</span>
-            }
-            else
-            {
-                <span>Editar</span>
-            }
-        </button>
+        <div style="float:right;">
+            <button type="button" class="btn btn-secondary mx-2" @onclick="FecharFormulario">
+                <span>Cancelar</span>
+            </button>
+            <button type="submit" class="btn btn-primary">
+                <span>@AdicionarOuEditar</span>
+            </button>
+        </div>
     </form>
 </div>
 
 
 @code {
     [Parameter]
-    public int IdDespesa { get; set; } = 0;
+    public int IdDespesa { get; set; }
+    [Parameter]
+    public int IdViagem { get; set; }
     private bool Adicionar = true;
+    private string AdicionarOuEditar = "Adicionar";
+
     //[Parameter]
     private DespesaHospedagemDTO Despesa { get; set; } = new();
     //[Parameter]
-    private Endereco Endereco { get; set; } = new();
+    //private Endereco Endereco { get; set; } = new();
     [Parameter]
     public EventCallback FormularioFechado { get; set; }
 
@@ -96,6 +102,7 @@
             await GetDespesaHospedagem();
         }
 
+        if (!Adicionar) AdicionarOuEditar = "Editar";
     }
 
     public void Dispose()
@@ -110,16 +117,25 @@
 
     private async Task GetDespesaHospedagem()
     {
-        await DespesaHospedagemService.GetDespesa(IdDespesa);
-        Despesa = DespesaHospedagemService.Despesa;
+        var response = await DespesaHospedagemService.GetDespesa(IdDespesa);
+        if (!response.IsSuccess)
+            await JSRuntime.InvokeVoidAsync("alert", $"{response.Error}");
 
-        await EnderecoService.GetEndereco(Despesa.IdEndereco);
-        Endereco = EnderecoService.Endereco;
+        Despesa = response.Value;
+
+        //await EnderecoService.GetEndereco(Despesa.IdEndereco);
+        //Endereco = EnderecoService.Endereco;
     }
 
     private async Task HandleDespesa()
     {
-        await JSRuntime.InvokeVoidAsync("alert", "Dados salvos com sucesso!");
+        Despesa.IdViagem = IdViagem;
+        if (IdDespesa > 0)
+            await DespesaHospedagemService.AtualizarDespesa(Despesa);
+        else
+            await DespesaHospedagemService.AdicionarDespesa(Despesa);
+
+        await JSRuntime.InvokeVoidAsync("alert", $"Dados salvos com sucesso!\nIdViagem: {IdViagem}");
         await FecharFormulario();
     }
 }

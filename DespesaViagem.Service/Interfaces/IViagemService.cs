@@ -16,12 +16,12 @@ namespace DespesaViagem.Services.Interfaces
         Task<DespesasPorPagina> ObterTodasDespesasPaginadasPorTipo(int idViagem, int pagina, string stringTipoDespesa);
         Task<List<DespesaPorCategoria>> ObterTotalDasDespesasPorCategoria(int viagemId);
         Task<Result<List<ViagemDTO>>> ObterViagemPorStatus(StatusViagem statusViagem);      
-        Task<Result<ViagemDTO>> AdicionarViagem(ViagemDTO viagemDTO);
-        Task<Result<ViagemDTO>> AlterarViagem(ViagemDTO viagemDTO);
+        Task<Result<ViagemDTO>> AdicionarViagem(ViagemDTO viagemDTO, int idFuncionario);
+        Task<Result<ViagemDTO>> AlterarViagem(ViagemDTO viagemDTO, int idFuncionario);
         Task<Result<ViagemDTO>> RemoverViagem(int id);
         Task<Result<decimal>> ObterPrestacaoDeContas(int idViagem);
-        Task<Result<ViagemDTO>> IniciarViagem();
-        Task<Result<ViagemDTO>> EncerrarViagem();
-        Task<Result<ViagemDTO>> CancelarViagem();
+        Task<Result<ViagemDTO>> IniciarViagem(int idFuncionario);
+        Task<Result<ViagemDTO>> EncerrarViagem(int idFuncionario);
+        Task<Result<ViagemDTO>> CancelarViagem(int idFuncionario);
     }
 }
