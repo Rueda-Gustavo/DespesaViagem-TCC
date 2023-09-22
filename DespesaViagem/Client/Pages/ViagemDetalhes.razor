@@ -206,7 +206,7 @@
         
         await ObterDespesas();
         await ObterFuncionario();
-        ObterSubtotal();
+        //ObterSubtotal();
         DespesasPorCategoria = await ViagemService.ObterTotalDespesasPorCategoria(IdViagem);
 
         PopularDictionaries();
@@ -238,6 +238,8 @@
         {
             DespesasPorPagina = await ViagemService.ObterDespesasPorPagina(IdViagem, Pagina);
         }
+
+        Subtotal = Viagem.Adiantamento - Viagem.TotalDespesas;
     }
 
     private async Task ObterFuncionario()
@@ -254,10 +256,10 @@
         //Viagem.Funcionario = await ViagemService.GetFuncionario(Viagem.IdFuncionario);
     }
 
-    private void ObterSubtotal()
+    /*private void ObterSubtotal()
     {
         Subtotal = Viagem.Adiantamento - Viagem.TotalDespesas;
-    }
+    }*/
 
     private void AbrirFormularioViagem() => FormularioViagemAberto = true;
     private async Task FecharFormularioViagem()
@@ -311,7 +313,8 @@
     public async Task FecharFormularioDespesa()
     {        
         FormularioDespesaAberto = false;
-        await ObterDespesas();
+        Viagem = await ViagemService.GetViagem(IdViagem);
+        await ObterDespesas();        
         DespesaForm = null;
     }
 

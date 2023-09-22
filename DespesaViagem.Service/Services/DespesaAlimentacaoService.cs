@@ -85,6 +85,7 @@ namespace DespesaViagem.Services.Services
             {
                 Viagem viagem = await _viagemRepository.ObterPorId(despesa.IdViagem);
                 viagem.AtualizarDespesa(despesa);
+                viagem.AtualizarTotalDespesas();
                 await _viagemRepository.Update(viagem);
             }
 
