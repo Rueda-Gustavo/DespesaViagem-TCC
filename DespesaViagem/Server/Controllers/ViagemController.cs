@@ -4,6 +4,7 @@ using DespesaViagem.Shared.DTOs.Despesas;
 using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
+using DespesaViagem.Shared.Models.Viagens;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -27,34 +28,37 @@ namespace DespesaViagem.Server.Controllers
         {
             string idUsuario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
 
-            Result<List<ViagemDTO>> viagens = await _viagemService.ObterTodasViagens(int.Parse(idUsuario)); //Ideia para que seja possível mostrar todas as viagens dos funcionários do gestor ou somente as viagens do próprio funcionário
+            Result<List<ViagemDTO>> result = await _viagemService.ObterTodasViagens(int.Parse(idUsuario)); //Ideia para que seja possível mostrar todas as viagens dos funcionários do gestor ou somente as viagens do próprio funcionário
 
             //Result<List<ViagemDTO>> viagens = await _viagemService.ObterTodasViagens();
 
-            if (viagens.IsFailure) return BadRequest(viagens.Error);
+            if (result.IsFailure)
+                return BadRequest(new ServiceResponse<List<ViagemDTO>> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(viagens.Value);
+
+            return Ok(new ServiceResponse<List<ViagemDTO>> { Conteudo = result.Value });
         }
 
         [HttpGet("{idViagem:int}")]
         public async Task<ActionResult> ObterViagemPorId(int idViagem)
         {
-            Result<ViagemDTO> viagem = await _viagemService.ObterViagemPorId(idViagem);
+            Result<ViagemDTO> result = await _viagemService.ObterViagemPorId(idViagem);
 
-            if (viagem.IsFailure) return BadRequest(viagem.Error);
+            if (result.IsFailure) return BadRequest(new ServiceResponse<ViagemDTO> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(viagem.Value);
+            return Ok(new ServiceResponse<ViagemDTO> { Conteudo = result.Value });
         }
 
 
         [HttpGet("/PrestacaoDeContas/{idViagem:int}")]
         public async Task<ActionResult> ObterPrestacaoDeContas(int idViagem)
         {
-            var totalDespesas = await _viagemService.ObterPrestacaoDeContas(idViagem);
+            Result<decimal> result = await _viagemService.ObterPrestacaoDeContas(idViagem);
 
-            if (totalDespesas.IsFailure) return BadRequest(totalDespesas.Error);
+            if (result.IsFailure)
+                return BadRequest(new ServiceResponse<decimal> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(totalDespesas.Value);
+            return Ok(new ServiceResponse<decimal> { Conteudo = result.Value });
         }
 
 
@@ -63,11 +67,12 @@ namespace DespesaViagem.Server.Controllers
         {
             string idFuncionario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
 
-            Result<ViagemDTO> viagem = await _viagemService.AdicionarViagem(viagemDTO, int.Parse(idFuncionario));
+            Result<ViagemDTO> result = await _viagemService.AdicionarViagem(viagemDTO, int.Parse(idFuncionario));
 
-            if (viagem.IsFailure) return BadRequest(viagem.Error);            
+            if (result.IsFailure)
+                return BadRequest(new ServiceResponse<ViagemDTO> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(viagem.Value) ;
+            return Ok(new ServiceResponse<ViagemDTO> { Conteudo = result.Value });
         }
 
         [HttpPut]
@@ -75,33 +80,38 @@ namespace DespesaViagem.Server.Controllers
         {
             string idFuncionario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
 
-            Result<ViagemDTO> viagem = await _viagemService.AlterarViagem(viagemDTO, int.Parse(idFuncionario));
+            Result<ViagemDTO> result = await _viagemService.AlterarViagem(viagemDTO, int.Parse(idFuncionario));
 
-            if (viagem.IsFailure) return BadRequest(viagem.Error);
+            if (result.IsFailure)
+                return BadRequest(new ServiceResponse<ViagemDTO> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(viagem.Value) ;
+            //return Ok(result.Value);
+
+            return Ok(new ServiceResponse<ViagemDTO> { Conteudo = result.Value });
         }
 
         [HttpGet("{filtro}")]
         public async Task<ActionResult> ObterViagensPorFiltro(string filtro)
         {
-            Result<List<ViagemDTO>> viagens = await _viagemService.ObterViagemPorFiltro(filtro);
+            Result<List<ViagemDTO>> result = await _viagemService.ObterViagemPorFiltro(filtro);
 
-            if (viagens.IsFailure) return BadRequest(viagens.Error);
+            if (result.IsFailure)
+                return BadRequest(new ServiceResponse<List<ViagemDTO>> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(viagens.Value);
+            return Ok(new ServiceResponse<List<ViagemDTO>> { Conteudo = result.Value });
         }
 
-        [HttpGet("ObterDespesas/{idViagem}")]        
+        [HttpGet("ObterDespesas/{idViagem}")]
         public async Task<ActionResult> ObterTodasDespesasDaViagem(int idViagem)
         {
             Result<List<DespesaDTO>> result = await _viagemService.ObterTodasDespesas(idViagem);
 
             if (result.IsFailure)
-                return BadRequest(result.Error);
+                return BadRequest(new ServiceResponse<List<DespesaDTO>> { Sucesso = false, Mensagem = result.Error });
 
-            List<DespesaDTO> despesas = result.Value;
-            return Ok(despesas);
+            //List<DespesaDTO> despesas = result.Value;
+
+            return Ok(new ServiceResponse<List<DespesaDTO>> { Conteudo = result.Value });
         }
 
 
@@ -111,44 +121,46 @@ namespace DespesaViagem.Server.Controllers
             Result<DespesasPorPagina> result = await _viagemService.ObterDespesasPorPagina(idViagem, pagina);
 
             if (result.IsFailure)
-                return BadRequest(result.Error);
+                return BadRequest(new ServiceResponse<DespesasPorPagina> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(result.Value);
+            return Ok(new ServiceResponse<DespesasPorPagina> { Conteudo = result.Value });
         }
 
         [HttpGet("ObterTodasDespesasPaginadasPorTipo/{idViagem}/{pagina}/{tipoDespesa}")]
-        public async Task<ActionResult> ObterTodasDespesasPaginadasPorTipo (int idViagem, int pagina, string tipoDespesa)
+        public async Task<ActionResult> ObterTodasDespesasPaginadasPorTipo(int idViagem, int pagina, string tipoDespesa)
         {
             Result<DespesasPorPagina> result = await _viagemService.ObterTodasDespesasPaginadasPorTipo(idViagem, pagina, tipoDespesa);
 
             if (result.IsFailure)
-                return BadRequest(result.Error);
+                return BadRequest(new ServiceResponse<DespesasPorPagina> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(result.Value);
+            return Ok(new ServiceResponse<DespesasPorPagina> { Conteudo = result.Value });
         }
 
         [HttpGet("ObterDespesasPorCategoria/{idViagem}")]
-        
+
         public async Task<ActionResult> ObterTotalDasDespesasPorCategoria(int idViagem)
         {
             Result<List<DespesaPorCategoria>> result = await _viagemService.ObterTotalDasDespesasPorCategoria(idViagem);
 
             if (result.IsFailure)
-                return BadRequest(result.Error);
+                return BadRequest(new ServiceResponse<List<DespesaPorCategoria>> { Sucesso = false, Mensagem = result.Error });
 
-            List<DespesaPorCategoria> despesas = result.Value;
-            return Ok(despesas);
+            //List<DespesaPorCategoria> despesas = result.Value;
+
+            return Ok(new ServiceResponse<List<DespesaPorCategoria>> { Conteudo = result.Value });
         }
 
         [HttpGet]
         [Route("status/{statusViagem}")]
         public async Task<ActionResult> ObterViagensPorEstado(StatusViagem statusViagem)
         {
-            Result<List<ViagemDTO>> viagens = await _viagemService.ObterViagemPorStatus(statusViagem);
+            Result<List<ViagemDTO>> result = await _viagemService.ObterViagemPorStatus(statusViagem);
 
-            if (viagens.IsFailure) return BadRequest(viagens.Error);            
+            if (result.IsFailure)
+                return BadRequest(new ServiceResponse<List<ViagemDTO>> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(viagens.Value);
+            return Ok(new ServiceResponse<List<ViagemDTO>> { Conteudo = result.Value });
         }
 
         [HttpPatch("Iniciar")]
@@ -156,11 +168,12 @@ namespace DespesaViagem.Server.Controllers
         {
             string idFuncionario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
 
-            Result<ViagemDTO> viagem = await _viagemService.IniciarViagem(int.Parse(idFuncionario));
+            Result<ViagemDTO> result = await _viagemService.IniciarViagem(int.Parse(idFuncionario));
 
-            if (viagem.IsFailure) return BadRequest(viagem.Error);            
+            if (result.IsFailure)
+                return BadRequest(new ServiceResponse<ViagemDTO> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(viagem.Value);
+            return Ok(new ServiceResponse<ViagemDTO> { Conteudo = result.Value });
         }
 
         [HttpPatch("Encerrar")]
@@ -168,11 +181,13 @@ namespace DespesaViagem.Server.Controllers
         {
             string idFuncionario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
 
-            Result<ViagemDTO> viagem = await _viagemService.EncerrarViagem(int.Parse(idFuncionario));
+            Result<ViagemDTO> result = await _viagemService.EncerrarViagem(int.Parse(idFuncionario));
 
-            if (viagem.IsFailure) return BadRequest(viagem.Error);            
+            if (result.IsFailure)
+                return BadRequest(new ServiceResponse<ViagemDTO> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(viagem.Value);
+
+            return Ok(new ServiceResponse<ViagemDTO> { Conteudo = result.Value });
         }
 
         [HttpPatch("Cancelar")]
@@ -180,11 +195,12 @@ namespace DespesaViagem.Server.Controllers
         {
             string idFuncionario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
 
-            Result<ViagemDTO> viagem = await _viagemService.CancelarViagem(int.Parse(idFuncionario));
+            Result<ViagemDTO> result = await _viagemService.CancelarViagem(int.Parse(idFuncionario));
 
-            if (viagem.IsFailure) return BadRequest(viagem.Error);
+            if (result.IsFailure)
+                return BadRequest(new ServiceResponse<ViagemDTO> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(viagem.Value);
+            return Ok(new ServiceResponse<ViagemDTO> { Conteudo = result.Value });
         }
     }
 }

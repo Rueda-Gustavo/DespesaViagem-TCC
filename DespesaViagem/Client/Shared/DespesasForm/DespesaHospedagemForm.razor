@@ -35,25 +35,25 @@
         <div class="form-group row">
             <div class="col">
                 <label for="Logradouro">Logradouro</label>
-                <input id="Logradouro" class="form-control" @bind="Despesa.Endereco.Logradouro" />
+                <input id="Logradouro" class="form-control" @bind="Despesa.Logradouro" />
             </div>
             <div class="col-auto" style="max-width: 5rem">
                 <label for="NumeroCasa">Nº</label>
-                <input id="NumeroCasa" class="form-control" @bind="Despesa.Endereco.NumeroCasa" />
+                <input id="NumeroCasa" class="form-control" @bind="Despesa.NumeroCasa" />
             </div>
         </div>
         <div class="form-group row">
             <div class="col">
                 <label for="Cidade">Cidade</label>
-                <input id="Cidade" class="form-control" @bind="Despesa.Endereco.Cidade" />
+                <input id="Cidade" class="form-control" @bind="Despesa.Cidade" />
             </div>
             <div class="col">
                 <label for="Estado">Estado</label>
-                <input id="Estado" class="form-control" @bind="Despesa.Endereco.Estado" />
+                <input id="Estado" class="form-control" @bind="Despesa.Estado" />
             </div>
             <div class="col">
                 <label for="CEP">CEP</label>
-                <input id="CEP" class="form-control" onkeypress="$(this).mask('00000-000')" @bind-value="Despesa.Endereco.CEP" />
+                <input id="CEP" class="form-control" onkeypress="$(this).mask('00000-000')" @bind-value="Despesa.CEP" />
             </div>
         </div>
         <div class="form-group row">
@@ -135,7 +135,7 @@
         else
             await DespesaHospedagemService.AdicionarDespesa(Despesa);
 
-        await JSRuntime.InvokeVoidAsync("alert", $"Dados salvos com sucesso!\nIdViagem: {IdViagem}");
+        await JSRuntime.InvokeVoidAsync("alert", $"Dados salvos com sucesso!");
         await FecharFormulario();
     }
 }

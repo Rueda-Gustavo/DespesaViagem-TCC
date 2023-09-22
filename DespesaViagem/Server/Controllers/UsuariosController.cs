@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Services.Interfaces;
+using DespesaViagem.Shared.Models.Core.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DespesaViagem.Server.Controllers
@@ -8,11 +9,11 @@ namespace DespesaViagem.Server.Controllers
     [ApiController]
     public class UsuariosController<T> : Controller where T : class
     {
-        private readonly IUsuariosService<T> _usuariosService;        
+        private readonly IUsuariosService<T> _usuariosService;
 
         public UsuariosController(IUsuariosService<T> usuariosService)
         {
-            _usuariosService = usuariosService;            
+            _usuariosService = usuariosService;
         }
 
 
@@ -23,9 +24,9 @@ namespace DespesaViagem.Server.Controllers
             Result<IEnumerable<T>> result = await _usuariosService.ObterTodos();
 
             if (result.IsFailure)
-                return BadRequest(result.Error);
+                return BadRequest(new ServiceResponse<IEnumerable<T>> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(result.Value.ToList());
+            return Ok(new ServiceResponse<IEnumerable<T>> { Conteudo = result.Value.ToList() });
         }
 
 
@@ -36,11 +37,11 @@ namespace DespesaViagem.Server.Controllers
             Result<IEnumerable<T>> result = await _usuariosService.ObterPorFiltro(filtro);
 
             if (result.IsFailure)
-                return BadRequest(result.Error);
+                return BadRequest(new ServiceResponse<IEnumerable<T>> { Sucesso = false, Mensagem = result.Error });
 
-            IEnumerable<T> usuarios = result.Value.ToList();
+            //IEnumerable<T> usuarios = result.Value.ToList();
 
-            return Ok(usuarios);
+            return Ok(new ServiceResponse<IEnumerable<T>> { Conteudo = result.Value.ToList() });
         }
 
         [HttpGet("{id:int}")]
@@ -49,11 +50,11 @@ namespace DespesaViagem.Server.Controllers
             Result<T> result = await _usuariosService.ObterPorId(id);
 
             if (result.IsFailure)
-                return BadRequest(result.Error);
+                return BadRequest(new ServiceResponse<T> { Sucesso = false, Mensagem = result.Error });
 
-            T usuario = result.Value;
+            //T usuario = result.Value;
 
-            return Ok(usuario);
+            return Ok(new ServiceResponse<T> { Conteudo = result.Value });
         }
 
         [HttpDelete]
@@ -62,11 +63,11 @@ namespace DespesaViagem.Server.Controllers
             Result<T> result = await _usuariosService.Remover(id);
 
             if (result.IsFailure)
-                return BadRequest(result.Error);
+                return BadRequest(new ServiceResponse<T> { Sucesso = false, Mensagem = result.Error });
 
-            T usuario = result.Value;
+            //T usuario = result.Value;
 
-            return Ok(usuario);
+            return Ok(new ServiceResponse<T> { Conteudo = result.Value });
         }
     }
 }

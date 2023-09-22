@@ -14,17 +14,19 @@ namespace DespesaViagem.Infra.Repositories
             _context = context;
         }
         public async Task<IEnumerable<DespesaHospedagem>> ObterTodos(int idViagem)
-        {                 
+        {
             return await _context.DespesasHospedagem
                 .Where(despesa => despesa.IdViagem == idViagem)
-                .Include(endereco => endereco.Endereco)
+                //.Include(endereco => endereco.Endereco)
                 .ToListAsync();
         }
 
         public async Task<DespesaHospedagem> ObterPorId(int id)
-            => await _context.DespesasHospedagem
-                .Include(endereco => endereco.Endereco)
-                .FirstOrDefaultAsync(despesa => despesa.Id == id);
+        {
+            return await _context.DespesasHospedagem
+                 //.Include(endereco => endereco.Endereco)
+                 .FirstOrDefaultAsync(despesa => despesa.Id == id);
+        }
 
         public async Task<IEnumerable<DespesaHospedagem>> ObterPorFiltro(string filtro, int idViagem)
         {
@@ -33,11 +35,11 @@ namespace DespesaViagem.Infra.Repositories
                  (despesa.NomeDespesa.Contains(filtro) ||
                  despesa.DescricaoDespesa.Contains(filtro)) &&
                  despesa.Viagem.Id == idViagem)
-                 .Include(endereco => endereco.Endereco)
+                //.Include(endereco => endereco.Endereco)
                 .ToListAsync();
         }
         public async Task Insert(DespesaHospedagem despesa)
-        {            
+        {
             _context.Add(despesa);
             await _context.SaveChangesAsync();
         }
@@ -49,11 +51,11 @@ namespace DespesaViagem.Infra.Repositories
             if (despesaNaMemoria != null)
                 _context.Entry(despesaNaMemoria).State = EntityState.Detached;
 
-            var enderecoNaMemoria = _context.Set<Endereco>().Find(despesa.IdEndereco);
+            /*var enderecoNaMemoria = _context.Set<Endereco>().Find(despesa.IdEndereco);
 
             if (enderecoNaMemoria != null)
                 _context.Entry(enderecoNaMemoria).State = EntityState.Detached;
-
+            */
             _context.Update(despesa);
             await _context.SaveChangesAsync();
         }

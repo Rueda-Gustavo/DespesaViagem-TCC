@@ -11,8 +11,9 @@
     <div class="dropdown-menu dropdown-menu-right @CssClassBotaoUsuario">
         <AuthorizeView>
             <Authorized>
+                <span class="username font-monospace mb-1" style="margin-left: 0;width: 100%;">@username</span>
                 <a href="/perfil" class="dropdown-item mb-1 btn-usuario" style="margin-left: 0;max-width: 7.5rem;">Perfil</a>
-                <button class="dropdown-item  btn-usuario" @onclick="Logout" style="margin-left: 0;max-width: 7.5rem;">Logout</button>
+                <button class="dropdown-item btn-usuario" @onclick="Logout" style="margin-left: 0;max-width: 7.5rem;">Logout</button>
             </Authorized>
             <NotAuthorized>
                 <a href="/login?returnUrl=@NavigationManager.ToBaseRelativePath(NavigationManager.Uri)" class="dropdown-item btn-usuario mb-1" style="margin-left: 0; max-width: 7.5rem;">Login</a>
@@ -29,6 +30,8 @@
     private bool mostrarMenuUsuario = false;
 
     private string CssClassBotaoUsuario => mostrarMenuUsuario ? "show-menu" : string.Empty;
+
+    private string username = string.Empty;
 
     private void ToggleMenuUsuario()
     {
@@ -47,4 +50,11 @@
         await AuthenticationStateProvider.GetAuthenticationStateAsync();
         NavigationManager.NavigateTo("");
     }
+    protected override async Task OnInitializedAsync()
+    {
+        ClaimsPrincipal usuarioLogado = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+        if (usuarioLogado is not null && usuarioLogado.Identity.IsAuthenticated)
+            username = usuarioLogado.FindFirst(ClaimTypes.Name).Value;
+    }   
 }

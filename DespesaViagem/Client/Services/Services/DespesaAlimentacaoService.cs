@@ -1,6 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Client.Services.Interfaces;
+using DespesaViagem.Server.Mapping;
 using DespesaViagem.Shared.DTOs.Despesas;
+using DespesaViagem.Shared.Models.Core.Helpers;
 using DespesaViagem.Shared.Models.Despesas;
 using System.Net.Http.Json;
 
@@ -25,7 +27,9 @@ namespace DespesaViagem.Client.Services.Services
             var result = await _httpClient
                           .PostAsJsonAsync("api/DespesaAlimentacao", despesa);
 
-            DespesaAlimentacaoDTO response = await result.Content.ReadFromJsonAsync<DespesaAlimentacaoDTO>();
+            DespesaAlimentacao response = await result.Content.ReadFromJsonAsync<DespesaAlimentacao>() ?? new();
+
+            despesa = MappingDTOs.ConverterDTO(response);
 
             if (response == null || response.Id == 0)
                 return Result.Failure<DespesaAlimentacaoDTO>("Falha para adicionar despesa!");
@@ -34,7 +38,7 @@ namespace DespesaViagem.Client.Services.Services
             Console.WriteLine("Sucesso - DespesaAlimentacaoService - Client");
             DespesasChanged.Invoke();
 
-            return Result.Success(response);
+            return Result.Success(despesa);
         }
 
         public async Task<Result<DespesaAlimentacaoDTO>> AtualizarDespesa(DespesaAlimentacaoDTO despesa)
@@ -56,17 +60,26 @@ namespace DespesaViagem.Client.Services.Services
 
         public async Task<Result<DespesaAlimentacaoDTO>> GetDespesa(int IdDespesa)
         {
-            DespesaAlimentacaoDTO response = await _httpClient
-                          .GetFromJsonAsync<DespesaAlimentacaoDTO>($"api/DespesaAlimentacao/{IdDespesa}") ?? new();
+            try
+            {
+                var response = await _httpClient
+                    .GetFromJsonAsync<ServiceResponse<DespesaAlimentacaoDTO>>($"api/DespesaAlimentacao/{IdDespesa}") ?? new();
 
-            if (response == null || response.Id == 0)
-                return Result.Failure<DespesaAlimentacaoDTO>("Nenhuma viagem encontrada!");
+                if (response.Conteudo is null || response.Conteudo.Id == 0)
+                    return Result.Failure<DespesaAlimentacaoDTO>("Despesa com alimentação não encontrada!");
 
 
-            Console.WriteLine("Sucesso - DespesaAlimentacaoService - Client");
-            DespesasChanged.Invoke();
+                Console.WriteLine("Sucesso - DespesaAlimentacaoService - Client");
+                DespesasChanged.Invoke();
 
-            return Result.Success(response);
+                return Result.Success(response.Conteudo);
+
+            } catch
+            {
+                Console.WriteLine("Falha - DespesaAlimentacaoService - Client");
+                Mensagem = "Despesa com alimentação não encontrada!";
+                return new();
+            }
         }
     }
 }

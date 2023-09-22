@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Client.Services.Interfaces;
 using DespesaViagem.Shared.DTOs.Despesas;
+using DespesaViagem.Shared.Models.Core.Helpers;
 using DespesaViagem.Shared.Models.Despesas;
 using System.Net.Http.Json;
 
@@ -46,8 +47,8 @@ namespace DespesaViagem.Client.Services.Services
 
             if (response == null || response.Id == 0)
                 return Result.Failure<DespesaHospedagemDTO>("Despesa com hospedagem não encontrada!");
-            
-                                   
+
+
             Console.WriteLine("Sucesso - DespesaHospedagemService - Client");
             DespesasChanged.Invoke();
 
@@ -56,17 +57,25 @@ namespace DespesaViagem.Client.Services.Services
 
         public async Task<Result<DespesaHospedagemDTO>> GetDespesa(int IdDespesa)
         {
-            DespesaHospedagemDTO response = await _httpClient
-                          .GetFromJsonAsync<DespesaHospedagemDTO>($"api/DespesaHospedagem/{IdDespesa}") ?? new();
+            try
+            {
+                var response = await _httpClient
+                              .GetFromJsonAsync<ServiceResponse<DespesaHospedagemDTO>>($"api/DespesaHospedagem/{IdDespesa}") ?? new();
 
-            if (response == null || response.Id == 0)
-                return Result.Failure<DespesaHospedagemDTO>("Nenhuma viagem encontrada!");
+                if (response.Conteudo is null || response.Conteudo.Id == 0)
+                    return Result.Failure<DespesaHospedagemDTO>("Despesa com hospedagem não encontrada!");
 
 
-            Console.WriteLine("Sucesso - DespesaHospedagemService - Client");
-            DespesasChanged.Invoke();
+                Console.WriteLine("Sucesso - DespesaHospedagemService - Client");
+                DespesasChanged.Invoke();
 
-            return Result.Success(response);
+                return Result.Success(response.Conteudo);
+            }
+            catch
+            {
+                Console.WriteLine("Falha - DespesaHospedagemService - Client");
+                return new();
+            }
         }
     }
 }

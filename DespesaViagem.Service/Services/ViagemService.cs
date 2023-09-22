@@ -22,7 +22,7 @@ namespace DespesaViagem.Services.Services
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly float _despesasPorPagina = 6f;
         public ViagemService(IViagemRepository viagemRepository,
-            IDespesaRepository despesaRepository, 
+            IDespesaRepository despesaRepository,
             IFuncionarioRepository funcionarioRepository,
             IUsuarioRepository usuarioRepository)
         {
@@ -49,7 +49,7 @@ namespace DespesaViagem.Services.Services
             {
                 viagens = await _viagemRepository.ObterTodos(idUsuario);
             }
-            
+
 
             if (!viagens.Any())
                 return Result.Failure<List<ViagemDTO>>("Não existem viagens cadastradas.");
@@ -136,7 +136,7 @@ namespace DespesaViagem.Services.Services
         }
 
         public async Task<DespesasPorPagina> ObterTodasDespesasPaginadasPorTipo(int idViagem, int pagina, string stringTipoDespesa)
-        {            
+        {
             TiposDespesas tipoDespesa = ConverterStringParaEnumTipoDespesa(stringTipoDespesa);
             double quantidadeDePaginas = Math.Ceiling((await _viagemRepository.ObterDespesasPorTipo(idViagem, tipoDespesa)).Count / _despesasPorPagina);
             List<Despesa> despesas = await _viagemRepository.ObterDespesasPorTipo(idViagem, tipoDespesa);
@@ -165,53 +165,68 @@ namespace DespesaViagem.Services.Services
 
         public async Task<Result<ViagemDTO>> AdicionarViagem(ViagemDTO viagemDTO, int idFuncionario)
         {
-            viagemDTO.StatusViagem = StatusViagem.Aberta;
-            Viagem viagem = MappingDTOs.ConverterDTO(viagemDTO);
+            try
+            {
+                viagemDTO.StatusViagem = StatusViagem.Aberta;
+                Viagem viagem = MappingDTOs.ConverterDTO(viagemDTO);
 
-            if (viagem is null || viagemDTO.Id != 0) //Caso o Id não seja 0 irá dar erro na hora de adicionar a viagem
-                return Result.Failure<ViagemDTO>("Nenhuma viagem informada.");
+                if (viagem is null || viagemDTO.Id != 0) //Caso o Id não seja 0 irá dar erro na hora de adicionar a viagem
+                    return Result.Failure<ViagemDTO>("Nenhuma viagem informada.");
 
-            if ((await ObterViagemAbertaOuEmAndamento(idFuncionario)) is not null)
-                return Result.Failure<ViagemDTO>("Já existe uma viagem aberta ou em andamento.");
+                if ((await ObterViagemAbertaOuEmAndamento(idFuncionario)) is not null)
+                    return Result.Failure<ViagemDTO>("Já existe uma viagem aberta ou em andamento.");
 
-            viagem.VerificarDataInicialeFinal();
+                viagem.VerificarDataInicialeFinal();
 
-            Funcionario funcionario = await _funcionarioRepository.ObterPorId(viagem.IdFuncionario);
+                Funcionario funcionario = await _funcionarioRepository.ObterPorId(viagem.IdFuncionario);
 
-            if (funcionario is null)
-                return Result.Failure<ViagemDTO>("Funcionário não encontrado!");
+                if (funcionario is null)
+                    return Result.Failure<ViagemDTO>("Funcionário não encontrado!");
 
-            viagem.AdicionarFuncionario(funcionario);
+                viagem.AdicionarFuncionario(funcionario);
 
-            await _viagemRepository.Insert(viagem);
+                await _viagemRepository.Insert(viagem);
 
-            return Result.Success(viagemDTO);
+                return Result.Success(viagemDTO);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<ViagemDTO>(ex.Message);
+            }
         }
 
         public async Task<Result<ViagemDTO>> AlterarViagem(ViagemDTO viagemDTO, int idFuncionario)
         {
-            Viagem viagem = MappingDTOs.ConverterDTO(viagemDTO);
+            try
+            {
+                Viagem viagem = MappingDTOs.ConverterDTO(viagemDTO);
 
-            if (viagem is null || viagemDTO.Id <= 0)
-                return Result.Failure<ViagemDTO>("Nenhuma viagem informada.");
+                if (viagem is null || viagemDTO.Id <= 0)
+                    return Result.Failure<ViagemDTO>("Nenhuma viagem informada.");
 
-            Viagem? viagemAuxiliar = await ObterViagemAbertaOuEmAndamento(idFuncionario);
+                Viagem? viagemAuxiliar = await ObterViagemAbertaOuEmAndamento(idFuncionario);
 
-            if (viagemAuxiliar is null || viagemAuxiliar.Id != viagem.Id)
-                return Result.Failure<ViagemDTO>("Nenhuma viagem em Aberto ou Em Andamento, ou a viagem informada está Cancelada ou Encerrada.");
+                if (viagemAuxiliar is null || viagemAuxiliar.Id != viagem.Id)
+                    return Result.Failure<ViagemDTO>("Nenhuma viagem em Aberto ou Em Andamento, ou a viagem informada está Cancelada ou Encerrada.");
 
-            if (viagemAuxiliar.Adiantamento != viagem.Adiantamento && viagemAuxiliar.StatusViagem != StatusViagem.Aberta)
-                return Result.Failure<ViagemDTO>("O Adiantamento incial não pode ser modificado.");
+                if (viagemAuxiliar.Adiantamento != viagem.Adiantamento && viagemAuxiliar.StatusViagem != StatusViagem.Aberta)
+                    return Result.Failure<ViagemDTO>("O Adiantamento incial não pode ser modificado.");
 
-            viagem.VerificarDataInicialeFinal();
+                viagem.VerificarDataInicialeFinal();
 
-            viagem.AdicionarFuncionario(await _funcionarioRepository.ObterPorId(viagemDTO.IdFuncionario));
+                viagem.AdicionarFuncionario(await _funcionarioRepository.ObterPorId(viagemDTO.IdFuncionario));
 
-            viagem.DefinirStatusViagem(viagemAuxiliar.StatusViagem); //O status é utilizado da forma como já está no banco por ele não ser mudado pelo usuário diretamente
-            viagem.DefinirAdiantamento(viagem.Adiantamento); //Caso a viagem esteja em aberto será possível modificar o adiantamento
+                viagem.DefinirStatusViagem(viagemAuxiliar.StatusViagem); //O status é utilizado da forma como já está no banco por ele não ser mudado pelo usuário diretamente
+                viagem.DefinirAdiantamento(viagem.Adiantamento); //Caso a viagem esteja em aberto será possível modificar o adiantamento
 
-            await _viagemRepository.Update(viagem);
-            return Result.Success(viagemDTO);
+                await _viagemRepository.Update(viagem);
+                return Result.Success(viagemDTO);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<ViagemDTO>(ex.Message);
+            }
+
         }
 
         public async Task<Result<ViagemDTO>> RemoverViagem(int id)
@@ -333,18 +348,18 @@ namespace DespesaViagem.Services.Services
 
             return viagem;
         }
-/*
-        private async Task<List<Viagem>> AdicionarFuncionarioParaAViagem(List<Viagem> viagens)
-        {
-            foreach (var viagem in viagens)
-            {
-                Funcionario funcionario = await _funcionarioRepository.ObterPorId(viagem.IdFuncionario);
-                viagem.AdicionarFuncionario(funcionario);
-            }
+        /*
+                private async Task<List<Viagem>> AdicionarFuncionarioParaAViagem(List<Viagem> viagens)
+                {
+                    foreach (var viagem in viagens)
+                    {
+                        Funcionario funcionario = await _funcionarioRepository.ObterPorId(viagem.IdFuncionario);
+                        viagem.AdicionarFuncionario(funcionario);
+                    }
 
-            return viagens;
-        }
-*/
+                    return viagens;
+                }
+        */
         private static TiposDespesas ConverterStringParaEnumTipoDespesa(string tipoDespesa)
         {
             return tipoDespesa switch

@@ -16,13 +16,24 @@
     margin-left: 0;
 }
 
+
 .dropdown-item:hover {
     background-color: #5101d4;
     border-radius: 10px;
     color: #fff;
-    border: 2px solid #ffb400;   
-    
-    
+    border: 2px solid #ffb400;
+}
+
+.username {
+    background-color: #fff;
+}
+.username:active {
+    background-color: #fff;
+    color: #000;
+}
+
+.username:focus {
+    outline: none;
 }
 
 .btn-usuario {
@@ -33,4 +44,3 @@
     transition: background-color 0.3s ease;
     text-decoration: none !important;
 }
-

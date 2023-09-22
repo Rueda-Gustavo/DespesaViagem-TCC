@@ -23,9 +23,9 @@ namespace DespesaViagem.Infra.Database.EntityConfiguration.DespesasEntityTypeCon
                    .IsUnicode(false)
                    .IsRequired(true);
 
-            builder.HasOne(e => e.Endereco)
-                    .WithMany(d => d.DespesasHospedagem)
-                    .HasForeignKey(d => d.IdEndereco);
+            /*builder.HasOne(e => e.Endereco)
+                    .WithOne(d => d.DespesaHospedagem)
+                    .HasForeignKey(d => d.IdEndereco);*/
         }
     }
 }

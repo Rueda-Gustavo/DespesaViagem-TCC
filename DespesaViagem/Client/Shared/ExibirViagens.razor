@@ -136,10 +136,11 @@ else
         FormularioDespesaAberto = true;
     }
 
-    private void FecharFormularioDespesa()
+    private void FecharFormularioDespesa(int idViagem)
     {
         FormularioDespesaAberto = false;
         DespesaForm = null;
+        NavigationManager.NavigateTo($"/viagens/{idViagem}/0");
     }
     
     public RenderFragment ObterDespesaForm(Type tipoDespesa, int idViagem, int idDespesa)
@@ -151,7 +152,7 @@ else
             builder.AddAttribute(2, "IdViagem", idViagem);
             builder.AddAttribute(3, "FormularioFechado", EventCallback.Factory.Create(this, () =>
             {
-                FecharFormularioDespesa();
+                FecharFormularioDespesa(idViagem);
             }));
             builder.CloseComponent();
         };

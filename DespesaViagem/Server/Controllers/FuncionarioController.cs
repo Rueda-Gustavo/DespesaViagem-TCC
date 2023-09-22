@@ -11,7 +11,7 @@ namespace DespesaViagem.Server.Controllers
     public class FuncionarioController : UsuariosController<Funcionario>
     {
         private readonly IFuncionarioService _funcionarioService;
-        
+
 
         public FuncionarioController(IFuncionarioService funcionarioService) : base(funcionarioService)
         {
@@ -24,9 +24,9 @@ namespace DespesaViagem.Server.Controllers
             Result<Funcionario> result = await _funcionarioService.Alterar(funcionario);
 
             if (result.IsFailure)
-                return BadRequest(result.Error);            
+                return BadRequest(new ServiceResponse<Funcionario> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(result.Value);
+            return Ok(new ServiceResponse<Funcionario> { Conteudo = result.Value });
         }
 
         [HttpPost]
@@ -37,14 +37,14 @@ namespace DespesaViagem.Server.Controllers
                 {
                     NomeCompleto = request.NomeCompleto,
                     CPF = request.CPF,
-                    Matricula = request.Matricula ?? string.Empty,                    
+                    Matricula = request.Matricula ?? string.Empty,
                     Username = request.Username
                 }, request.Password);
 
             if (result.IsFailure)
                 return BadRequest(new ServiceResponse<int> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(new ServiceResponse<int> { Conteudo = result.Value.Id, Mensagem = "Usuário cadastrado com sucesso." } );
+            return Ok(new ServiceResponse<int> { Conteudo = result.Value.Id, Mensagem = "Usuário cadastrado com sucesso." });
         }
     }
 }

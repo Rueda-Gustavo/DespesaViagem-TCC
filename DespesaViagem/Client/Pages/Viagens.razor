@@ -93,10 +93,14 @@
     {
         var usuario = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         string idUsuario = usuario.User.FindFirst(ClaimTypes.NameIdentifier).Value.ToString() ?? "0";
-        ViagemService.Viagens.ForEach(v => Console.WriteLine(v.StatusViagem.ToString()));
-
-        return ViagemService.Viagens
-        .Any(v => v.StatusViagem == StatusViagem.EmAndamento || v.StatusViagem == StatusViagem.Aberta);
+        if (ViagemService.Viagens.Any())
+        {
+            ViagemService.Viagens.ForEach(v => Console.WriteLine(v.StatusViagem.ToString()));
+            return ViagemService.Viagens
+                .Any(v => v.StatusViagem == StatusViagem.EmAndamento || v.StatusViagem == StatusViagem.Aberta);
+        }
+        else
+            return false;
     }
 
     private void AbrirFormulario() => FormularioAberto = true;

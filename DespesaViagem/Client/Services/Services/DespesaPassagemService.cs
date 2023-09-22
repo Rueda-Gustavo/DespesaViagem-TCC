@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Client.Services.Interfaces;
 using DespesaViagem.Shared.DTOs.Despesas;
+using DespesaViagem.Shared.Models.Core.Helpers;
 using System.Net.Http.Json;
 
 namespace DespesaViagem.Client.Services.Services
@@ -55,17 +56,26 @@ namespace DespesaViagem.Client.Services.Services
 
         public async Task<Result<DespesaPassagemDTO>> GetDespesa(int IdDespesa)
         {
-            DespesaPassagemDTO response = await _httpClient
-                          .GetFromJsonAsync<DespesaPassagemDTO>($"api/DespesaPassagem/{IdDespesa}") ?? new();
+            try
+            {
+                var response = await _httpClient
+              .GetFromJsonAsync<ServiceResponse<DespesaPassagemDTO>>($"api/DespesaPassagem/{IdDespesa}") ?? new();
 
-            if (response == null || response.Id == 0)
-                return Result.Failure<DespesaPassagemDTO>("Nenhuma viagem encontrada!");
-                       
-                        
-            Console.WriteLine("Sucesso - DespesaPassagemService - Client");
-            DespesasChanged.Invoke();
+                if (response.Conteudo is null || response.Conteudo.Id == 0)
+                    return Result.Failure<DespesaPassagemDTO>("Despesa com passagem não encontrada!");
 
-            return Result.Success(response);
+
+                Console.WriteLine("Sucesso - DespesaPassagemService - Client");
+                DespesasChanged.Invoke();
+
+                return Result.Success(response.Conteudo);
+            }
+            catch
+            {
+                Console.WriteLine("Falha - DespesaPassagemService - Client");
+                return new();
+            }
+
         }
     }
 }

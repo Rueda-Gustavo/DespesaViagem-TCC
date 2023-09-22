@@ -39,7 +39,7 @@ namespace DespesaViagem.Server.Mapping
                 cfg.CreateMap<DespesaHospedagemDTO, DespesaHospedagem>()
                 //.ForMember(dst => dst.NomeDespesa, opt => opt.Ignore())
                 .ForMember(dst => dst.Viagem, opt => opt.Ignore())
-                .ForMember(dst => dst.Endereco, opt => opt.Ignore())
+                //.ForMember(dst => dst.Endereco, opt => opt.Ignore())
                 .ForMember(dst => dst.TotalDespesa, opt => opt.Ignore());
                 ;
             });

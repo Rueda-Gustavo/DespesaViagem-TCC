@@ -95,7 +95,7 @@
 
         _ = int.TryParse(claimNameIdentifier, out int idFuncionario);
         Console.WriteLine("Id do usuário logado: {0}", idFuncionario);
-        
+
         Viagem.IdFuncionario = idFuncionario;
         Viagem.Funcionario = await ViagemService.GetFuncionario(idFuncionario);
 
@@ -127,11 +127,19 @@
 
     private async Task HandleViagem()
     {
-        if (Adicionar)
-            await ViagemService.AdicionarViagem(Viagem);
-        else
-            await ViagemService.AtualizarViagem(Viagem);
-        await JSRuntime.InvokeVoidAsync("alert", "Dados salvos com sucesso!");
-        await FecharFormulario();
+        try
+        {
+            if (Adicionar)
+                await ViagemService.AdicionarViagem(Viagem);
+            else
+                await ViagemService.AtualizarViagem(Viagem);
+            await JSRuntime.InvokeVoidAsync("alert",ViagemService.Mensagem);
+            //await JSRuntime.InvokeVoidAsync("alert", "Dados salvos com sucesso!");
+            await FecharFormulario();
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", ex.Message + "\n" + ViagemService.Mensagem);
+        }
     }
 }

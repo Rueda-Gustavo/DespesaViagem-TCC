@@ -19,6 +19,7 @@ namespace DespesaViagem.Shared.Models.Core.Helpers
         [Column(TypeName = "varchar(100)")]
         public string Estado { get; set; } = string.Empty;
         [JsonIgnore]
-        public ICollection<DespesaHospedagem> DespesasHospedagem { get; set; } = new Collection<DespesaHospedagem>();
+        //public ICollection<DespesaHospedagem> DespesasHospedagem { get; set; } = new Collection<DespesaHospedagem>();
+        public DespesaHospedagem DespesaHospedagem { get; set; } = new();
     }
 }

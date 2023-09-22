@@ -2,6 +2,7 @@
 @page "/viagens/{idViagem:int}/{pagina:int}/{tipoDespesa}"
 @inject IViagemService ViagemService
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @implements IDisposable
 @attribute [Authorize]
 
@@ -195,7 +196,7 @@
     protected override async Task OnInitializedAsync()
     {
         ViagemService.ViagensChanged += StateHasChanged;
-
+        
         Viagem = await ViagemService.GetViagem(IdViagem);
 
         if (Viagem.StatusViagem == StatusViagem.EmAndamento)
@@ -241,7 +242,16 @@
 
     private async Task ObterFuncionario()
     {
-        Viagem.Funcionario = await ViagemService.GetFuncionario(Viagem.IdFuncionario);
+        AuthenticationState usuarioLogado = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var claimNameIdentifier = usuarioLogado.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+        _ = int.TryParse(claimNameIdentifier, out int idFuncionario);
+        Console.WriteLine("Id do usuário logado: {0}", idFuncionario);
+
+        Viagem.IdFuncionario = idFuncionario;
+        Viagem.Funcionario = await ViagemService.GetFuncionario(idFuncionario);
+
+        //Viagem.Funcionario = await ViagemService.GetFuncionario(Viagem.IdFuncionario);
     }
 
     private void ObterSubtotal()

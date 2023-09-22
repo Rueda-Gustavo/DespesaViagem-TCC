@@ -12,14 +12,14 @@ namespace DespesaViagem.Services.Services
     {
         private readonly IViagemRepository _viagemRepository;
         private readonly IDespesasRepository<DespesaHospedagem> _despesaRepository;
-        private readonly IEnderecoRepository _enderecoRepository;
+        //private readonly IEnderecoRepository _enderecoRepository;
 
         public DespesaHospedagemService(IDespesasRepository<DespesaHospedagem> despesaRepository,
-            IViagemRepository viagemRepository, IEnderecoRepository enderecoRepository)
+            IViagemRepository viagemRepository/*, IEnderecoRepository enderecoRepository*/)
         {
             _viagemRepository = viagemRepository;
             _despesaRepository = despesaRepository;
-            _enderecoRepository = enderecoRepository;
+            //_enderecoRepository = enderecoRepository;
         }
 
         public async Task<Result<IEnumerable<DespesaHospedagem>>> ObterTodasDespesas(int idViagem)
@@ -64,8 +64,10 @@ namespace DespesaViagem.Services.Services
             if (await _despesaRepository.ObterPorId(despesa.Id) is not null)
                 return Result.Failure<DespesaHospedagem>("Já existe uma despesa como essa!");
 
+            /*
             if (await _enderecoRepository.ObterPorId(despesa.IdEndereco) is null || despesa.IdEndereco <= 0)
                 return Result.Failure<DespesaHospedagem>("Forneça um endereço já existente, ou cadastre um novo.");
+            */
 
             Viagem viagem = await _viagemRepository.ObterPorId(despesa.IdViagem);
 

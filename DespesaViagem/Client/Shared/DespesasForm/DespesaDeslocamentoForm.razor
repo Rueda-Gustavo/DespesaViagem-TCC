@@ -119,7 +119,7 @@
         else
             await DespesaDeslocamentoService.AdicionarDespesa(Despesa);
 
-        await JSRuntime.InvokeVoidAsync("alert", $"Dados salvos com sucesso!\nIdViagem: {IdViagem}");
+        await JSRuntime.InvokeVoidAsync("alert", $"Dados salvos com sucesso!");
         await FecharFormulario();
     }
 }

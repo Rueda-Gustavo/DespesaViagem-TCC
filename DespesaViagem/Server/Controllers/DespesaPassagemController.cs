@@ -2,6 +2,7 @@
 using DespesaViagem.Server.Mapping;
 using DespesaViagem.Services.Interfaces;
 using DespesaViagem.Shared.DTOs.Despesas;
+using DespesaViagem.Shared.Models.Core.Helpers;
 using DespesaViagem.Shared.Models.Despesas;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,11 +25,11 @@ namespace DespesaViagem.Server.Controllers
             Result<IEnumerable<DespesaPassagem>> result = await _despesasService.ObterTodasDespesas(idViagem);
 
             if (result.IsFailure)
-                return BadRequest(result.Error);
+                return BadRequest(new ServiceResponse<List<DespesaPassagemDTO>> { Sucesso = false, Mensagem = result.Error });
 
             List<DespesaPassagemDTO> despesas = MappingDTOs.ConverterDTO(result.Value.ToList());
              
-            return Ok(despesas);
+            return Ok(new ServiceResponse<List<DespesaPassagemDTO>> { Conteudo = despesas });
         }
 
         [HttpGet("{id:int}")]
@@ -37,11 +38,11 @@ namespace DespesaViagem.Server.Controllers
             Result<DespesaPassagem> result = await _despesasService.ObterDespesaPorId(id);
 
             if (result.IsFailure)
-                return BadRequest(result.Error);
+                return BadRequest(new ServiceResponse<DespesaPassagemDTO> { Sucesso = false, Mensagem = result.Error });
 
             DespesaPassagemDTO despesa = MappingDTOs.ConverterDTO(result.Value);
 
-            return Ok(despesa);
+            return Ok(new ServiceResponse<DespesaPassagemDTO> { Conteudo = despesa });
         }
 
         [HttpGet("filtro")]
@@ -50,27 +51,27 @@ namespace DespesaViagem.Server.Controllers
             Result<IEnumerable<DespesaPassagem>> result = await _despesasService.ObterDespesasPorFiltro(filtro, idViagem);
 
             if (result.IsFailure)
-                return BadRequest(result.Error);
+                return BadRequest(new ServiceResponse<List<DespesaPassagemDTO>> { Sucesso = false, Mensagem = result.Error });
 
             List<DespesaPassagemDTO> despesas = MappingDTOs.ConverterDTO(result.Value.ToList());
 
-            return Ok(despesas);
+            return Ok(new ServiceResponse<List<DespesaPassagemDTO>> { Conteudo = despesas });
         }
 
         [HttpPost]
         public async Task<ActionResult> AdicionarDespesa(DespesaPassagemDTO despesaDTO)
         {
 
-            DespesaPassagem despesa= MappingDTOs.ConverterDTO(despesaDTO);
+            DespesaPassagem despesa = MappingDTOs.ConverterDTO(despesaDTO);
 
             Result<DespesaPassagem> result = await _despesasService.AdicionarDespesa(despesa);
 
             if (result.IsFailure)
-                return BadRequest(result.Error);
+                return BadRequest(new ServiceResponse<DespesaPassagem> { Sucesso = false, Mensagem = result.Error });
 
             despesa = result.Value;
 
-            return Ok(despesa);
+            return Ok(new ServiceResponse<DespesaPassagem> { Conteudo = despesa });
         }
 
         [HttpPut]
@@ -81,11 +82,12 @@ namespace DespesaViagem.Server.Controllers
             Result<DespesaPassagem> result = await _despesasService.AlterarDespesa(despesa);
 
             if (result.IsFailure)
-                return BadRequest(result.Error);
+                return BadRequest(new ServiceResponse<DespesaPassagem> { Sucesso = false, Mensagem = result.Error });
 
             despesa = result.Value;
 
-            return Ok(despesa);
+            return Ok(new ServiceResponse<DespesaPassagem> { Conteudo = despesa });
+
         }
     }
 }
