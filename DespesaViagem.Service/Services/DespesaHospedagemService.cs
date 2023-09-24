@@ -74,6 +74,12 @@ namespace DespesaViagem.Services.Services
             if (viagem is null || (viagem.StatusViagem != StatusViagem.Aberta && viagem.StatusViagem != StatusViagem.EmAndamento))
                 return Result.Failure<DespesaHospedagem>("Viagem não encontrada ou não existe uma viagem aberta ou em andamento.");
 
+            if (despesa.ValorDiaria <= 0 || despesa.TotalDespesa <= 0)
+                return Result.Failure<DespesaHospedagem>("Insira um valor válido para a despesa.");
+
+            if (despesa.NomeDespesa.Length < 4 || despesa.DescricaoDespesa.Length < 4)
+                return Result.Failure<DespesaHospedagem>("Preencha os campos Nome e Descrição para a despesa. (Mínimo de 4 caracteres)");
+
             viagem.AdicionarDespesa(despesa);
             viagem.AtualizarTotalDespesas();
 
@@ -95,7 +101,10 @@ namespace DespesaViagem.Services.Services
                 viagem.AtualizarDespesa(despesa);
                 await _viagemRepository.Update(viagem);
             }
-            
+
+            if (despesa.NomeDespesa.Length < 4 || despesa.DescricaoDespesa.Length < 4)
+                return Result.Failure<DespesaHospedagem>("Preencha os campos Nome e Descrição para a despesa. (Mínimo de 4 caracteres)");
+
             await _despesaRepository.Update(despesa);
             return Result.Success(despesa);
         }

@@ -24,38 +24,56 @@ namespace DespesaViagem.Client.Services.Services
 
         public async Task<Result<DespesaAlimentacaoDTO>> AdicionarDespesa(DespesaAlimentacaoDTO despesa)
         {
-            var result = await _httpClient
-                          .PostAsJsonAsync("api/DespesaAlimentacao", despesa);
+            try
+            {
+                var result = await _httpClient
+                              .PostAsJsonAsync("api/DespesaAlimentacao", despesa);
 
-            DespesaAlimentacao response = await result.Content.ReadFromJsonAsync<DespesaAlimentacao>() ?? new();
+                var response = await result.Content.ReadFromJsonAsync<ServiceResponse<DespesaAlimentacao>>() ?? new();
 
-            despesa = MappingDTOs.ConverterDTO(response);
+                if (response.Conteudo is null || !response.Sucesso)
+                    return Result.Failure<DespesaAlimentacaoDTO>("Falha para adicionar despesa!");
 
-            if (response == null || response.Id == 0)
-                return Result.Failure<DespesaAlimentacaoDTO>("Falha para adicionar despesa!");
+                despesa = MappingDTOs.ConverterDTO(response.Conteudo);
 
+                Console.WriteLine("Sucesso - DespesaAlimentacaoService - Client");
+                DespesasChanged.Invoke();
 
-            Console.WriteLine("Sucesso - DespesaAlimentacaoService - Client");
-            DespesasChanged.Invoke();
-
-            return Result.Success(despesa);
+                return Result.Success(despesa);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Falha - DespesaAlimentacaoService - Client");
+                Mensagem = ex.Message;
+                return new();
+            }
         }
 
         public async Task<Result<DespesaAlimentacaoDTO>> AtualizarDespesa(DespesaAlimentacaoDTO despesa)
         {
-            var result = await _httpClient
-                          .PutAsJsonAsync("api/DespesaAlimentacao", despesa);
+            try
+            {
+                var result = await _httpClient
+                              .PutAsJsonAsync("api/DespesaAlimentacao", despesa);
 
-            DespesaAlimentacaoDTO response = await result.Content.ReadFromJsonAsync<DespesaAlimentacaoDTO>();
+                var response = await result.Content.ReadFromJsonAsync<ServiceResponse<DespesaAlimentacao>>() ?? new();
 
-            if (response == null || response.Id == 0)
-                return Result.Failure<DespesaAlimentacaoDTO>("Despesa com alimentação não encontrada!");
+                if (response.Conteudo is null || !response.Sucesso)
+                    return Result.Failure<DespesaAlimentacaoDTO>("Despesa com alimentação não encontrada!");
 
+                despesa = MappingDTOs.ConverterDTO(response.Conteudo);
 
-            Console.WriteLine("Sucesso - DespesaAlimentacaoService - Client");
-            DespesasChanged.Invoke();
+                Console.WriteLine("Sucesso - DespesaAlimentacaoService - Client");
+                DespesasChanged.Invoke();
 
-            return Result.Success(response);
+                return Result.Success(despesa);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Falha - DespesaAlimentacaoService - Client");
+                Mensagem = ex.Message;
+                return new();
+            }
         }
 
         public async Task<Result<DespesaAlimentacaoDTO>> GetDespesa(int IdDespesa)
@@ -74,7 +92,8 @@ namespace DespesaViagem.Client.Services.Services
 
                 return Result.Success(response.Conteudo);
 
-            } catch
+            }
+            catch
             {
                 Console.WriteLine("Falha - DespesaAlimentacaoService - Client");
                 Mensagem = "Despesa com alimentação não encontrada!";

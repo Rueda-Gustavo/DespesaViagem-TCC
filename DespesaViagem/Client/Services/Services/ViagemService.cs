@@ -5,6 +5,7 @@ using DespesaViagem.Shared.DTOs.Despesas;
 using DespesaViagem.Shared.DTOs.Helpers;
 using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Core.Helpers;
+using System.Diagnostics;
 using System.Net.Http.Json;
 
 namespace DespesaViagem.Client.Services.Services
@@ -34,12 +35,13 @@ namespace DespesaViagem.Client.Services.Services
 
                 var response = await result.Content.ReadFromJsonAsync<ServiceResponse<ViagemDTO>>() ?? new();
 
-                if (response.Conteudo is null || response.Conteudo.Id == 0)
+                if (response.Conteudo is null || !response.Sucesso)
                 {
                     Mensagem = response.Mensagem;
                     return Result.Failure<ViagemDTO>("Erro para adicionar a viagem.");
                 }
-                    
+
+                Mensagem = "Viagem adicionada com sucesso.";
 
                 Console.WriteLine("Sucesso - ViagemService - Client");
                 ViagensChanged.Invoke();
@@ -51,21 +53,33 @@ namespace DespesaViagem.Client.Services.Services
                 Mensagem = ex.Message;
                 return new();
             }
-            
+
         }
 
         public async Task<Result<ViagemDTO>> AtualizarViagem(ViagemDTO viagem)
         {
-            var result = await _http.PutAsJsonAsync("api/viagem", viagem);
+            try
+            {
+                var result = await _http.PutAsJsonAsync("api/viagem", viagem);
 
-            ViagemDTO response = await result.Content.ReadFromJsonAsync<ViagemDTO>();
+                var response = await result.Content.ReadFromJsonAsync<ServiceResponse<ViagemDTO>>() ?? new();
 
-            if (response is null || response.Id == 0)
-                return Result.Failure<ViagemDTO>("Erro para editar a viagem.");
+                if (response.Conteudo is null || !response.Sucesso)
+                    return Result.Failure<ViagemDTO>("Erro para editar a viagem.");
 
-            Console.WriteLine("Sucesso - ViagemService - Client");
-            ViagensChanged.Invoke();
-            return Result.Success(response); //await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
+                Mensagem = "Viagem atualizada com sucesso.";
+
+                Console.WriteLine("Sucesso - ViagemService - Client");
+                ViagensChanged.Invoke();
+                return Result.Success(response.Conteudo); //await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Falha - ViagemService - Client");
+                Mensagem = ex.Message;
+                return new();
+            }
+
         }
 
         public async Task GetViagens()
@@ -159,7 +173,7 @@ namespace DespesaViagem.Client.Services.Services
                     .GetFromJsonAsync<ServiceResponse<Funcionario>>($"api/funcionario/{CPF}/obterfuncionarioporfiltro")
                     ?? new();
 
-                if (response.Conteudo is null || response.Conteudo.Id == 0 || response.Conteudo.CPF == string.Empty)
+                if (response.Conteudo is null || !response.Sucesso || response.Conteudo.CPF == string.Empty)
                 {
                     Mensagem = response.Mensagem;
                     Console.WriteLine("Funcionário não encontrado.");
@@ -187,7 +201,7 @@ namespace DespesaViagem.Client.Services.Services
                     .GetFromJsonAsync<ServiceResponse<Funcionario>>($"api/funcionario/{idFuncionario}")
                     ?? new();
 
-                if (response.Conteudo is null || response.Conteudo.Id == 0 || response.Conteudo.CPF == string.Empty)
+                if (response.Conteudo is null || !response.Sucesso || response.Conteudo.CPF == string.Empty)
                 {
                     Console.WriteLine("Funcionário não encontrado.");
                     return new();

@@ -33,10 +33,12 @@ namespace DespesaViagem.Shared.Models.Viagens
 
         public Viagem(int id, string nomeViagem, string descricaoViagem, decimal adiantamento, StatusViagem statusViagem, DateTime dataInicial, DateTime dataFinal, Funcionario funcionario)
         {
+            
+
             Id = id;
             NomeViagem = nomeViagem;
             DescricaoViagem = descricaoViagem;
-            Adiantamento = adiantamento;
+            DefinirAdiantamento(adiantamento);//Adiantamento = adiantamento;
             DataInicial = dataInicial;
             DataFinal = dataFinal;
             Adiantamento = adiantamento;
@@ -90,11 +92,11 @@ namespace DespesaViagem.Shared.Models.Viagens
 
         public decimal GerarPrestacaoDeContas()
         {
-            if(StatusViagem == StatusViagem.EmAndamento)
+            if (StatusViagem == StatusViagem.EmAndamento)
                 StatusViagem = StatusViagem.Encerrada;
-            
+
             return Adiantamento - TotalDespesas;
-        }        
+        }
 
         public void AtualizarTotalDespesas()
         {
@@ -102,7 +104,7 @@ namespace DespesaViagem.Shared.Models.Viagens
                 throw new ArgumentException("Sem despesas cadastradas");
 
             decimal totalDespesas = 0m;
-            foreach(var despesa in _despesas)
+            foreach (var despesa in _despesas)
             {
                 totalDespesas += despesa.TotalDespesa;
             }
@@ -123,7 +125,9 @@ namespace DespesaViagem.Shared.Models.Viagens
 
         public void AtualizarDataFinal(DateTime dataFinal)
         {
-
+            if (DataFinal != dataFinal && StatusViagem == StatusViagem.Aberta)
+                DataFinal = dataFinal;
+            VerificarDataInicialeFinal();
         }
 
         public void IniciarViagem()
@@ -157,9 +161,9 @@ namespace DespesaViagem.Shared.Models.Viagens
         public void DefinirAdiantamento(decimal adiantamento)
         {
             if (adiantamento >= 0)
-            {
                 Adiantamento = adiantamento;
-            }
+            else
+                throw new ArgumentException("O adiantamente deve ser um valor válido.");
         }
 
         public void DefinirStatusViagem(StatusViagem statusViagem)

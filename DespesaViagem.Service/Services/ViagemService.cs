@@ -185,6 +185,9 @@ namespace DespesaViagem.Services.Services
 
                 viagem.AdicionarFuncionario(funcionario);
 
+                if (viagem.NomeViagem.Length < 4 || viagem.DescricaoViagem.Length < 4)
+                    return Result.Failure<ViagemDTO>("Preencha os campos Nome e Descrição para a viagem. (Mínimo de 4 caracteres)");
+
                 await _viagemRepository.Insert(viagem);
 
                 return Result.Success(viagemDTO);

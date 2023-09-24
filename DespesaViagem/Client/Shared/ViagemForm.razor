@@ -31,11 +31,11 @@
         <div class="form-group row">
             <div class="col">
                 <label for="DataInicial">Data Inicial</label>
-                <input id="DataInicial" type="date" class="form-control" @bind="Viagem.DataInicial" />
+                <input id="DataInicial" type="datetime-local" class="form-control" @bind="Viagem.DataInicial" />
             </div>
             <div class="col">
                 <label for="DataFinal">Data Final</label>
-                <input id="DataFinal" type="date" class="form-control" @bind="Viagem.DataFinal" />
+                <input id="DataFinal" type="datetime-local" class="form-control" @bind="Viagem.DataFinal" />
             </div>
             <div class="col">
                 <label for="Adiantamento">Adiantamento</label>
@@ -129,13 +129,16 @@
     {
         try
         {
+            Result<ViagemDTO> viagem = new();
             if (Adicionar)
-                await ViagemService.AdicionarViagem(Viagem);
+                viagem = await ViagemService.AdicionarViagem(Viagem);
             else
-                await ViagemService.AtualizarViagem(Viagem);
+                viagem = await ViagemService.AtualizarViagem(Viagem);
+
             await JSRuntime.InvokeVoidAsync("alert",ViagemService.Mensagem);
             //await JSRuntime.InvokeVoidAsync("alert", "Dados salvos com sucesso!");
-            await FecharFormulario();
+
+            if (viagem.IsSuccess) await FecharFormulario();
         }
         catch (Exception ex)
         {

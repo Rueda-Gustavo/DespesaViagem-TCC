@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Infra.Interfaces;
 using DespesaViagem.Services.Interfaces;
+using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Despesas;
 using DespesaViagem.Shared.Models.Viagens;
@@ -66,6 +67,13 @@ namespace DespesaViagem.Services.Services
             if (viagem is null || (viagem.StatusViagem != StatusViagem.Aberta && viagem.StatusViagem != StatusViagem.EmAndamento))
                 return Result.Failure<DespesaAlimentacao>("Viagem não encontrada ou não existe uma viagem aberta ou em andamento.");
 
+            if (despesa.ValorRefeicao <= 0 || despesa.TotalDespesa <= 0)
+                return Result.Failure<DespesaAlimentacao>("Insira um valor válido para a despesa.");
+
+            if (despesa.NomeDespesa.Length < 4 || despesa.DescricaoDespesa.Length < 4)
+                return Result.Failure<DespesaAlimentacao>("Preencha os campos Nome e Descrição para a despesa. (Mínimo de 4 caracteres)");
+
+
             viagem.AdicionarDespesa(despesa);
             viagem.AtualizarTotalDespesas();
 
@@ -88,6 +96,9 @@ namespace DespesaViagem.Services.Services
                 viagem.AtualizarTotalDespesas();
                 await _viagemRepository.Update(viagem);
             }
+
+            if (despesa.NomeDespesa.Length < 4 || despesa.DescricaoDespesa.Length < 4)
+                return Result.Failure<DespesaAlimentacao>("Preencha os campos Nome e Descrição para a despesa. (Mínimo de 4 caracteres)");
 
             await _despesaRepository.Update(despesa);
             return Result.Success(despesa);

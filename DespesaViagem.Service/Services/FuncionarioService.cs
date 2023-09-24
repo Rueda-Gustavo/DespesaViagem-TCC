@@ -114,12 +114,8 @@ namespace DespesaViagem.Services.Services
             {
                 return true;
             }
-
-            funcionario.Matricula = null;
-
+            
             return false;
         }
-
-
     }
 }

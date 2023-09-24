@@ -18,7 +18,7 @@ namespace DespesaViagem.Client.Services.Services
             var result = await _http.PostAsJsonAsync("api/funcionario", request);
             Console.WriteLine("Sucesso - FuncionarioService - Client");
 
-            ServiceResponse<int> response = await result.Content.ReadFromJsonAsync<ServiceResponse<int>>() ?? new() { Sucesso = false } ;
+            ServiceResponse<int> response = await result.Content.ReadFromJsonAsync<ServiceResponse<int>>() ?? new() { Sucesso = false };
 
             return response; //await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
         }

@@ -1,7 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Client.Services.Interfaces;
+using DespesaViagem.Server.Mapping;
 using DespesaViagem.Shared.DTOs.Despesas;
 using DespesaViagem.Shared.Models.Core.Helpers;
+using DespesaViagem.Shared.Models.Despesas;
 using System.Net.Http.Json;
 
 namespace DespesaViagem.Client.Services.Services
@@ -22,36 +24,57 @@ namespace DespesaViagem.Client.Services.Services
 
         public async Task<Result<DespesaDeslocamentoDTO>> AdicionarDespesa(DespesaDeslocamentoDTO despesa)
         {
-            var result = await _httpClient
-                          .PostAsJsonAsync("api/DespesaDeslocamento", despesa);
+            try
+            {
+                var result = await _httpClient
+                              .PostAsJsonAsync("api/DespesaDeslocamento", despesa);
 
-            DespesaDeslocamentoDTO response = await result.Content.ReadFromJsonAsync<DespesaDeslocamentoDTO>();
+                var response = await result.Content.ReadFromJsonAsync<ServiceResponse<DespesaDeslocamento>>() ?? new();
 
-            if (response == null || response.Id == 0)
-                return Result.Failure<DespesaDeslocamentoDTO>("Falha para adicionar despesa!");
+                if (response.Conteudo is null || !response.Sucesso)
+                    return Result.Failure<DespesaDeslocamentoDTO>("Falha para adicionar despesa!");
 
 
-            Console.WriteLine("Sucesso - DespesaDeslocamentoService - Client");
-            DespesasChanged.Invoke();
+                Console.WriteLine("Sucesso - DespesaDeslocamentoService - Client");
+                DespesasChanged.Invoke();
 
-            return Result.Success(response);
+                despesa = MappingDTOs.ConverterDTO(response.Conteudo);
+
+                return Result.Success(despesa);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Falha - DespesaDeslocamentoService - Client");
+                Mensagem = ex.Message;
+                return new();
+            }
         }
 
         public async Task<Result<DespesaDeslocamentoDTO>> AtualizarDespesa(DespesaDeslocamentoDTO despesa)
         {
-            var result = await _httpClient
-                          .PutAsJsonAsync("api/DespesaDeslocamento", despesa);
+            try
+            {
+                var result = await _httpClient
+                              .PutAsJsonAsync("api/DespesaDeslocamento", despesa);
 
-            DespesaDeslocamentoDTO response = await result.Content.ReadFromJsonAsync<DespesaDeslocamentoDTO>();
+                var response = await result.Content.ReadFromJsonAsync<ServiceResponse<DespesaDeslocamento>>() ?? new();
 
-            if (response == null || response.Id == 0)
-                return Result.Failure<DespesaDeslocamentoDTO>("Despesa com deslocamento não encontrada!");
+                if (response.Conteudo is null || !response.Sucesso)
+                    return Result.Failure<DespesaDeslocamentoDTO>("Despesa com deslocamento não encontrada!");
 
+                Console.WriteLine("Sucesso - DespesaDeslocamentoService - Client");
+                DespesasChanged.Invoke();
 
-            Console.WriteLine("Sucesso - DespesaDeslocamentoService - Client");
-            DespesasChanged.Invoke();
+                despesa = MappingDTOs.ConverterDTO(response.Conteudo);
 
-            return Result.Success(response);
+                return Result.Success(despesa);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Falha - DespesaDeslocamentoService - Client");
+                Mensagem = ex.Message;
+                return new();
+            }
         }
         public async Task<Result<DespesaDeslocamentoDTO>> GetDespesa(int IdDespesa)
         {
@@ -69,7 +92,7 @@ namespace DespesaViagem.Client.Services.Services
 
                 return Result.Success(response.Conteudo);
             }
-            catch 
+            catch
             {
                 Console.WriteLine("Falha - DespesaDeslocamentoService - Client");
                 Mensagem = "Despesa com deslocamento não encontrada!";
