@@ -5,6 +5,7 @@ using DespesaViagem.Shared.DTOs.Despesas;
 using DespesaViagem.Shared.DTOs.Helpers;
 using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Core.Helpers;
+using DespesaViagem.Shared.Models.Viagens;
 using System.Diagnostics;
 using System.Net.Http.Json;
 
@@ -33,7 +34,7 @@ namespace DespesaViagem.Client.Services.Services
             {
                 var result = await _http.PostAsJsonAsync("api/viagem", viagem);
 
-                var response = await result.Content.ReadFromJsonAsync<ServiceResponse<ViagemDTO>>() ?? new();
+                var response = await result.Content.ReadFromJsonAsync<ServiceResponse<ViagemDTO>>() ?? new() { Sucesso = false };
 
                 if (response.Conteudo is null || !response.Sucesso)
                 {
@@ -62,7 +63,7 @@ namespace DespesaViagem.Client.Services.Services
             {
                 var result = await _http.PutAsJsonAsync("api/viagem", viagem);
 
-                var response = await result.Content.ReadFromJsonAsync<ServiceResponse<ViagemDTO>>() ?? new();
+                var response = await result.Content.ReadFromJsonAsync<ServiceResponse<ViagemDTO>>() ?? new() { Sucesso = false };
 
                 if (response.Conteudo is null || !response.Sucesso)
                     return Result.Failure<ViagemDTO>("Erro para editar a viagem.");
@@ -79,7 +80,35 @@ namespace DespesaViagem.Client.Services.Services
                 Mensagem = ex.Message;
                 return new();
             }
+        }
 
+        public async Task<Result<ViagemDTO>> IniciarViagem()
+        {
+            try
+            {
+                var result = await _http.PatchAsync("api/viagem/Iniciar", null);
+
+                var response = await result.Content.ReadFromJsonAsync<ServiceResponse<ViagemDTO>>() ?? new() { Sucesso = false };
+
+                if (response.Conteudo is null || !response.Sucesso)
+                    return Result.Failure<ViagemDTO>("Erro para iniciar a viagem.");
+
+                Mensagem = "Viagem iniciada com sucesso.";
+
+                ViagemDTO viagemAntiga = Viagens.FirstOrDefault(v => v.Id == response.Conteudo.Id) ?? new();
+                Viagens.Remove(viagemAntiga);
+                Viagens.Add(response.Conteudo);
+
+                Console.WriteLine("Sucesso - ViagemService - Client");
+                ViagensChanged.Invoke();
+                return Result.Success(response.Conteudo); //await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Falha - ViagemService - Client");
+                Mensagem = ex.Message;
+                return new();
+            }
         }
 
         public async Task GetViagens()
@@ -87,7 +116,7 @@ namespace DespesaViagem.Client.Services.Services
             try
             {
                 var response = await _http
-                   .GetFromJsonAsync<ServiceResponse<List<ViagemDTO>>>("api/Viagem") ?? new();
+                   .GetFromJsonAsync<ServiceResponse<List<ViagemDTO>>>("api/Viagem") ?? new() { Sucesso = false };
 
                 if (response.Conteudo is null || !response.Conteudo.Any())
                 {
@@ -114,7 +143,7 @@ namespace DespesaViagem.Client.Services.Services
             try
             {
                 var response = await _http
-                    .GetFromJsonAsync<ServiceResponse<List<ViagemDTO>>>($"api/Viagem") ?? new();
+                    .GetFromJsonAsync<ServiceResponse<List<ViagemDTO>>>($"api/Viagem") ?? new() { Sucesso = false };
 
                 if (response.Conteudo is null || !response.Conteudo.Any())
                     //Mensagem = "Nenhuma viagem encontrada!";
@@ -141,7 +170,7 @@ namespace DespesaViagem.Client.Services.Services
             try
             {
                 var response = await _http
-                    .GetFromJsonAsync<ServiceResponse<ViagemDTO>>($"api/Viagem/{idViagem}") ?? new();
+                    .GetFromJsonAsync<ServiceResponse<ViagemDTO>>($"api/Viagem/{idViagem}") ?? new() { Sucesso = false };
 
                 if (response.Conteudo is null)
                 {
@@ -164,14 +193,14 @@ namespace DespesaViagem.Client.Services.Services
                 return new ViagemDTO();
             }
         }
-
+        /*
         public async Task<FuncionarioDTO> GetFuncionario(string CPF)
         {
             try
             {
                 var response = await _http
                     .GetFromJsonAsync<ServiceResponse<Funcionario>>($"api/funcionario/{CPF}/obterfuncionarioporfiltro")
-                    ?? new();
+                    ?? new() { Sucesso = false };
 
                 if (response.Conteudo is null || !response.Sucesso || response.Conteudo.CPF == string.Empty)
                 {
@@ -192,14 +221,15 @@ namespace DespesaViagem.Client.Services.Services
                 return new();
             }
         }
-
+        */
+        /*
         public async Task<FuncionarioDTO> GetFuncionario(int idFuncionario)
         {
             try
             {
                 var response = await _http
                     .GetFromJsonAsync<ServiceResponse<Funcionario>>($"api/funcionario/{idFuncionario}")
-                    ?? new();
+                    ?? new() { Sucesso = false };
 
                 if (response.Conteudo is null || !response.Sucesso || response.Conteudo.CPF == string.Empty)
                 {
@@ -219,14 +249,14 @@ namespace DespesaViagem.Client.Services.Services
                 return new();
             }
         }
-
+        */
         public async Task<List<DespesaDTO>> ObterDespesas(int idViagem)
         {
             try
             {
                 var response = await _http
                     .GetFromJsonAsync<ServiceResponse<List<DespesaDTO>>>($"api/Viagem/ObterDespesas/{idViagem}")
-                    ?? new();
+                    ?? new() { Sucesso = false };
 
                 if (response.Conteudo is null || !response.Conteudo.Any())
                 {
@@ -252,7 +282,7 @@ namespace DespesaViagem.Client.Services.Services
             {
                 var response = await _http
                     .GetFromJsonAsync<ServiceResponse<DespesasPorPagina>>($"api/Viagem/ObterDespesasPorPagina/{idViagem}/{pagina}")
-                    ?? new();
+                    ?? new() { Sucesso = false };
 
                 if (response.Conteudo is null)
                 {
@@ -280,7 +310,7 @@ namespace DespesaViagem.Client.Services.Services
             {
                 var response = await _http
                 .GetFromJsonAsync<ServiceResponse<DespesasPorPagina>>($"api/Viagem/ObterTodasDespesasPaginadasPorTipo/{idViagem}/{pagina}/{tipoDespesa}")
-                ?? new();
+                ?? new() { Sucesso = false };
 
                 if (response.Conteudo is null)
                 {
@@ -309,7 +339,7 @@ namespace DespesaViagem.Client.Services.Services
             {
                 var response = await _http
                     .GetFromJsonAsync<ServiceResponse<List<DespesaPorCategoria>>>($"api/Viagem/ObterDespesasPorCategoria/{idViagem}")
-                    ?? new();
+                    ?? new() { Sucesso = false };
 
                 if (response.Conteudo is null || !response.Conteudo.Any())
                 {

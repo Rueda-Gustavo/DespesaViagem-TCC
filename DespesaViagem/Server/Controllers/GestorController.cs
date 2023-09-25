@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Services.Interfaces;
+using DespesaViagem.Shared.DTOs.Helpers;
 using DespesaViagem.Shared.Models.Core.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,15 +19,16 @@ namespace DespesaViagem.Server.Controllers
         {
             _gestorService = gestorService;
         }
+
         [HttpPut]
-        public async Task<ActionResult> AlterarGestor(Gestor gestor)
+        public async Task<ActionResult> AlterarGestor(GestorDTO gestor)
         {
             Result<Gestor> result = await _gestorService.Alterar(gestor);
 
             if (result.IsFailure)
-                return BadRequest(result.Error);
+                return BadRequest(new ServiceResponse<Gestor> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(result.Value);
+            return Ok(new ServiceResponse<Gestor> { Conteudo = result.Value });
         }
 
         [HttpPost]
@@ -35,9 +37,9 @@ namespace DespesaViagem.Server.Controllers
             Result<Gestor> result = await _gestorService.Adicionar(gestor);
 
             if (result.IsFailure)
-                return BadRequest(result.Error);            
+                return BadRequest(new ServiceResponse<Gestor> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(result.Value);
+            return Ok(new ServiceResponse<Gestor> { Conteudo = result.Value });
         }
 
         [HttpGet("lista-funcionarios")]
@@ -48,9 +50,9 @@ namespace DespesaViagem.Server.Controllers
             Result<IEnumerable<Funcionario>> result = await _gestorService.ObterListaFuncionarios(int.Parse(idGestor));
 
             if (result.IsFailure)
-                return BadRequest(result.Error);            
+                return BadRequest(new ServiceResponse<IEnumerable<Funcionario>> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(result.Value);
+            return Ok(new ServiceResponse<IEnumerable<Funcionario>> { Conteudo = result.Value });
 
         }
     }

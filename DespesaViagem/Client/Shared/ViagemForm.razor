@@ -1,4 +1,5 @@
 ﻿@inject IViagemService ViagemService
+@inject IFuncionarioService FuncionarioService
 @inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @implements IDisposable
@@ -73,7 +74,6 @@
             </button>
         </div>
     </form>
-
 </div>
 
 @code {
@@ -97,7 +97,7 @@
         Console.WriteLine("Id do usuário logado: {0}", idFuncionario);
 
         Viagem.IdFuncionario = idFuncionario;
-        Viagem.Funcionario = await ViagemService.GetFuncionario(idFuncionario);
+        Viagem.Funcionario = await FuncionarioService.GetFuncionario(idFuncionario);
 
         ViagemService.ViagensChanged += StateHasChanged;
         if (IdViagem > 0)

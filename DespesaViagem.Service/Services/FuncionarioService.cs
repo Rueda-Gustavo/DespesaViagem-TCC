@@ -1,6 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
+using CSharpFunctionalExtensions.ValueTasks;
 using DespesaViagem.Infra.Interfaces;
 using DespesaViagem.Services.Interfaces;
+using DespesaViagem.Shared.DTOs.Helpers;
 using DespesaViagem.Shared.Models.Core.Helpers;
 
 namespace DespesaViagem.Services.Services
@@ -11,7 +13,7 @@ namespace DespesaViagem.Services.Services
         private readonly IGestorRepository _gestorRepository;
         private readonly IUsuarioRepository _usuarioRepository;
 
-        public FuncionarioService(IFuncionarioRepository funcionarioRepository, 
+        public FuncionarioService(IFuncionarioRepository funcionarioRepository,
                                   IGestorRepository gestorRepository,
                                   IUsuarioRepository usuarioRepository)
         {
@@ -84,12 +86,24 @@ namespace DespesaViagem.Services.Services
             return Result.Success(funcionario);
         }
 
-        public async Task<Result<Funcionario>> Alterar(Funcionario funcionario)
+        public async Task<Result<Funcionario>> Alterar(FuncionarioDTO funcionarioDTO)
         {
-            if (!await FuncionarioJaExiste(funcionario))
+            if (!await FuncionarioJaExiste(funcionarioDTO))
                 return Result.Failure<Funcionario>("Funcionario não encontrado!");
 
+            Funcionario funcionario = await _funcionarioRepository.ObterPorId(funcionarioDTO.Id);
+
+            funcionario.NomeCompleto = funcionarioDTO.NomeCompleto;
+            funcionario.Username = funcionarioDTO.Username;
+            funcionario.CPF = funcionarioDTO.CPF;
+            funcionario.Matricula = funcionarioDTO.Matricula;
+
             funcionario.Gestor = (await _funcionarioRepository.ObterPorId(funcionario.Id)).Gestor;
+
+            var duplicidadesFuncionario = await VerificaDuplicidades(funcionario);
+
+            if (duplicidadesFuncionario.IsFailure)
+                return Result.Failure<Funcionario>(duplicidadesFuncionario.Error);
 
             await _funcionarioRepository.Update(funcionario);
             return Result.Success(funcionario);
@@ -114,8 +128,38 @@ namespace DespesaViagem.Services.Services
             {
                 return true;
             }
-            
+
             return false;
+        }
+
+        private async Task<bool> FuncionarioJaExiste(FuncionarioDTO funcionario)
+        {
+
+            if (await _usuarioRepository.UsuarioJaExiste(funcionario.CPF) ||
+                await _usuarioRepository.UsuarioJaExiste(funcionario.Username) ||
+                (funcionario.Matricula is not null && await _funcionarioRepository.FuncionarioJaExiste(funcionario.Matricula)))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private async Task<Result<string>> VerificaDuplicidades(Funcionario funcionario)
+        {
+            if ((await _funcionarioRepository.ObterPorFiltro(funcionario.Username)).Count() > 1)
+            {
+                return Result.Failure<string>("Username já está em uso!");
+            }
+
+            var matricula = await _funcionarioRepository.ObterPorFiltro(funcionario.Matricula);
+
+            if (matricula is not null && matricula.Count() > 1)
+            {
+                return Result.Failure<string>("Matrícula já cadastrada!");
+            }
+
+            return Result.Success("Sem duplicidades");
         }
     }
 }

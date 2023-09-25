@@ -1,4 +1,7 @@
-﻿using DespesaViagem.Client.Services.Interfaces;
+﻿using DespesaViagem.Client.Pages;
+using DespesaViagem.Client.Services.Interfaces;
+using DespesaViagem.Shared.DTOs.Viagens;
+using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
 using System.Net.Http.Json;
 
@@ -30,6 +33,24 @@ namespace DespesaViagem.Client.Services.Services
             ServiceResponse<bool> response = await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>() ?? new() { Sucesso = false };
 
             return response;//await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+        }
+
+        public async Task<ServiceResponse<RolesUsuario>> ObterTipoUsuario()
+        {
+
+
+            try
+            {
+                var response = await _http.GetFromJsonAsync<ServiceResponse<RolesUsuario>>("api/usuario/tipo-usuario") ?? new() { Sucesso = false };
+                Console.WriteLine("Sucesso - UsuarioService - Client");
+
+                return response;
+            }
+            catch
+            {
+                Console.WriteLine("Falha - ViagemService - Client");
+                return new() { Sucesso = false, Mensagem = "Falha para carregar o usuário." };
+            }
         }
     }
 }

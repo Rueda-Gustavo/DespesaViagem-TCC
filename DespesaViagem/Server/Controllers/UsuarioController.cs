@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Services.Interfaces;
+using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -52,9 +53,23 @@ namespace DespesaViagem.Server.Controllers
 
             if (!response.IsSuccess)
             {
-                return BadRequest(new ServiceResponse<bool> { Conteudo = false, Mensagem = response.Error });
+                return BadRequest(new ServiceResponse<bool> { Sucesso = false, Conteudo = false, Mensagem = response.Error });
             }
             return Ok(new ServiceResponse<bool> { Conteudo = true, Mensagem = "Senha alterada com sucesso." });
+        }
+
+        [HttpGet("tipo-usuario")]
+        public async Task<ActionResult<ServiceResponse<RolesUsuario>>> ObterTipoUsuario()
+        {
+            string idUsuario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
+
+            Result<RolesUsuario> response = await _usuarioService.ObterTipoUsuario(int.Parse(idUsuario));
+
+            if (!response.IsSuccess)
+            {
+                return BadRequest(new ServiceResponse<RolesUsuario> { Sucesso = false, Mensagem = response.Error });
+            }
+            return Ok(new ServiceResponse<RolesUsuario> { Conteudo = response.Value });
         }
     }
 }

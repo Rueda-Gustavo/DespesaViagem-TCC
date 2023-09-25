@@ -58,6 +58,15 @@ else
                         </ul>
                     </div>
                 }
+                else if (viagem.StatusViagem == StatusViagem.Aberta)
+                {
+                    <AuthorizeView Roles="Funcionario">
+                        <div style="float:right;">
+                            <button class="btn btn-outline-dark" @onclick="IniciarViagem">Iniciar viagem</button>
+                        </div>
+                    </AuthorizeView>
+
+                }
             </div>
         </div>
     }
@@ -107,7 +116,7 @@ else
         NavigationManager.NavigateTo($"/viagens/{idViagem}/1");
     }
 
-    /*    
+    /*
     private void AdicionarDespesa(int idViagem)
         {
         NavigationManager.NavigateTo($"/viagens/adicionar-despesa/{idViagem}");
@@ -115,7 +124,7 @@ else
     */
 
     private void AbrirFormularioDespesa(TiposDespesas tipoDespesa, int idViagem)
-    {        
+    {
         FormularioDespesaAberto = true;
         switch (tipoDespesa)
         {
@@ -140,9 +149,19 @@ else
     {
         FormularioDespesaAberto = false;
         DespesaForm = null;
-        NavigationManager.NavigateTo($"/viagens/{idViagem}/0");
+        NavigationManager.NavigateTo($"/viagens");
     }
-    
+
+    private async Task IniciarViagem()
+    {
+        bool confirma = await JSRuntime.InvokeAsync<bool>("confirm", "Tem certeza de que deseja continuar?");
+        if (confirma)
+        {
+            await ViagemService.IniciarViagem();
+            await JSRuntime.InvokeVoidAsync("alert", ViagemService.Mensagem);
+        }
+    }
+
     public RenderFragment ObterDespesaForm(Type tipoDespesa, int idViagem, int idDespesa)
     {
         return builder =>
@@ -157,5 +176,5 @@ else
             builder.CloseComponent();
         };
     }
-    
+
 }

@@ -1,7 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Infra.Interfaces;
+using DespesaViagem.Infra.Repositories;
 using DespesaViagem.Services.Interfaces;
+using DespesaViagem.Shared.DTOs.Helpers;
 using DespesaViagem.Shared.Models.Core.Helpers;
+using System.Numerics;
 
 namespace DespesaViagem.Services.Services
 {
@@ -82,10 +85,33 @@ namespace DespesaViagem.Services.Services
             return Result.Success(gestor);
         }
 
-        public async Task<Result<Gestor>> Alterar(Gestor gestor)
+        /*
+                     if (!await FuncionarioJaExiste(funcionarioDTO))
+                return Result.Failure<Funcionario>("Funcionario não encontrado!");
+
+            Funcionario funcionario = await _funcionarioRepository.ObterPorId(funcionarioDTO.Id);
+
+            funcionario.NomeCompleto = funcionarioDTO.NomeCompleto;
+            funcionario.Username = funcionarioDTO.Username;
+            funcionario.CPF = funcionarioDTO.CPF;
+            funcionario.Matricula = funcionarioDTO.Matricula;
+         */
+
+        public async Task<Result<Gestor>> Alterar(GestorDTO gestorDTO)
         {
-            if (!await GestorJaExiste(gestor))
+            if (!await GestorJaExiste(gestorDTO))
                 return Result.Failure<Gestor>("Gestor não encontrado!");
+
+            Gestor gestor = await _gestorRepository.ObterPorId(gestorDTO.Id);
+
+            gestor.NomeCompleto = gestorDTO.NomeCompleto;
+            gestor.Username = gestorDTO.Username;
+            gestor.CPF = gestorDTO.CPF;
+
+            var duplicidadesGestor = await VerificaDuplicidades(gestor);
+
+            if (duplicidadesGestor.IsFailure)
+                return Result.Failure<Gestor>(duplicidadesGestor.Error);
 
             await _gestorRepository.Update(gestor);
             return Result.Success(gestor);
@@ -100,7 +126,7 @@ namespace DespesaViagem.Services.Services
             await _gestorRepository.Delete(Gestor);
             return Result.Success(Gestor);
         }
-
+        /*
         private async Task<bool> GestorJaExiste(Gestor gestor)
         {
             if ((await _gestorRepository.ObterPorFiltro(gestor.CPF)).Any() || await _gestorRepository.ObterPorId(gestor.Id) is not null)
@@ -108,6 +134,49 @@ namespace DespesaViagem.Services.Services
                 return true;
             }
             return false;
+        }
+
+        private async Task<bool> GestorJaExiste(GestorDTO gestor)
+        {
+            if ((await _gestorRepository.ObterPorFiltro(gestor.CPF)).Any() || await _gestorRepository.ObterPorId(gestor.Id) is not null)
+            {
+                return true;
+            }
+            return false;
+        }
+        */
+        private async Task<bool> GestorJaExiste(Gestor gestor)
+        {
+
+            if (await _gestorRepository.UsuarioJaExiste(gestor.CPF) ||
+                await _gestorRepository.UsuarioJaExiste(gestor.Username))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private async Task<bool> GestorJaExiste(GestorDTO gestor)
+        {
+
+            if (await _gestorRepository.UsuarioJaExiste(gestor.CPF) ||
+                await _gestorRepository.UsuarioJaExiste(gestor.Username))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private async Task<Result<string>> VerificaDuplicidades(Gestor gestor)
+        {
+            if ((await _gestorRepository.ObterPorFiltro(gestor.Username)).Count() > 1)
+            {
+                return Result.Failure<string>("Username já está em uso!");
+            }            
+
+            return Result.Success("Sem duplicidades");
         }
     }
 }

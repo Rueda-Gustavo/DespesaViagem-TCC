@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Services.Interfaces;
+using DespesaViagem.Shared.DTOs.Helpers;
 using DespesaViagem.Shared.Models.Core.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +20,7 @@ namespace DespesaViagem.Server.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> AlterarFuncionario(Funcionario funcionario)
+        public async Task<ActionResult> AlterarFuncionario(FuncionarioDTO funcionario)
         {
             Result<Funcionario> result = await _funcionarioService.Alterar(funcionario);
 

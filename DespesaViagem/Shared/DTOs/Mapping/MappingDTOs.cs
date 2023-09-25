@@ -360,5 +360,38 @@ namespace DespesaViagem.Server.Mapping
             return mapper.Map<FuncionarioDTO>(funcionario);
         }
 
+        public static Gestor ConverterDTO(GestorDTO gestorDTO)
+        {
+            MapperConfiguration config = new(cfg =>
+            {
+                cfg.CreateMap<GestorDTO, Gestor>()
+                .ForMember(dst => dst.PasswordHash, opt => opt.Ignore())
+                .ForMember(dst => dst.PasswordSalt, opt => opt.Ignore())
+                //.ForMember(dst => dst.Endereco, opt => opt.Ignore())
+                //.ForMember(dst => dst.TotalDespesa, opt => opt.Ignore());
+                ;
+            });
+
+            Mapper mapper = new(config);
+
+            return mapper.Map<Gestor>(gestorDTO);
+        }
+
+        public static GestorDTO ConverterDTO(Gestor gestor)
+        {
+            MapperConfiguration config = new(cfg =>
+            {
+                cfg.CreateMap<Gestor, GestorDTO>();
+                //.ForMember(dst => dst., opt => opt.Ignore())
+                //.ForMember(dst => dst.PasswordSalt, opt => opt.Ignore())
+                //.ForMember(dst => dst.Endereco, opt => opt.Ignore())
+                //.ForMember(dst => dst.TotalDespesa, opt => opt.Ignore());
+                ;
+            });
+
+            Mapper mapper = new(config);
+
+            return mapper.Map<GestorDTO>(gestor);
+        }
     }
 }

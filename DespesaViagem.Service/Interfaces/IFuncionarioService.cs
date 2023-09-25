@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DespesaViagem.Shared.DTOs.Helpers;
 using DespesaViagem.Shared.Models.Core.Helpers;
 
 namespace DespesaViagem.Services.Interfaces
@@ -7,6 +8,6 @@ namespace DespesaViagem.Services.Interfaces
     {        
         Task<Result<Funcionario>> ObterPorCPF(string CPF);
         Task<Result<Funcionario>> Adicionar(Funcionario funcionario, string password);
-        Task<Result<Funcionario>> Alterar(Funcionario funcionario);
+        Task<Result<Funcionario>> Alterar(FuncionarioDTO funcionario);
     }
 }

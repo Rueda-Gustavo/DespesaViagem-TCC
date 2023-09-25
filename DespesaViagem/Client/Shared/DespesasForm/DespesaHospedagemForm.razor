@@ -128,7 +128,7 @@
     }
 
     private async Task HandleDespesa()
-    {
+    {   /*
         Despesa.IdViagem = IdViagem;
         if (IdDespesa > 0)
             await DespesaHospedagemService.AtualizarDespesa(Despesa);
@@ -137,5 +137,24 @@
 
         await JSRuntime.InvokeVoidAsync("alert", $"Dados salvos com sucesso!");
         await FecharFormulario();
+        */
+
+        try
+        {
+            Result<DespesaHospedagemDTO> despesa = new();
+            Despesa.IdViagem = IdViagem;
+
+            if (Adicionar)
+                despesa = await DespesaHospedagemService.AdicionarDespesa(Despesa);
+            else
+                despesa = await DespesaHospedagemService.AtualizarDespesa(Despesa);
+
+            if (despesa.IsSuccess) await FecharFormulario();
+            else await JSRuntime.InvokeVoidAsync("alert", despesa.Error);
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", ex.Message + "\n" + DespesaHospedagemService.Mensagem);
+        }
     }
 }

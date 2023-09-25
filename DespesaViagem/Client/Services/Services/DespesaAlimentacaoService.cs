@@ -32,7 +32,7 @@ namespace DespesaViagem.Client.Services.Services
                 var response = await result.Content.ReadFromJsonAsync<ServiceResponse<DespesaAlimentacao>>() ?? new();
 
                 if (response.Conteudo is null || !response.Sucesso)
-                    return Result.Failure<DespesaAlimentacaoDTO>("Falha para adicionar despesa!");
+                    return Result.Failure<DespesaAlimentacaoDTO>(response.Mensagem);
 
                 despesa = MappingDTOs.ConverterDTO(response.Conteudo);
 

@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Infra.Interfaces;
 using DespesaViagem.Services.Interfaces;
+using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -97,6 +98,17 @@ namespace DespesaViagem.Services.Services
             passwordSalt = hmac.Key;
             passwordHash = hmac
                 .ComputeHash(Encoding.UTF8.GetBytes(passoword));
+        }
+
+        public async Task<Result<RolesUsuario>> ObterTipoUsuario(int idUsuario)
+        {
+            Usuario? usuario = await _usuarioRepository.ObterUsuario(idUsuario);
+            if (usuario is null)
+            {
+                return Result.Failure<RolesUsuario>("Usuário não encontrado!");
+            }
+
+            return Result.Success(usuario.TipoDeUsuario);
         }
     }
 }

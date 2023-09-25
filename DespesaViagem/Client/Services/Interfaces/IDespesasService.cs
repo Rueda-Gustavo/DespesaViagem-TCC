@@ -8,7 +8,7 @@ namespace DespesaViagem.Client.Services.Interfaces
     {
         event Action DespesasChanged;
         //T Despesa { get; set; }
-        //string Mensagem { get; set; }
+        string Mensagem { get; set; }
         Task<Result<T>> GetDespesa(int IdDespesa);
         Task<Result<T>> AtualizarDespesa(T Despesa);
         Task<Result<T>> AdicionarDespesa(T Despesa);
