@@ -4,6 +4,7 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJSRuntime JSRuntime
+@inherits BotaoUsuario
 
 <PageTitle>Login</PageTitle>
 
@@ -50,15 +51,15 @@
     protected override void OnInitialized()
     {
         Uri uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        if(QueryHelpers.ParseQuery(uri.Query).TryGetValue("returnUrl", out StringValues url))
-        {            
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("returnUrl", out StringValues url))
+        {
             returnUrl = url.ToString();
         }
     }
 
     private async Task HandleLogin()
     {
-        carregando = true;        
+        carregando = true;
         ServiceResponse<string> resultadoLogin = await UsuarioService.Login(usuario);
         carregando = false;
 
@@ -68,7 +69,9 @@
 
             await LocalStorage.SetItemAsync("tokenJwt", resultadoLogin.Conteudo);
             await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            //await JSRuntime.InvokeVoidAsync("alert", "Sucesso no login!");
+            //await JSRuntime.InvokeVoidAsync("alert", "Sucesso no login!");            
+            
+            BotaoUsuarioChanged();
             NavigationManager.NavigateTo(returnUrl);
         }
         else

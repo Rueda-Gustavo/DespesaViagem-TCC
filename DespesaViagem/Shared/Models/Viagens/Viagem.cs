@@ -28,13 +28,10 @@ namespace DespesaViagem.Shared.Models.Viagens
         public Funcionario Funcionario { get; private set; }
         public int IdFuncionario { get; private set; }
 
-
         private readonly List<Despesa> _despesas = new();
 
         public Viagem(int id, string nomeViagem, string descricaoViagem, decimal adiantamento, StatusViagem statusViagem, DateTime dataInicial, DateTime dataFinal, Funcionario funcionario)
         {
-            
-
             Id = id;
             NomeViagem = nomeViagem;
             DescricaoViagem = descricaoViagem;

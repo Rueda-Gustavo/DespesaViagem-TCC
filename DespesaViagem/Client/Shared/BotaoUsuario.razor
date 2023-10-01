@@ -4,7 +4,7 @@
 
 <div class="btn-group dropdown">
     <button @onclick="ToggleMenuUsuario"
-    @onfocusout="EsconderMenuUsuario"
+            @onfocusout="EsconderMenuUsuario"
             class="btn btn-secondary dropdown-toggle botao-usuario mx-3">
         <i class="oi oi-person"></i>
     </button>
@@ -35,7 +35,7 @@
 
     private void ToggleMenuUsuario()
     {
-        mostrarMenuUsuario = !mostrarMenuUsuario;
+        mostrarMenuUsuario = !mostrarMenuUsuario;        
     }
 
     private async Task EsconderMenuUsuario()
@@ -48,6 +48,7 @@
     {
         await LocalStorage.RemoveItemAsync("tokenJwt");
         await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        StateHasChanged();
         NavigationManager.NavigateTo("");
     }
     protected override async Task OnInitializedAsync()
@@ -57,4 +58,10 @@
         if (usuarioLogado is not null && usuarioLogado.Identity.IsAuthenticated)
             username = usuarioLogado.FindFirst(ClaimTypes.Name).Value;
     }   
+
+    public void BotaoUsuarioChanged()
+    {
+        StateHasChanged();
+        Console.WriteLine("Sucesso - O botão foi renderizado novamente!!");
+    }
 }
