@@ -89,10 +89,9 @@ namespace DespesaViagem.Shared.Models.Viagens
 
         public decimal GerarPrestacaoDeContas()
         {
-            if (StatusViagem == StatusViagem.EmAndamento)
-                StatusViagem = StatusViagem.Encerrada;
-
-            return Adiantamento - TotalDespesas;
+            if (StatusViagem != StatusViagem.Aberta || StatusViagem != StatusViagem.Cancelada)
+                return Adiantamento - TotalDespesas;
+            throw new ArgumentException("A viagem está em aberta ou foi cancelada. Não é possível gerar prestação de contas.");
         }
 
         public void AtualizarTotalDespesas()

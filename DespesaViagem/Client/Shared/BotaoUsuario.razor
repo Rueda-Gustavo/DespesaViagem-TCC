@@ -2,16 +2,19 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 
+<button id="btnObterUsername" class="d-none" @onclick="ObterUsername" disabled hidden></button>
+
+
 <div class="btn-group dropdown">
     <button @onclick="ToggleMenuUsuario"
-            @onfocusout="EsconderMenuUsuario"
+    @onfocusout="EsconderMenuUsuario"
             class="btn btn-secondary dropdown-toggle botao-usuario mx-3">
         <i class="oi oi-person"></i>
     </button>
     <div class="dropdown-menu dropdown-menu-right @CssClassBotaoUsuario">
+        <span class="username font-monospace mb-1" id="username" style="margin-left: 0;width: 100%;">@username</span>
         <AuthorizeView>
-            <Authorized>
-                <span class="username font-monospace mb-1" style="margin-left: 0;width: 100%;">@username</span>
+            <Authorized>                
                 <a href="/perfil" class="dropdown-item mb-1 btn-usuario" style="margin-left: 0;max-width: 7.5rem;">Perfil</a>
                 <button class="dropdown-item btn-usuario" @onclick="Logout" style="margin-left: 0;max-width: 7.5rem;">Logout</button>
             </Authorized>
@@ -20,12 +23,8 @@
                 <a href="/cadastro" class="dropdown-item btn-usuario" style="margin-left: 0; max-width: 7.5rem;">Cadastrar</a>
             </NotAuthorized>
         </AuthorizeView>
-
     </div>
-
 </div>
-
-
 @code {
     private bool mostrarMenuUsuario = false;
 
@@ -35,7 +34,7 @@
 
     private void ToggleMenuUsuario()
     {
-        mostrarMenuUsuario = !mostrarMenuUsuario;        
+        mostrarMenuUsuario = !mostrarMenuUsuario;
     }
 
     private async Task EsconderMenuUsuario()
@@ -48,20 +47,23 @@
     {
         await LocalStorage.RemoveItemAsync("tokenJwt");
         await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        username = string.Empty;
         StateHasChanged();
         NavigationManager.NavigateTo("");
     }
     protected override async Task OnInitializedAsync()
     {
+        await ObterUsername();
+    }
+
+    private async Task ObterUsername()
+    {
         ClaimsPrincipal usuarioLogado = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
         if (usuarioLogado is not null && usuarioLogado.Identity.IsAuthenticated)
             username = usuarioLogado.FindFirst(ClaimTypes.Name).Value;
-    }   
 
-    public void BotaoUsuarioChanged()
-    {
+        Console.WriteLine(username);
         StateHasChanged();
-        Console.WriteLine("Sucesso - O botão foi renderizado novamente!!");
     }
 }

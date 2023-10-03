@@ -75,3 +75,14 @@
     justify-content: center;
     align-items: center;    
 }
+
+.btn-iniciar-viagem {
+    color: #fff;
+    background-color: #0fa825;
+}
+
+    .btn-iniciar-viagem:hover {
+        background-color: #00de64;
+        border-color: #064b08;
+        color: #064b08;
+    }

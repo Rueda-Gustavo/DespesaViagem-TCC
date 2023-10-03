@@ -262,7 +262,7 @@ namespace DespesaViagem.Services.Services
             if (viagemAberta is null || !viagemAberta.Any())
                 return Result.Failure<ViagemDTO>("Não há nenhuma viagem Aberta");
 
-            Viagem viagem = viagemAberta.First();
+            Viagem viagem = viagemAberta.First() ?? new();
 
             viagem.IniciarViagem();
             await _viagemRepository.Update(viagem);

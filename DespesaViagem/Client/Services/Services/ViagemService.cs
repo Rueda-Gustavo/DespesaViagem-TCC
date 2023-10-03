@@ -358,6 +358,64 @@ namespace DespesaViagem.Client.Services.Services
             }
 
         }
+
+        public async Task<Result<ViagemDTO>> CancelarViagem()
+        {
+            try
+            {
+                var result = await _http.PatchAsync("api/viagem/Cancelar", null);
+
+                var response = await result.Content.ReadFromJsonAsync<ServiceResponse<ViagemDTO>>() ?? new() { Sucesso = false };
+
+                if (response.Conteudo is null || !response.Sucesso)
+                    return Result.Failure<ViagemDTO>("Erro para cancelar a viagem.");
+
+                Mensagem = "Viagem cancelada com sucesso.";
+
+                ViagemDTO viagemAntiga = Viagens.FirstOrDefault(v => v.Id == response.Conteudo.Id) ?? new();
+                Viagens.Remove(viagemAntiga);
+                Viagens.Add(response.Conteudo);
+
+                Console.WriteLine("Sucesso - ViagemService - Client");
+                ViagensChanged.Invoke();
+                return Result.Success(response.Conteudo); //await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Falha - ViagemService - Client");
+                Mensagem = ex.Message;
+                return new();
+            }
+        }
+
+        public async Task<Result<ViagemDTO>> EncerrarViagem()
+        {
+            try
+            {
+                var result = await _http.PatchAsync("api/viagem/Encerrar", null);
+
+                var response = await result.Content.ReadFromJsonAsync<ServiceResponse<ViagemDTO>>() ?? new() { Sucesso = false };
+
+                if (response.Conteudo is null || !response.Sucesso)
+                    return Result.Failure<ViagemDTO>("Erro para encerrar a viagem.");
+
+                Mensagem = "Viagem encerrada com sucesso.";
+
+                ViagemDTO viagemAntiga = Viagens.FirstOrDefault(v => v.Id == response.Conteudo.Id) ?? new();
+                Viagens.Remove(viagemAntiga);
+                Viagens.Add(response.Conteudo);
+
+                Console.WriteLine("Sucesso - ViagemService - Client");
+                ViagensChanged.Invoke();
+                return Result.Success(response.Conteudo); //await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Falha - ViagemService - Client");
+                Mensagem = ex.Message;
+                return new();
+            }
+        }
     }
 }
 

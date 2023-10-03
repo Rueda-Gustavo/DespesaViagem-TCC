@@ -23,5 +23,7 @@ namespace DespesaViagem.Client.Services.Interfaces
         Task<Result<ViagemDTO>> AdicionarViagem(ViagemDTO viagem);
         Task<Result<ViagemDTO>> AtualizarViagem(ViagemDTO viagem);
         Task<Result<ViagemDTO>> IniciarViagem();
+        Task<Result<ViagemDTO>> CancelarViagem();
+        Task<Result<ViagemDTO>> EncerrarViagem();
     }
 }

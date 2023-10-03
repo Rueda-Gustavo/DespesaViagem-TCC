@@ -62,7 +62,8 @@ else
                 {
                     <AuthorizeView Roles="Funcionario">
                         <div style="float:right;">
-                            <button class="btn btn-outline-dark" @onclick="IniciarViagem">Iniciar viagem</button>
+                            <button class="btn btn-danger" @onclick="CancelarViagem">Cancelar <i class="bi bi-x-octagon"></i></button>
+                            <button class="btn btn-iniciar-viagem mx-2" @onclick="IniciarViagem">Iniciar <i class="bi bi-play-circle"></i></button>
                         </div>
                     </AuthorizeView>
 
@@ -154,10 +155,20 @@ else
 
     private async Task IniciarViagem()
     {
-        bool confirma = await JSRuntime.InvokeAsync<bool>("confirm", "Tem certeza de que deseja continuar?");
+        bool confirma = await JSRuntime.InvokeAsync<bool>("confirm", "Tem certeza de que deseja iniciar a viagem?");
         if (confirma)
         {
             await ViagemService.IniciarViagem();
+            await JSRuntime.InvokeVoidAsync("alert", ViagemService.Mensagem);
+        }
+    }
+
+    private async Task CancelarViagem()
+    {
+        bool confirma = await JSRuntime.InvokeAsync<bool>("confirm", "Tem certeza de que deseja cancelar a viagem?");
+        if (confirma)
+        {
+            await ViagemService.CancelarViagem();
             await JSRuntime.InvokeVoidAsync("alert", ViagemService.Mensagem);
         }
     }

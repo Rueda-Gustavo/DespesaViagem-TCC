@@ -4,19 +4,37 @@
 @inject IFuncionarioService FuncionarioService
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JSRuntime
 @implements IDisposable
 @attribute [Authorize]
 
 <h3>Detalhes da viagem</h3>
 <a href="/viagens" class="btn btn-outline-primary">Voltar</a>
+<button class="btn btn-primary d-xl-none m-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasResponsive" aria-controls="offcanvasResponsive">Detalhes da viagem</button>
 <div class="container" style="margin: 0 0;">
     <div class="d-flex">
-        <div class="form-inline mb-3">
+        <div class="form-inline mb-3 d-flex">
+
+            @if (Viagem.StatusViagem == StatusViagem.EmAndamento)
+            {
+                <div class="dropdown-center dropdown">
+                    <AuthorizeView Roles="Funcionario">
+                        <button class="btn btn-outline-secondary dropdown-toggle" title="Adicionar despesa" data-bs-toggle="dropdown" aria-expanded="false">
+                            Despesas <i class="bi bi-file-earmark-plus-fill"></i>
+                        </button>
+                    </AuthorizeView>
+                    <ul class="dropdown-menu">
+                        <li><buttton class="dropdown-item" @onclick="(() => AbrirFormularioDespesa(TiposDespesas.Alimentação, Viagem.Id))">Alimentação</buttton></li>
+                        <li><button class="dropdown-item" @onclick="(() => AbrirFormularioDespesa(TiposDespesas.Deslocamento, Viagem.Id))">Deslocamento</button></li>
+                        <li><button class="dropdown-item" @onclick="(() => AbrirFormularioDespesa(TiposDespesas.Hospedagem, Viagem.Id))">Hospedagem</button></li>
+                        <li><button class="dropdown-item" @onclick="(() => AbrirFormularioDespesa(TiposDespesas.Passagem, Viagem.Id))">Passagem</button></li>
+                    </ul>
+                </div>
+            }
             <div class="dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Filtro
+                <button class="btn btn-outline-secondary dropdown-toggle mx-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Filtro <i class="bi bi-funnel"></i>
                 </button>
-                <button class="btn btn-primary d-xl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasResponsive" aria-controls="offcanvasResponsive">Detalhes da viagem</button>
                 <ul class="dropdown-menu">
                     <li><a class="btn btn-outline-secondary dropdown-item" href="/viagens/@IdViagem/1/Alimentação">Alimentação</a></li>
                     <li><a class="btn btn-outline-secondary dropdown-item" href="/viagens/@IdViagem/1/Deslocamento">Deslocamento</a></li>
@@ -36,7 +54,7 @@
                 <!-- Grid com as Despesas -->
                 @if (!DespesasPorPagina.Despesas.Any())
                 {
-                    <span>Nenhuma despesa foi cadastrada, volte para cadastrar uma nova despesa.</span>
+                    <span>Nenhuma despesa foi cadastrada. <br /></span>
                 }
 
                 @foreach (var despesa in DespesasPorPagina.Despesas)
@@ -112,34 +130,54 @@
                                         </span>
                                     </div>
                                 </div>
+                                @if (Viagem.StatusViagem == StatusViagem.Aberta)
+                                {
+                                    <div class="mx-2 d-flex justify-content-center">
+                                        <AuthorizeView Roles="Funcionario">
+                                            <button class="btn btn-danger mx-1" style="top: 3px;" @onclick="CancelarViagem">Cancelar <i class="bi bi-x-octagon"></i></button>
+                                            <button class="btn btn-iniciar-viagem mx-1" style="top: 3px; flex-grow: 1;" @onclick="IniciarViagem">Iniciar <i class="bi bi-play-circle"></i></button>
+                                        </AuthorizeView>
+                                    </div>
+                                }
+                                else if (Viagem.StatusViagem == StatusViagem.EmAndamento)
+                                {
+                                    <div class="mx-2 d-flex justify-content-end">
+                                        <AuthorizeView Roles="Funcionario">
+                                            <button class="btn btn-danger mx-1" style="top: 3px;" @onclick="EncerrarViagem">Encerrar <i class="bi bi-calendar2-check"></i></button>
+                                        </AuthorizeView>
+                                    </div>
+                                }
                             </div>
                         </div>
                         <div class="row">
-                            <div class="card-viagem m-2" type="button" data-bs-toggle="collapse" data-bs-target="#resumoDespesas" aria-expanded="false" aria-controls="resumoDespesas">
-                                <div class="accordion accordion-flush" id="accordionTotalDespesasPorCategoria">
-                                    <div class="accordion-item">
-                                        <h2 class="accordion-header">
-                                            <button class="accordion-button collapsed resumo-despesas-btn" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                                                Mostrar resumo das despesas
-                                            </button>
-                                        </h2>
-                                        <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionTotalDespesasPorCategoria">
-                                            <ul class="list-group list-group-flush">
-                                                <li class="list-group-item"></li>
-                                                @foreach (var despesa in DespesasPorCategoria)
-                                                {
+                            @if (Viagem.StatusViagem != StatusViagem.Aberta)
+                            {
+                                <div class="card-viagem m-2" type="button" data-bs-toggle="collapse" data-bs-target="#resumoDespesas" aria-expanded="false" aria-controls="resumoDespesas">
+                                    <div class="accordion accordion-flush" id="accordionTotalDespesasPorCategoria">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button collapsed resumo-despesas-btn" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                                    Mostrar resumo das despesas
+                                                </button>
+                                            </h2>
+                                            <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionTotalDespesasPorCategoria">
+                                                <ul class="list-group list-group-flush">
+                                                    <li class="list-group-item"></li>
+                                                    @foreach (var despesa in DespesasPorCategoria)
+                                                    {
+                                                        <li class="list-group-item">
+                                                            @despesa.TipoDespesa.ToString() - R$@despesa.TotalDespesa
+                                                        </li>
+                                                    }
                                                     <li class="list-group-item">
-                                                        @despesa.TipoDespesa.ToString() - R$@despesa.TotalDespesa
+                                                        <strong>Total: R$@Viagem.TotalDespesas</strong>
                                                     </li>
-                                                }
-                                                <li class="list-group-item">
-                                                    <strong>Total: R$@Viagem.TotalDespesas</strong>
-                                                </li>
-                                            </ul>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -197,14 +235,14 @@
     protected override async Task OnInitializedAsync()
     {
         ViagemService.ViagensChanged += StateHasChanged;
-        
+
         Viagem = await ViagemService.GetViagem(IdViagem);
 
         if (Viagem.StatusViagem == StatusViagem.EmAndamento)
             Status = "Em andamento";
         else
             Status = Viagem.StatusViagem.ToString();
-        
+
         await ObterDespesas();
         await ObterFuncionario();
         //ObterSubtotal();
@@ -258,7 +296,7 @@
     }
 
     /*private void ObterSubtotal()
-    {
+        {
         Subtotal = Viagem.Adiantamento - Viagem.TotalDespesas;
     }*/
 
@@ -266,10 +304,40 @@
     private async Task FecharFormularioViagem()
     {
         FormularioViagemAberto = false;
-        Viagem = await ViagemService.GetViagem(IdViagem);        
+        Viagem = await ViagemService.GetViagem(IdViagem);
     }
 
     private void HandleViagem() => Console.WriteLine("Teste viagem.");
+
+    private async Task IniciarViagem()
+    {
+        bool confirma = await JSRuntime.InvokeAsync<bool>("confirm", "Tem certeza de que deseja iniciar a viagem?");
+        if (confirma)
+        {
+            await ViagemService.IniciarViagem();
+            await JSRuntime.InvokeVoidAsync("alert", ViagemService.Mensagem);
+        }
+    }
+
+    private async Task CancelarViagem()
+    {
+        bool confirma = await JSRuntime.InvokeAsync<bool>("confirm", "Tem certeza de que deseja cancelar a viagem?");
+        if (confirma)
+        {
+            await ViagemService.CancelarViagem();
+            await JSRuntime.InvokeVoidAsync("alert", ViagemService.Mensagem);
+        }
+    }
+
+    private async Task EncerrarViagem()
+    {
+        bool confirma = await JSRuntime.InvokeAsync<bool>("confirm", "Tem certeza de que deseja encerrar a viagem?");
+        if (confirma)
+        {
+            await ViagemService.EncerrarViagem();
+            await JSRuntime.InvokeVoidAsync("alert", ViagemService.Mensagem);
+        }
+    }
 
     private void LimparFiltro()
     {
@@ -291,7 +359,7 @@
     }
     */
     public void AbrirFormularioDespesa(TiposDespesas tipoDespesa, int idDespesa)
-    {        
+    {
         switch (tipoDespesa)
         {
             case TiposDespesas.Hospedagem:
@@ -306,16 +374,16 @@
             case TiposDespesas.Passagem:
                 DespesaForm = ObterDespesaForm(typeof(DespesaPassagemForm), IdViagem, idDespesa);
                 break;
-        }       
+        }
 
-        FormularioDespesaAberto = true;        
+        FormularioDespesaAberto = true;
     }
 
     public async Task FecharFormularioDespesa()
-    {        
+    {
         FormularioDespesaAberto = false;
         Viagem = await ViagemService.GetViagem(IdViagem);
-        await ObterDespesas();        
+        await ObterDespesas();
         DespesaForm = null;
     }
 

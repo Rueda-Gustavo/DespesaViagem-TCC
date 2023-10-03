@@ -15,14 +15,14 @@
     @if (!PossuiViagemAbertaOuEmAndamento)
     {
         <button class="btn btn-add-viagem" @onclick="AbrirFormulario">
-            Adicionar<FeatherPlus Size="24" Color="#fff" StrokeWidth="2.0f" />
+            Adicionar <i class="bi bi-suitcase-lg"></i>
         </button>
     }
 </AuthorizeView>
 
 <AuthorizeView Roles="Gestor, Administrador">
     <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Filtro
+        Filtro <i class="bi bi-funnel"></i>
     </button>
     <ul class="dropdown-menu">
         @foreach (var funcionario in Funcionarios)

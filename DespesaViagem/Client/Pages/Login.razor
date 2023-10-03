@@ -69,15 +69,20 @@
 
             await LocalStorage.SetItemAsync("tokenJwt", resultadoLogin.Conteudo);
             await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            //await JSRuntime.InvokeVoidAsync("alert", "Sucesso no login!");            
-            
-            BotaoUsuarioChanged();
+            //await JSRuntime.InvokeVoidAsync("alert", "Sucesso no login!");
+
+            //StateHasChanged();
             NavigationManager.NavigateTo(returnUrl);
+            await GetUsername();
         }
         else
         {
             mensagemErro = resultadoLogin.Mensagem;
         }
+    }
 
+    private async Task GetUsername()
+    {
+        await JSRuntime.InvokeVoidAsync("getUsername");
     }
 }
