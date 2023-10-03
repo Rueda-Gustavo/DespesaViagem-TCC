@@ -1,6 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Infra.Interfaces;
-using DespesaViagem.Infra.Repositories;
 using DespesaViagem.Services.Interfaces;
 using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Despesas;

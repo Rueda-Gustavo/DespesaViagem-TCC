@@ -37,8 +37,6 @@ namespace DespesaViagem.Client.Services.Services
 
         public async Task<ServiceResponse<RolesUsuario>> ObterTipoUsuario()
         {
-
-
             try
             {
                 var response = await _http.GetFromJsonAsync<ServiceResponse<RolesUsuario>>("api/usuario/tipo-usuario") ?? new() { Sucesso = false };

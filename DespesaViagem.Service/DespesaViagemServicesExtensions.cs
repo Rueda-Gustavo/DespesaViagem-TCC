@@ -22,7 +22,7 @@ namespace DespesaViagem.Services
             service.AddScoped<IDespesasService<DespesaDeslocamento>, DespesaDeslocamentoService>();
             service.AddScoped<IDespesasService<DespesaPassagem>, DespesaPassagemService>();
             service.AddScoped<IUsuarioService, UsuarioService>();
-
+            service.AddScoped<IAdminService, AdminService>();            
             return service;
         }
     }

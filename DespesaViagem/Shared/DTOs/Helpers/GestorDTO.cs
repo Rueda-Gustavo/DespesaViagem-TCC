@@ -2,5 +2,6 @@
 {
     public class GestorDTO : UsuarioDTO
     {
+        public List<FuncionarioDTO> Funcionarios { get; set; } = new();
     }
 }

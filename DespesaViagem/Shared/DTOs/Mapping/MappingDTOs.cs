@@ -260,8 +260,6 @@ namespace DespesaViagem.Server.Mapping
             return despesasDeslocamentoDTO;
         }
 
-
-
         public static Viagem ConverterDTO(ViagemDTO viagemDTO)
         {
             MapperConfiguration config = new(cfg =>
@@ -325,7 +323,7 @@ namespace DespesaViagem.Server.Mapping
 
             return viagensDTO;
         }
-        
+
         public static Funcionario ConverterDTO(FuncionarioDTO funcionarioDTO)
         {            
             MapperConfiguration config = new(cfg =>
@@ -360,6 +358,32 @@ namespace DespesaViagem.Server.Mapping
             return mapper.Map<FuncionarioDTO>(funcionario);
         }
 
+        public static List<FuncionarioDTO> ConverterDTO(List<Funcionario> funcionarios)
+        {
+            MapperConfiguration config = new(cfg =>
+            {
+                cfg.CreateMap<Gestor, GestorDTO>();
+
+
+                cfg.CreateMap<Funcionario, FuncionarioDTO>();
+                //.ForMember(dst => dst.Funcionario, opt => opt.Ignore())
+                //.ForMember(dst => dst.StatusViagem, opt => opt.MapFrom(src => src.StatusViagem));
+                //.ForMember(dst => dst.StatusViagem, opt => opt.MapFrom(src => src.StatusViagem.ToString()));
+            });
+
+            Mapper mapper = new(config);
+
+            List<FuncionarioDTO> funcionariosDTO = new();
+
+            foreach (var funcionarioDTO in funcionarios)
+            {
+                funcionariosDTO.Add(mapper.Map<FuncionarioDTO>(funcionarioDTO));
+            }
+
+            return funcionariosDTO;
+        }
+
+
         public static Gestor ConverterDTO(GestorDTO gestorDTO)
         {
             MapperConfiguration config = new(cfg =>
@@ -392,6 +416,42 @@ namespace DespesaViagem.Server.Mapping
             Mapper mapper = new(config);
 
             return mapper.Map<GestorDTO>(gestor);
+        }
+
+        public static List<GestorDTO> ConverterDTO(List<Gestor> gestores)
+        {
+            MapperConfiguration config = new(cfg =>
+            {
+                cfg.CreateMap<Gestor, GestorDTO>();               
+                //.ForMember(dst => dst.Funcionario, opt => opt.Ignore())
+                //.ForMember(dst => dst.StatusViagem, opt => opt.MapFrom(src => src.StatusViagem));
+                //.ForMember(dst => dst.StatusViagem, opt => opt.MapFrom(src => src.StatusViagem.ToString()));
+            });
+
+            Mapper mapper = new(config);
+
+            List<GestorDTO> gestoresDTO = new();
+
+            foreach (var gestorDTO in gestores)
+            {
+                gestoresDTO.Add(mapper.Map<GestorDTO>(gestorDTO));
+            }
+
+            return gestoresDTO;
+        }
+
+        public static AdminManutencaoDTO ConverterDTO(AdminManutencao manutencao)
+        {
+            MapperConfiguration config = new(cfg =>
+            {
+                cfg.CreateMap<AdminManutencao, AdminManutencaoDTO>();
+                cfg.CreateMap<Gestor, GestorDTO>();
+                cfg.CreateMap<Funcionario, FuncionarioDTO>();
+            });
+
+            Mapper mapper = new(config);
+
+            return mapper.Map<AdminManutencaoDTO>(manutencao);
         }
     }
 }

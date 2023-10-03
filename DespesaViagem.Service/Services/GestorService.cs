@@ -1,10 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Infra.Interfaces;
-using DespesaViagem.Infra.Repositories;
 using DespesaViagem.Services.Interfaces;
 using DespesaViagem.Shared.DTOs.Helpers;
 using DespesaViagem.Shared.Models.Core.Helpers;
-using System.Numerics;
 
 namespace DespesaViagem.Services.Services
 {
