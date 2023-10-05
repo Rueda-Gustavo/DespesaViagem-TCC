@@ -2,6 +2,7 @@
 @inject NavigationManager NavigationManager
 @inject IViagemService ViagemService
 @inject IGestorService GestorService
+@inject IAdminService AdminService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @implements IDisposable
 @attribute [Authorize]
@@ -55,14 +56,18 @@
     private bool FormularioAberto = false;
     private bool PossuiViagemAbertaOuEmAndamento = false;
 
-    private List<Funcionario> Funcionarios = new();
+    private List<FuncionarioDTO> Funcionarios = new();
 
     protected override async Task OnInitializedAsync()
     {
-        var usuario = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        /*var usuario = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         string tipoDeUsuario = usuario.User.FindFirst(ClaimTypes.Role).Value.ToString() ?? string.Empty;
-        if (tipoDeUsuario == "Gestor")
-            await ObterListaFuncionarios();
+        */
+        string tipoDeUsuario = (await AuthenticationStateProvider.GetAuthenticationStateAsync())
+        .User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Role).Value;
+
+        if (!tipoDeUsuario.Contains(RolesUsuario.Funcionario.ToString()))
+            await ObterListaFuncionarios(tipoDeUsuario);
 
         await ViagemService.GetViagens();
         PossuiViagemAbertaOuEmAndamento = await FuncionarioPossuiViagemEmAndamentoOuAberta();
@@ -75,9 +80,13 @@
         ViagemService.ViagensChanged -= StateHasChanged;
     }
 
-    private async Task ObterListaFuncionarios()
-    {
-        Funcionarios = await GestorService.ObterListaDeFuncionarios();
+    private async Task ObterListaFuncionarios(string tipoDeUsuario)
+    {       
+        if (tipoDeUsuario.Contains(RolesUsuario.Administrador.ToString()))
+            Funcionarios = await AdminService.ObterListaDeFuncionarios();
+        else if (tipoDeUsuario.Contains(RolesUsuario.Gestor.ToString()))
+            Funcionarios = await GestorService.ObterListaDeFuncionarios();
+
         Console.WriteLine(Funcionarios.Count);
     }
 

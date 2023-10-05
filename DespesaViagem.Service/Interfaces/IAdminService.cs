@@ -7,5 +7,6 @@ namespace DespesaViagem.Services.Interfaces
     public interface IAdminService
     {
         Task<Result<AdminManutencaoDTO>> ObterListaUsuarios(int idAdmin);
+        Task<Result<IEnumerable<FuncionarioDTO>>> ObterListaFuncionarios(int idAdmin);
     }
 }

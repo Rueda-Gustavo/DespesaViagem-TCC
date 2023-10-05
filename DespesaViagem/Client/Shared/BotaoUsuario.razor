@@ -17,7 +17,7 @@
             <Authorized>                
                 <a href="/perfil" class="dropdown-item mb-1 btn-usuario" style="margin-left: 0;max-width: 7.5rem;">Perfil</a>
                 <BotaoAdmin />                                
-                <button class="dropdown-item btn-usuario mt-2" @onclick="Logout" style="margin-left: 0;max-width: 7.5rem;">Logout</button>                
+                <button class="dropdown-item btn-usuario mt-1" @onclick="Logout" style="margin-left: 0;max-width: 7.5rem;">Logout</button>                
             </Authorized>
             <NotAuthorized>
                 <a href="/login?returnUrl=@NavigationManager.ToBaseRelativePath(NavigationManager.Uri)" class="dropdown-item btn-usuario mb-1" style="margin-left: 0; max-width: 7.5rem;">Login</a>

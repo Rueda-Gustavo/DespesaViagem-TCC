@@ -45,6 +45,10 @@ namespace DespesaViagem.Services.Services
             {
                 viagens = await _viagemRepository.ObterTodosGestor(idUsuario);
             }
+            else if (usuario.TipoDeUsuario == RolesUsuario.Administrador)
+            {                                
+                viagens = await _viagemRepository.ObterTodos();
+            }
             else
             {
                 viagens = await _viagemRepository.ObterTodos(idUsuario);

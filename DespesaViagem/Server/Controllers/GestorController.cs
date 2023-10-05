@@ -11,7 +11,7 @@ namespace DespesaViagem.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GestorController : UsuariosController<Gestor>
+    public class GestorController : UsuariosController<GestorDTO>
     {
         private readonly IGestorService _gestorService;
 
@@ -23,37 +23,36 @@ namespace DespesaViagem.Server.Controllers
         [HttpPut]
         public async Task<ActionResult> AlterarGestor(GestorDTO gestor)
         {
-            Result<Gestor> result = await _gestorService.Alterar(gestor);
+            Result<GestorDTO> result = await _gestorService.Alterar(gestor);
 
             if (result.IsFailure)
-                return BadRequest(new ServiceResponse<Gestor> { Sucesso = false, Mensagem = result.Error });
+                return BadRequest(new ServiceResponse<GestorDTO> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(new ServiceResponse<Gestor> { Conteudo = result.Value });
+            return Ok(new ServiceResponse<GestorDTO> { Conteudo = result.Value });
         }
-
+        /*
         [HttpPost]
-        public async Task<ActionResult> AdicionarGestor(Gestor gestor)
+        public async Task<ActionResult> AdicionarGestor(GestorDTO gestor)
         {
-            Result<Gestor> result = await _gestorService.Adicionar(gestor);
+            Result<GestorDTO> result = await _gestorService.Adicionar(gestor);
 
             if (result.IsFailure)
-                return BadRequest(new ServiceResponse<Gestor> { Sucesso = false, Mensagem = result.Error });
+                return BadRequest(new ServiceResponse<GestorDTO> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(new ServiceResponse<Gestor> { Conteudo = result.Value });
+            return Ok(new ServiceResponse<GestorDTO> { Conteudo = result.Value });
         }
-
+        */
         [HttpGet("lista-funcionarios")]
         public async Task<ActionResult> ObterListaFuncionario()
         {
             string idGestor = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
 
-            Result<IEnumerable<Funcionario>> result = await _gestorService.ObterListaFuncionarios(int.Parse(idGestor));
+            Result<IEnumerable<FuncionarioDTO>> result = await _gestorService.ObterListaFuncionarios(int.Parse(idGestor));
 
             if (result.IsFailure)
-                return BadRequest(new ServiceResponse<IEnumerable<Funcionario>> { Sucesso = false, Mensagem = result.Error });
+                return BadRequest(new ServiceResponse<List<FuncionarioDTO>> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(new ServiceResponse<IEnumerable<Funcionario>> { Conteudo = result.Value });
-
+            return Ok(new ServiceResponse<List<FuncionarioDTO>> { Conteudo = result.Value.ToList() });
         }
     }
 }

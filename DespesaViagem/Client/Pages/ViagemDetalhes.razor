@@ -244,7 +244,7 @@
             Status = Viagem.StatusViagem.ToString();
 
         await ObterDespesas();
-        await ObterFuncionario();
+        //await ObterFuncionario();
         //ObterSubtotal();
         DespesasPorCategoria = await ViagemService.ObterTotalDespesasPorCategoria(IdViagem);
 
@@ -280,9 +280,10 @@
 
         Subtotal = Viagem.Adiantamento - Viagem.TotalDespesas;
     }
-
+    /*
     private async Task ObterFuncionario()
     {
+        
         AuthenticationState usuarioLogado = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var claimNameIdentifier = usuarioLogado.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
@@ -294,7 +295,7 @@
 
         //Viagem.Funcionario = await ViagemService.GetFuncionario(Viagem.IdFuncionario);
     }
-
+    */
     /*private void ObterSubtotal()
         {
         Subtotal = Viagem.Adiantamento - Viagem.TotalDespesas;

@@ -8,7 +8,7 @@ namespace DespesaViagem.Client.Services.Interfaces
     {
         event Action GestoresChanged;
         string Mensagem { get; set; }
-        Task<List<Funcionario>> ObterListaDeFuncionarios();
+        Task<List<FuncionarioDTO>> ObterListaDeFuncionarios();
         Task<GestorDTO> GetGestor(int idGestor);
         Task<GestorDTO> GetGestor(string CPF);
         Task<Result<GestorDTO>> AtualizarPerfil(GestorDTO gestor);

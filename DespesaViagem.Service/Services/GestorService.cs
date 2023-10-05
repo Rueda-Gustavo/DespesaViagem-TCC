@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Infra.Interfaces;
+using DespesaViagem.Server.Mapping;
 using DespesaViagem.Services.Interfaces;
 using DespesaViagem.Shared.DTOs.Helpers;
 using DespesaViagem.Shared.Models.Core.Helpers;
@@ -17,61 +18,70 @@ namespace DespesaViagem.Services.Services
             _funcionarioRepository = funcionarioRepository;
         }
 
-        public async Task<Result<IEnumerable<Gestor>>> ObterTodos()
+        public async Task<Result<IEnumerable<GestorDTO>>> ObterTodos()
         {
             IEnumerable<Gestor> gestores = await _gestorRepository.ObterTodos();
 
             if (!gestores.Any())
-                return Result.Failure<IEnumerable<Gestor>>("Não foram encontrados Gestores.");
+                return Result.Failure<IEnumerable<GestorDTO>>("Não foram encontrados Gestores.");
 
+            IEnumerable<GestorDTO> gestoresDTO = MappingDTOs.ConverterDTO(gestores.ToList());
 
-            return Result.Success(gestores);
+            return Result.Success(gestoresDTO);
         }
 
-        public async Task<Result<IEnumerable<Funcionario>>> ObterListaFuncionarios(int gestorId)
+        public async Task<Result<IEnumerable<FuncionarioDTO>>> ObterListaFuncionarios(int gestorId)
         {
             IEnumerable<Funcionario> funcionarios = await _funcionarioRepository.ObterFuncionariosPorGestor(gestorId);
 
             if (!funcionarios.Any())
-                return Result.Failure<IEnumerable<Funcionario>>("Não foram encontrados funcionarios.");
+                return Result.Failure<IEnumerable<FuncionarioDTO>>("Não foram encontrados funcionarios.");
 
-            return Result.Success(funcionarios);
+            IEnumerable<FuncionarioDTO> funcionariosDTO = MappingDTOs.ConverterDTO(funcionarios.ToList());
+
+            return Result.Success(funcionariosDTO);
         }
 
-        public async Task<Result<Gestor>> ObterPorId(int id)
+        public async Task<Result<GestorDTO>> ObterPorId(int id)
         {
             //_ = int.TryParse(id, out int idFuncionario);
 
             if (id > 0)
             {
-                Gestor Gestor = await _gestorRepository.ObterPorId(id);
-                if (Gestor is null)
-                    return Result.Failure<Gestor>("Gestor não encontrado.");
+                Gestor gestor = await _gestorRepository.ObterPorId(id);
+                if (gestor is null)
+                    return Result.Failure<GestorDTO>("Gestor não encontrado.");
 
-                return Result.Success(Gestor);
+                GestorDTO gestorDTO = MappingDTOs.ConverterDTO(gestor);
+
+                return Result.Success(gestorDTO);
             }
 
-            return Result.Failure<Gestor>("Especifique um id válido!!");
+            return Result.Failure<GestorDTO>("Especifique um id válido!!");
         }
 
-        public async Task<Result<Gestor>> ObterPorCPF(string CPF)
+        public async Task<Result<GestorDTO>> ObterPorCPF(string CPF)
         {
-            Gestor Gestor = await _gestorRepository.ObterPorCPF(CPF);
+            Gestor gestor = await _gestorRepository.ObterPorCPF(CPF);
 
-            if (Gestor is null)
-                return Result.Failure<Gestor>("Gestor não encontrado. Por favor faça o cadastro do mesmo.");
+            if (gestor is null)
+                return Result.Failure<GestorDTO>("Gestor não encontrado. Por favor faça o cadastro do mesmo.");
 
-            return Result.Success(Gestor);
+            GestorDTO gestorDTO = MappingDTOs.ConverterDTO(gestor);
+
+            return Result.Success(gestorDTO);
         }
 
-        public async Task<Result<IEnumerable<Gestor>>> ObterPorFiltro(string filtro)
+        public async Task<Result<IEnumerable<GestorDTO>>> ObterPorFiltro(string filtro)
         {
             IEnumerable<Gestor> gestores = await _gestorRepository.ObterPorFiltro(filtro);
 
             if (!gestores.Any())
-                return Result.Failure<IEnumerable<Gestor>>("Esses gestores não foram encontrados, por favor faça o cadastro dos mesmos!");
+                return Result.Failure<IEnumerable<GestorDTO>>("Esses gestores não foram encontrados, por favor faça o cadastro dos mesmos!");
 
-            return Result.Success(gestores);
+            IEnumerable<GestorDTO> gestoresDTO = MappingDTOs.ConverterDTO(gestores.ToList());
+
+            return Result.Success(gestoresDTO);
         }
 
         public async Task<Result<Gestor>> Adicionar(Gestor gestor)
@@ -95,10 +105,10 @@ namespace DespesaViagem.Services.Services
             funcionario.Matricula = funcionarioDTO.Matricula;
          */
 
-        public async Task<Result<Gestor>> Alterar(GestorDTO gestorDTO)
+        public async Task<Result<GestorDTO>> Alterar(GestorDTO gestorDTO)
         {
             if (!await GestorJaExiste(gestorDTO))
-                return Result.Failure<Gestor>("Gestor não encontrado!");
+                return Result.Failure<GestorDTO>("Gestor não encontrado!");
 
             Gestor gestor = await _gestorRepository.ObterPorId(gestorDTO.Id);
 
@@ -109,20 +119,22 @@ namespace DespesaViagem.Services.Services
             var duplicidadesGestor = await VerificaDuplicidades(gestor);
 
             if (duplicidadesGestor.IsFailure)
-                return Result.Failure<Gestor>(duplicidadesGestor.Error);
+                return Result.Failure<GestorDTO>(duplicidadesGestor.Error);
 
             await _gestorRepository.Update(gestor);
-            return Result.Success(gestor);
+            return Result.Success(gestorDTO);
         }
 
-        public async Task<Result<Gestor>> Remover(int id)
+        public async Task<Result<GestorDTO>> Remover(int id)
         {
-            Gestor Gestor = await _gestorRepository.ObterPorId(id);
-            if (Gestor is null)
-                return Result.Failure<Gestor>("Gestor não encontrado!");
+            Gestor gestor = await _gestorRepository.ObterPorId(id);
+            if (gestor is null)
+                return Result.Failure<GestorDTO>("Gestor não encontrado!");
 
-            await _gestorRepository.Delete(Gestor);
-            return Result.Success(Gestor);
+            await _gestorRepository.Delete(gestor);
+
+            GestorDTO gestorDTO = MappingDTOs.ConverterDTO(gestor);
+            return Result.Success(gestorDTO);
         }
         /*
         private async Task<bool> GestorJaExiste(Gestor gestor)

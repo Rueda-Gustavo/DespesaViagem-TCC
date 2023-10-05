@@ -19,12 +19,31 @@ namespace DespesaViagem.Client.Services.Services
             _http = http;
         }
 
-        public async Task<List<Funcionario>> ObterListaDeFuncionarios()
+        public async Task<List<FuncionarioDTO>> ObterListaDeFuncionarios()
         {
-            var result = await _http.GetFromJsonAsync<List<Funcionario>>("api/gestor/lista-funcionarios") ?? new();
-            Console.WriteLine("Sucesso - GestorService - Client");
-            
-            return result;
+            try
+            {
+                var response = await _http.GetFromJsonAsync<ServiceResponse<List<FuncionarioDTO>>>("api/gestor/lista-funcionarios") ?? new();
+                Console.WriteLine("Sucesso - GestorService - Client");
+
+                if (response.Conteudo is null || !response.Conteudo.Any())
+                {
+                    Mensagem = response.Mensagem;
+                    return new();
+                }
+                else
+                {
+                    Console.WriteLine("Sucesso - AdminService - Client");
+                    return response.Conteudo;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Falha - GestorService - Client");
+                Mensagem = ex.Message;
+                return new();
+            }
+
         }
 
         public async Task<Result<GestorDTO>> AtualizarPerfil(GestorDTO gestor)
