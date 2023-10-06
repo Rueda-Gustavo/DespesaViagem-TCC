@@ -4,10 +4,10 @@ using DespesaViagem.Shared.Models.Core.Helpers;
 
 namespace DespesaViagem.Services.Interfaces
 {
-    public interface IFuncionarioService : IUsuariosService<Funcionario>
+    public interface IFuncionarioService : IUsuariosService<FuncionarioDTO>
     {        
-        Task<Result<Funcionario>> ObterPorCPF(string CPF);
-        Task<Result<Funcionario>> Adicionar(Funcionario funcionario, string password);
-        Task<Result<Funcionario>> Alterar(FuncionarioDTO funcionario);
+        Task<Result<FuncionarioDTO>> ObterPorCPF(string CPF);
+        Task<Result<FuncionarioDTO>> Adicionar(Funcionario funcionario, string password);
+        Task<Result<FuncionarioDTO>> Alterar(FuncionarioDTO funcionario);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DespesaViagem.Shared.Models.Core.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace DespesaViagem.Shared.Models.Core.Helpers
 {
@@ -11,6 +12,7 @@ namespace DespesaViagem.Shared.Models.Core.Helpers
         [Required]
         public string CPF { get; set; } = string.Empty;
         public string? Matricula { get; set; } = string.Empty;
+        public RolesUsuario TipoDeUsuario { get; set; } = RolesUsuario.Funcionario;
         [Required, StringLength(100, MinimumLength = 6, ErrorMessage = "A senha deve ter de 6 a 100 caracteres.")]
         public string Password { get; set; } = string.Empty;
         [Compare("Password", ErrorMessage = "Senhas diferentes.")]

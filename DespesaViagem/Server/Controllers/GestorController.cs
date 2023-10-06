@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using Azure.Core;
+using CSharpFunctionalExtensions;
 using DespesaViagem.Services.Interfaces;
 using DespesaViagem.Shared.DTOs.Helpers;
 using DespesaViagem.Shared.Models.Core.Helpers;
@@ -30,18 +31,32 @@ namespace DespesaViagem.Server.Controllers
 
             return Ok(new ServiceResponse<GestorDTO> { Conteudo = result.Value });
         }
-        /*
+        
         [HttpPost]
-        public async Task<ActionResult> AdicionarGestor(GestorDTO gestor)
+        public async Task<ActionResult> AdicionarGestor(CadastroUsuario request)
         {
+            /*
             Result<GestorDTO> result = await _gestorService.Adicionar(gestor);
 
             if (result.IsFailure)
                 return BadRequest(new ServiceResponse<GestorDTO> { Sucesso = false, Mensagem = result.Error });
 
             return Ok(new ServiceResponse<GestorDTO> { Conteudo = result.Value });
+            */
+            Result<GestorDTO> result = await _gestorService.Adicionar(
+               new Gestor
+               {
+                   NomeCompleto = request.NomeCompleto,
+                   CPF = request.CPF,                   
+                   Username = request.Username
+               }, request.Password);
+
+            if (result.IsFailure)
+                return BadRequest(new ServiceResponse<int> { Sucesso = false, Mensagem = result.Error });
+
+            return Ok(new ServiceResponse<int> { Conteudo = result.Value.Id, Mensagem = "Usuário cadastrado com sucesso." });
         }
-        */
+        
         [HttpGet("lista-funcionarios")]
         public async Task<ActionResult> ObterListaFuncionario()
         {

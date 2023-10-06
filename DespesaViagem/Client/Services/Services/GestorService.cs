@@ -19,6 +19,25 @@ namespace DespesaViagem.Client.Services.Services
             _http = http;
         }
 
+        public async Task<ServiceResponse<int>> Cadastrar(CadastroUsuario request)
+        {
+            try
+            {
+                var result = await _http.PostAsJsonAsync("api/gestor", request);
+                Console.WriteLine("Sucesso - GestorService - Client");
+
+                ServiceResponse<int> response = await result.Content.ReadFromJsonAsync<ServiceResponse<int>>() ?? new() { Sucesso = false };
+
+                return response; //await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
+            } 
+            catch (Exception ex)
+            {
+                Console.WriteLine("Falha - GestorService - Client");
+                Mensagem = ex.Message;
+                return new();
+            }
+        }
+
         public async Task<List<FuncionarioDTO>> ObterListaDeFuncionarios()
         {
             try

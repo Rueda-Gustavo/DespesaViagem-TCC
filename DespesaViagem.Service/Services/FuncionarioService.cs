@@ -1,6 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
-using CSharpFunctionalExtensions.ValueTasks;
 using DespesaViagem.Infra.Interfaces;
+using DespesaViagem.Server.Mapping;
 using DespesaViagem.Services.Interfaces;
 using DespesaViagem.Shared.DTOs.Helpers;
 using DespesaViagem.Shared.Models.Core.Helpers;
@@ -22,18 +22,19 @@ namespace DespesaViagem.Services.Services
             _usuarioRepository = usuarioRepository;
         }
 
-        public async Task<Result<IEnumerable<Funcionario>>> ObterTodos()
+        public async Task<Result<IEnumerable<FuncionarioDTO>>> ObterTodos()
         {
             IEnumerable<Funcionario> funcionarios = await _funcionarioRepository.ObterTodos();
 
             if (!funcionarios.Any())
-                return Result.Failure<IEnumerable<Funcionario>>("Não foram encontrados funcionários.");
+                return Result.Failure<IEnumerable<FuncionarioDTO>>("Não foram encontrados funcionários.");
 
+            IEnumerable<FuncionarioDTO> funcionariosDTO = MappingDTOs.ConverterDTO(funcionarios.ToList());
 
-            return Result.Success(funcionarios);
+            return Result.Success(funcionariosDTO);
         }
 
-        public async Task<Result<Funcionario>> ObterPorId(int id)
+        public async Task<Result<FuncionarioDTO>> ObterPorId(int id)
         {
             //_ = int.TryParse(id, out int idFuncionario);
 
@@ -41,39 +42,46 @@ namespace DespesaViagem.Services.Services
             {
                 Funcionario funcionario = await _funcionarioRepository.ObterPorId(id);
                 if (funcionario is null)
-                    return Result.Failure<Funcionario>("Funcionário não encontrado.");
+                    return Result.Failure<FuncionarioDTO>("Funcionário não encontrado.");
 
-                return Result.Success(funcionario);
+                FuncionarioDTO funcionarioDTO = MappingDTOs.ConverterDTO(funcionario);
+
+                return Result.Success(funcionarioDTO);
             }
-
-            return Result.Failure<Funcionario>("Especifique um id válido!!");
+            
+            return Result.Failure<FuncionarioDTO>("Especifique um id válido!!");
         }
 
-        public async Task<Result<Funcionario>> ObterPorCPF(string CPF)
+        public async Task<Result<FuncionarioDTO>> ObterPorCPF(string CPF)
         {
             Funcionario funcionario = await _funcionarioRepository.ObterPorCPF(CPF);
 
             if (funcionario is null)
-                return Result.Failure<Funcionario>("Funcionário não encontrado. Por favor faça o cadastro dos mesmos.");
+                return Result.Failure<FuncionarioDTO>("Funcionário não encontrado. Por favor faça o cadastro dos mesmos.");
 
-            return Result.Success(funcionario);
+            FuncionarioDTO funcionarioDTO = MappingDTOs.ConverterDTO(funcionario);
+
+            return Result.Success(funcionarioDTO);
+            //return Result.Success(funcionario);
         }
 
-        public async Task<Result<IEnumerable<Funcionario>>> ObterPorFiltro(string filtro)
+        public async Task<Result<IEnumerable<FuncionarioDTO>>> ObterPorFiltro(string filtro)
         {
             IEnumerable<Funcionario> funcionarios = await _funcionarioRepository.ObterPorFiltro(filtro);
 
             if (!funcionarios.Any())
-                return Result.Failure<IEnumerable<Funcionario>>("Esses funcionarios não foram encontrados, por favor faça o cadastro dos mesmos!");
+                return Result.Failure<IEnumerable<FuncionarioDTO>>("Esses funcionarios não foram encontrados, por favor faça o cadastro dos mesmos!");
 
-            return Result.Success(funcionarios);
+            IEnumerable<FuncionarioDTO> funcionariosDTO = MappingDTOs.ConverterDTO(funcionarios.ToList());
+
+            return Result.Success(funcionariosDTO);
+            //return Result.Success(funcionarios);
         }
 
-        public async Task<Result<Funcionario>> Adicionar(Funcionario funcionario, string password)
+        public async Task<Result<FuncionarioDTO>> Adicionar(Funcionario funcionario, string password)
         {
-
             if (await FuncionarioJaExiste(funcionario))
-                return Result.Failure<Funcionario>("Funcionário já cadastrado.");
+                return Result.Failure<FuncionarioDTO>("Usuário já cadastrado.");
 
             //funcionario.Gestor = await _gestorRepository.ObterPorId(funcionario.Gestor.Id);
 
@@ -83,13 +91,17 @@ namespace DespesaViagem.Services.Services
             funcionario.PasswordSalt = passwordSalt;
 
             await _funcionarioRepository.Insert(funcionario);
-            return Result.Success(funcionario);
+
+            FuncionarioDTO funcionarioDTO = MappingDTOs.ConverterDTO(funcionario);
+
+            return Result.Success(funcionarioDTO);
+            //return Result.Success(funcionario);
         }
 
-        public async Task<Result<Funcionario>> Alterar(FuncionarioDTO funcionarioDTO)
+        public async Task<Result<FuncionarioDTO>> Alterar(FuncionarioDTO funcionarioDTO)
         {
             if (!await FuncionarioJaExiste(funcionarioDTO))
-                return Result.Failure<Funcionario>("Funcionario não encontrado!");
+                return Result.Failure<FuncionarioDTO>("Funcionario não encontrado!");
 
             Funcionario funcionario = await _funcionarioRepository.ObterPorId(funcionarioDTO.Id);
 
@@ -103,20 +115,28 @@ namespace DespesaViagem.Services.Services
             var duplicidadesFuncionario = await VerificaDuplicidades(funcionario);
 
             if (duplicidadesFuncionario.IsFailure)
-                return Result.Failure<Funcionario>(duplicidadesFuncionario.Error);
+                return Result.Failure<FuncionarioDTO>(duplicidadesFuncionario.Error);
 
             await _funcionarioRepository.Update(funcionario);
-            return Result.Success(funcionario);
+
+            funcionarioDTO = MappingDTOs.ConverterDTO(funcionario);
+
+            return Result.Success(funcionarioDTO);
+            //return Result.Success(funcionario);
         }
 
-        public async Task<Result<Funcionario>> Remover(int id)
+        public async Task<Result<FuncionarioDTO>> Remover(int id)
         {
             Funcionario funcionario = await _funcionarioRepository.ObterPorId(id);
             if (funcionario is null)
-                return Result.Failure<Funcionario>("Funcionario não encontrado!");
+                return Result.Failure<FuncionarioDTO>("Funcionario não encontrado!");
 
             await _funcionarioRepository.Delete(funcionario);
-            return Result.Success(funcionario);
+            
+            FuncionarioDTO funcionarioDTO = MappingDTOs.ConverterDTO(funcionario);
+
+            return Result.Success(funcionarioDTO);
+            //return Result.Success(funcionario);
         }
 
         private async Task<bool> FuncionarioJaExiste(Funcionario funcionario)

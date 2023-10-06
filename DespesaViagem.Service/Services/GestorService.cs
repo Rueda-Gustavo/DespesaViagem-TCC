@@ -84,13 +84,21 @@ namespace DespesaViagem.Services.Services
             return Result.Success(gestoresDTO);
         }
 
-        public async Task<Result<Gestor>> Adicionar(Gestor gestor)
+        public async Task<Result<GestorDTO>> Adicionar(Gestor gestor, string password)
         {
             if (await GestorJaExiste(gestor))
-                return Result.Failure<Gestor>("Gestor já cadastrado.");
+                return Result.Failure<GestorDTO>("Usuário já cadastrado.");
+
+            UsuarioService.CriarPasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+
+            gestor.PasswordHash = passwordHash;
+            gestor.PasswordSalt = passwordSalt;
 
             await _gestorRepository.Insert(gestor);
-            return Result.Success(gestor);
+
+            GestorDTO gestorDTO = MappingDTOs.ConverterDTO(gestor);
+
+            return Result.Success(gestorDTO);
         }
 
         /*

@@ -1,5 +1,6 @@
 ﻿@page "/cadastro"
 @inject IFuncionarioService FuncionarioService
+@inject IGestorService GestorService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 
@@ -27,10 +28,13 @@
                     <ValidationMessage For="@(() => usuario.CPF)" />
                 </div>
             </div>
-            <div class="col">
-                <label for="matricula">Matricula <small>(Opcional)</small></label>
-                <InputText id="matricula" @bind-Value="usuario.Matricula" class="form-control"></InputText>
-            </div>
+            @if (usuario.TipoDeUsuario == RolesUsuario.Funcionario)
+            {
+                <div class="col">
+                    <label for="matricula">Matricula <small>(Opcional)</small></label>
+                    <InputText id="matricula" @bind-Value="usuario.Matricula" class="form-control"></InputText>
+                </div>
+            }
         </div>
         <div class="mb-3">
             <label for="password">Senha</label>
@@ -42,7 +46,13 @@
             <InputText id="confirmPassword" @bind-Value="usuario.ConfirmPassword" class="form-control" type="password"></InputText>
             <ValidationMessage For="@(() => usuario.ConfirmPassword)" />
         </div>
-        <button type="submit" class="btn btn-primary">Cadastrar</button>
+        <InputRadioGroup @bind-Value="usuario.TipoDeUsuario">
+            <InputRadio Value="RolesUsuario.Gestor" /> @RolesUsuario.Gestor.ToString()
+            <InputRadio Value="RolesUsuario.Funcionario" /> @RolesUsuario.Funcionario.ToString()
+        </InputRadioGroup>
+        <div class="float-end">
+            <button type="submit" class="btn btn-primary">Cadastrar</button>
+        </div>
         <div class="text-danger">
             <span>@mensagemErro</span>
         </div>
@@ -65,9 +75,23 @@
 
     private async Task HandleCadastro()
     {
+        ServiceResponse<int> result = new() { Sucesso = false };
+
+        //Início - Bloco de cadastro
         carregando = true;
-        var result = await FuncionarioService.Cadastrar(usuario);
+
+        if (usuario.TipoDeUsuario == RolesUsuario.Gestor)
+        {
+            bool confirma = await JSRuntime.InvokeAsync<bool>("confirm", "Deseja se cadastrar como gestor?\nVocê não conseguirá criar viagens e precisará entrar em contato com o administrador para liberar seus acessos.");
+            if (confirma)
+                result = await GestorService.Cadastrar(usuario);
+        }
+        else
+            result = await FuncionarioService.Cadastrar(usuario);
+
         carregando = false;
+        //Fim - Bloco de cadastro
+
         if (result.Sucesso)
         {
             mensagemErro = string.Empty;

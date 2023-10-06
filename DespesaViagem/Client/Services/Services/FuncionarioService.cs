@@ -22,12 +22,22 @@ namespace DespesaViagem.Client.Services.Services
 
         public async Task<ServiceResponse<int>> Cadastrar(CadastroUsuario request)
         {
-            var result = await _http.PostAsJsonAsync("api/funcionario", request);
-            Console.WriteLine("Sucesso - FuncionarioService - Client");
+            try
+            {
+                var result = await _http.PostAsJsonAsync("api/funcionario", request);
+                Console.WriteLine("Sucesso - FuncionarioService - Client");
 
-            ServiceResponse<int> response = await result.Content.ReadFromJsonAsync<ServiceResponse<int>>() ?? new() { Sucesso = false };
+                ServiceResponse<int> response = await result.Content.ReadFromJsonAsync<ServiceResponse<int>>() ?? new() { Sucesso = false };
 
-            return response; //await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
+                return response; //await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Falha - FuncionarioService - Client");
+                Mensagem = ex.Message;
+                return new();
+            }
         }
 
         public async Task<Result<FuncionarioDTO>> AtualizarPerfil(FuncionarioDTO funcionario)

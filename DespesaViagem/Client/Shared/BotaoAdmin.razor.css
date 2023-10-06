@@ -1,11 +1,4 @@
-﻿.dropdown-item:hover {
-    background-color: #5101d4;
-    border-radius: 10px;
-    color: #fff;
-    border: 2px solid #ffb400;
-}
-
-.btn-usuario {
+﻿.btn-usuario {
     background-color: #fff;
     border: 2px solid #5101d4;
     border-radius: 10px;
@@ -13,3 +6,10 @@
     transition: background-color 0.3s ease;
     text-decoration: none !important;
 }
+    .btn-usuario:hover {
+        /*background-color: #5101d4;*/
+        background: linear-gradient(to bottom, #294eff, #5100ad);
+        border-radius: 10px;
+        color: #fff;
+        border: 2px solid #00efff;
+    }

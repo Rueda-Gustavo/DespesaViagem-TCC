@@ -9,7 +9,7 @@ namespace DespesaViagem.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FuncionarioController : UsuariosController<Funcionario>
+    public class FuncionarioController : UsuariosController<FuncionarioDTO>
     {
         private readonly IFuncionarioService _funcionarioService;
 
@@ -22,18 +22,18 @@ namespace DespesaViagem.Server.Controllers
         [HttpPut]
         public async Task<ActionResult> AlterarFuncionario(FuncionarioDTO funcionario)
         {
-            Result<Funcionario> result = await _funcionarioService.Alterar(funcionario);
+            Result<FuncionarioDTO> result = await _funcionarioService.Alterar(funcionario);
 
             if (result.IsFailure)
-                return BadRequest(new ServiceResponse<Funcionario> { Sucesso = false, Mensagem = result.Error });
+                return BadRequest(new ServiceResponse<FuncionarioDTO> { Sucesso = false, Mensagem = result.Error });
 
-            return Ok(new ServiceResponse<Funcionario> { Conteudo = result.Value });
+            return Ok(new ServiceResponse<FuncionarioDTO> { Conteudo = result.Value });
         }
 
         [HttpPost]
         public async Task<ActionResult> AdicionarFuncionario(CadastroUsuario request)
         {
-            Result<Funcionario> result = await _funcionarioService.Adicionar(
+            Result<FuncionarioDTO> result = await _funcionarioService.Adicionar(
                 new Funcionario
                 {
                     NomeCompleto = request.NomeCompleto,
