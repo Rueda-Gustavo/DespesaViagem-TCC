@@ -2,11 +2,6 @@
 using DespesaViagem.Infra.Interfaces;
 using DespesaViagem.Shared.Models.Core.Helpers;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DespesaViagem.Infra.Repositories
 {
@@ -26,21 +21,23 @@ namespace DespesaViagem.Infra.Repositories
 
         public async Task<Gestor> ObterPorId(int id)
         {
-            return await _context.Gestores                
+            return await _context.Gestores
+                .Include(g => g.Funcionarios)
                 .FirstOrDefaultAsync(g => g.Id == id);
         }
 
         public async Task<Gestor> ObterPorCPF(string CPF)
         {
-            return await _context.Gestores                
+            return await _context.Gestores
+                .Include(g => g.Funcionarios)
                 .FirstOrDefaultAsync(g => g.CPF == CPF);
         }
 
         public async Task<IEnumerable<Gestor>> ObterPorFiltro(string filtro)
         {
             return await _context.Gestores
-                
-                .Where(Gestor => Gestor.CPF.Contains(filtro) || 
+                .Include(g => g.Funcionarios)
+                .Where(Gestor => Gestor.CPF.Contains(filtro) ||
                                  Gestor.NomeCompleto.Contains(filtro))
                 .ToListAsync();
         }

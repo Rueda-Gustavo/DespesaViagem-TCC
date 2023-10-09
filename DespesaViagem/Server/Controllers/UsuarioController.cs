@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Services.Interfaces;
+using DespesaViagem.Shared.DTOs.Helpers;
 using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
 using Microsoft.AspNetCore.Authorization;
@@ -19,6 +20,19 @@ namespace DespesaViagem.Server.Controllers
         {
             //_configuration = configuration;
             _usuarioService = usuarioService;
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult> ObterPorId(int id)
+        {
+            Result<UsuarioDTO> result = await _usuarioService.ObterUsuario(id);
+
+            if (result.IsFailure)
+                return BadRequest(new ServiceResponse<UsuarioDTO> { Sucesso = false, Mensagem = result.Error });
+
+            //T usuario = result.Value;
+
+            return Ok(new ServiceResponse<UsuarioDTO> { Conteudo = result.Value });
         }
 
         [HttpPost("login")]

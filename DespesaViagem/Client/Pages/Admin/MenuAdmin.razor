@@ -1,9 +1,145 @@
 ﻿@page "/admin/manutencao"
 @inject IAdminService AdminService
+@inject IUsuarioService UsuarioService
+@inject IFuncionarioService FuncionarioService
+@inject IGestorService GestorService
 @attribute [Authorize(Roles = "Administrador")]
+
+<PageTitle>Administração</PageTitle>
 
 <h3>Administração</h3>
 
+<AuthorizeView Roles="Administrador">
+    <div class="container text-center">
+        <div class="btn-group" role="group">
+            <button class="btn btn-outline-secondary" @onclick="(() => MostrarUsuarios(EnumFiltroAdmin.Funcionarios))">Funcionários</button>
+            <button class="btn btn-outline-secondary" @onclick="(() => MostrarUsuarios(EnumFiltroAdmin.Gestores))">Gestores</button>
+            <button class="btn btn-outline-secondary" @onclick="(() => MostrarUsuarios(EnumFiltroAdmin.Pendentes))">Pendentes</button>
+            <button class="btn btn-outline-secondary" @onclick="(() => mostrarListagem = false)">Limpar</button>
+        </div>
+    </div>
+
+    @if (mostrarListagem)
+    {
+        <div class="container-md">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>@apresentacaoListagem[0]</th>
+                        <th>@apresentacaoListagem[1]</th>
+                        @if (filtro == EnumFiltroAdmin.Funcionarios)
+                        {
+                            <th>@apresentacaoListagem[2]</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @switch (filtro)
+                    {
+                        case EnumFiltroAdmin.Funcionarios:
+                            foreach (var funcionario in manutencao.Funcionarios)
+                            {
+                                <tr>
+                                    <td>@funcionario.Username</td>
+                                    <td>@funcionario.GestorUsername</td>
+                                    <td><button class="btn btn-edit-vinculo" @onclick="(() => AbrirFormManutencao(funcionario.Id, RolesUsuario.Funcionario))"><i class="bi bi-pencil-square"></i></button></td>
+                                </tr>
+                            }
+                            break;
+
+                        case EnumFiltroAdmin.Gestores:
+                            foreach (var gestor in manutencao.Gestores)
+                            {
+                                <tr>
+                                    <td>@gestor.Username</td>
+                                    <td><button class="btn btn-edit-vinculo" @onclick="(() => AbrirFormManutencao(gestor.Id, RolesUsuario.Gestor))"><i class="bi bi-pencil-square"></i></button></td>
+                                </tr>
+                            }
+                            break;
+
+                        case EnumFiltroAdmin.Pendentes:
+                            List<FuncionarioDTO> funcionarios = manutencao.Funcionarios.Where(f => f.GestorId == 0).ToList();
+
+                            foreach (var funcionario in funcionarios)
+                            {
+                                <tr>
+                                    <td>@funcionario.Username</td>
+                                    <td><button class="btn btn-edit-vinculo" @onclick="(() => AbrirFormManutencao(funcionario.Id, RolesUsuario.Funcionario))"><i class="bi bi-pencil-square"></i></button></td>
+                                </tr>
+                            }
+                            break;
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    @if (formManutencaoAberto)
+    {
+        <div class="modal-overlay">
+            <div class="modal-content">
+                <AdminForm Usuario="usuarioSelecionado" FormularioFechado="(() => formManutencaoAberto = false)" Manutencao="manutencao" />
+
+            </div>
+        </div>
+    }
+
+
+
+</AuthorizeView>
+
 @code {
+    private AdminManutencaoDTO manutencao = new();
+
+    private bool formManutencaoAberto = false;
+    private bool mostrarListagem = false;
+    private EnumFiltroAdmin filtro;
+    private string[] apresentacaoListagem = { "Funcionario", "Gestor", "Edição" };
+
+    private UsuarioDTO usuarioSelecionado = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        manutencao = await AdminService.ObterListaDeUsuarios();
+        /*
+        gestoresPendentesDeVinculacao = manutencao.Gestores.Where(g => !g.Funcionarios.Any());
+        gestoresVinculados = manutencao.Gestores.Where(g => g.Funcionarios.Any());
+
+        funcionariosPendentesParaVinculacao = manutencao.Funcionarios.Where(f => f.GestorId == 0);
+        funcionariosVinculados = manutencao.Funcionarios.Where(f => f.GestorId != 0);
+    */
+    }
+
+    private async Task AbrirFormManutencao(int idFuncionario, RolesUsuario tipoDeUsuario)
+    {
+        Console.WriteLine(idFuncionario);
+        usuarioSelecionado = await UsuarioService.GetFuncionario(idFuncionario);
+        formManutencaoAberto = true;
+    }
+
+    private void MostrarUsuarios(EnumFiltroAdmin filtro)
+    {
+
+
+        switch (filtro)
+        {
+            case EnumFiltroAdmin.Funcionarios:
+                apresentacaoListagem[0] = "Funcionarios";
+                apresentacaoListagem[1] = "Gestores";
+                apresentacaoListagem[2] = "Edição";
+                break;
+            case EnumFiltroAdmin.Gestores:
+                apresentacaoListagem[0] = "Gestores";
+                apresentacaoListagem[1] = "Ediçao";
+                break;
+            case EnumFiltroAdmin.Pendentes:
+                apresentacaoListagem[0] = "Pendentes";
+                apresentacaoListagem[1] = "Ediçao";
+                break;
+        }
+
+        this.filtro = filtro;
+        mostrarListagem = true;
+    }
 
 }

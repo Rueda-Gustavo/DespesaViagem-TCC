@@ -1,5 +1,7 @@
 ﻿using DespesaViagem.Client.Pages;
 using DespesaViagem.Client.Services.Interfaces;
+using DespesaViagem.Server.Mapping;
+using DespesaViagem.Shared.DTOs.Helpers;
 using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
@@ -15,6 +17,34 @@ namespace DespesaViagem.Client.Services.Services
         {
             _http = http;
         }
+
+        public async Task<UsuarioDTO> GetFuncionario(int idUsuario)
+        {
+            try
+            {
+                var response = await _http
+                    .GetFromJsonAsync<ServiceResponse<UsuarioDTO>>($"api/usuario/{idUsuario}")
+                    ?? new() { Sucesso = false };
+
+                if (response.Conteudo is null || !response.Sucesso || response.Conteudo.CPF == string.Empty)
+                {
+                    Console.WriteLine("Usuário não encontrado.");
+                    return new();
+                }
+
+                //FuncionarioDTO funcionarioDTO = MappingDTOs.ConverterDTO(response.Conteudo);
+
+                Console.WriteLine("Sucesso - UsuarioService - Client");
+                return response.Conteudo;
+            }
+            catch
+            {
+                Console.WriteLine("Falha - UsuarioService - Client");
+                //Mensagem = "Usuário não encontrado!";
+                return new();
+            }
+        }
+
         public async Task<ServiceResponse<string>> Login(LoginUsuario request)
         {
             var result = await _http.PostAsJsonAsync("api/usuario/login", request);

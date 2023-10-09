@@ -6,6 +6,7 @@
     transition: background-color 0.3s ease;
     text-decoration: none !important;
 }
+
     .btn-usuario:hover {
         /*background-color: #5101d4;*/
         background: linear-gradient(to bottom, #294eff, #5100ad);
@@ -13,3 +14,13 @@
         color: #fff;
         border: 2px solid #00efff;
     }
+
+.btn-edit-vinculo {
+    padding: 8px 9px 5px 10px;
+    min-height: 30px;
+    color: #000;
+    position: relative;
+    /*margin-left: 18rem;*/
+    align-self: end;
+    margin: 0.5rem 1rem -2.5rem 0;
+}

@@ -1,6 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Infra.Interfaces;
+using DespesaViagem.Server.Mapping;
 using DespesaViagem.Services.Interfaces;
+using DespesaViagem.Shared.DTOs.Helpers;
 using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +24,20 @@ namespace DespesaViagem.Services.Services
             _usuarioRepository = usuarioRepository;
             _configuration = configuration;
         }
+
+        public async Task<Result<UsuarioDTO>> ObterUsuario(int idUsuario)
+        {
+            Usuario? usuario = await _usuarioRepository.ObterUsuario(idUsuario);
+            if (usuario is null)
+            {
+                return Result.Failure<UsuarioDTO>("Usuário não encontrado!");
+            }
+
+            UsuarioDTO usuarioDTO = MappingDTOs.ConverterDTO(usuario);
+
+            return Result.Success(usuarioDTO);
+        }
+
         public async Task<Result<string>> Login(string username, string password)
         {
             Usuario? usuario = await _usuarioRepository.ObterUsuario(username);

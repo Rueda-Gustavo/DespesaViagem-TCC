@@ -70,7 +70,7 @@ namespace DespesaViagem.Client.Services.Services
             try
             {
                 var response = await _http
-                    .GetFromJsonAsync<ServiceResponse<Funcionario>>($"api/funcionario/{CPF}/obterfuncionarioporfiltro")
+                    .GetFromJsonAsync<ServiceResponse<FuncionarioDTO>>($"api/funcionario/{CPF}/obterfuncionarioporfiltro")
                     ?? new() { Sucesso = false };
 
                 if (response.Conteudo is null || !response.Sucesso || response.Conteudo.CPF == string.Empty)
@@ -80,14 +80,14 @@ namespace DespesaViagem.Client.Services.Services
                     return new();
                 }
 
-                FuncionarioDTO funcionarioDTO = MappingDTOs.ConverterDTO(response.Conteudo);
+                //FuncionarioDTO funcionarioDTO = MappingDTOs.ConverterDTO(response.Conteudo);
 
-                Console.WriteLine("Sucesso - ViagemService - Client");
-                return funcionarioDTO;
+                Console.WriteLine("Sucesso - FuncionarioService - Client");
+                return response.Conteudo;
             }
             catch
             {
-                Console.WriteLine("Falha - ViagemService - Client");
+                Console.WriteLine("Falha - FuncionarioService - Client");
                 Mensagem = "Funcionario não encontrado!";
                 return new();
             }
@@ -98,7 +98,7 @@ namespace DespesaViagem.Client.Services.Services
             try
             {
                 var response = await _http
-                    .GetFromJsonAsync<ServiceResponse<Funcionario>>($"api/funcionario/{idFuncionario}")
+                    .GetFromJsonAsync<ServiceResponse<FuncionarioDTO>>($"api/funcionario/{idFuncionario}")
                     ?? new() { Sucesso = false };
 
                 if (response.Conteudo is null || !response.Sucesso || response.Conteudo.CPF == string.Empty)
@@ -107,14 +107,14 @@ namespace DespesaViagem.Client.Services.Services
                     return new();
                 }
 
-                FuncionarioDTO funcionarioDTO = MappingDTOs.ConverterDTO(response.Conteudo);
+                //FuncionarioDTO funcionarioDTO = MappingDTOs.ConverterDTO(response.Conteudo);
 
-                Console.WriteLine("Sucesso - ViagemService - Client");
-                return funcionarioDTO;
+                Console.WriteLine("Sucesso - FuncionarioService - Client");
+                return response.Conteudo;
             }
             catch
             {
-                Console.WriteLine("Falha - ViagemService - Client");
+                Console.WriteLine("Falha - FuncionarioService - Client");
                 Mensagem = "Funcionario não encontrado!";
                 return new();
             }

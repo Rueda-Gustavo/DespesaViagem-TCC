@@ -8,5 +8,6 @@ namespace DespesaViagem.Client.Services.Interfaces
         event Action GestoresChanged;
         string Mensagem { get; set; }
         Task<List<FuncionarioDTO>> ObterListaDeFuncionarios();
+        Task<AdminManutencaoDTO> ObterListaDeUsuarios();
     }
 }

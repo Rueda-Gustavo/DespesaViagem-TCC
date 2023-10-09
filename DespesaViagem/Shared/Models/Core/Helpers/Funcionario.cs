@@ -10,9 +10,9 @@ namespace DespesaViagem.Shared.Models.Core.Helpers
         [Column(TypeName = "varchar(30)")]
         public string? Matricula { get; set; } = string.Empty;
         [Column(TypeName = "varchar(15)")]        
-        //public int IdGestor { get; set; }
+        //public int GestorId { get; set; }
         //[JsonIgnore]
-        public Gestor? Gestor { get; set; }        
+        public Gestor? Gestor { get; set; }     
         [JsonIgnore]
         public ICollection<Viagem> Viagens { get; set; } = new Collection<Viagem>();
 

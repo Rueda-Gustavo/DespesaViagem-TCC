@@ -95,7 +95,7 @@ namespace DespesaViagem.Client.Services.Services
             try
             {
                 var response = await _http
-                    .GetFromJsonAsync<ServiceResponse<Gestor>>($"api/gestor/{CPF}/obterfuncionarioporfiltro")
+                    .GetFromJsonAsync<ServiceResponse<GestorDTO>>($"api/gestor/{CPF}/obterfuncionarioporfiltro")
                     ?? new() { Sucesso = false };
 
                 if (response.Conteudo is null || !response.Sucesso || response.Conteudo.CPF == string.Empty)
@@ -105,10 +105,10 @@ namespace DespesaViagem.Client.Services.Services
                     return new();
                 }
 
-                GestorDTO gestorDTO = MappingDTOs.ConverterDTO(response.Conteudo);
+                //GestorDTO gestorDTO = MappingDTOs.ConverterDTO(response.Conteudo);
 
                 Console.WriteLine("Sucesso - GestorService - Client");
-                return gestorDTO;
+                return response.Conteudo;
             }
             catch
             {
@@ -123,7 +123,7 @@ namespace DespesaViagem.Client.Services.Services
             try
             {
                 var response = await _http
-                    .GetFromJsonAsync<ServiceResponse<Gestor>>($"api/gestor/{idGestor}")
+                    .GetFromJsonAsync<ServiceResponse<GestorDTO>>($"api/gestor/{idGestor}")
                     ?? new() { Sucesso = false };
 
                 if (response.Conteudo is null || !response.Sucesso || response.Conteudo.CPF == string.Empty)
@@ -132,10 +132,10 @@ namespace DespesaViagem.Client.Services.Services
                     return new();
                 }
 
-                GestorDTO gestorDTO = MappingDTOs.ConverterDTO(response.Conteudo);
+                //GestorDTO gestorDTO = MappingDTOs.ConverterDTO(response.Conteudo);
 
                 Console.WriteLine("Sucesso - GestorService - Client");
-                return gestorDTO;
+                return response.Conteudo;
             }
             catch
             {

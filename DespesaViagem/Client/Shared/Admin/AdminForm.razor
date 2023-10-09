@@ -1,0 +1,140 @@
+﻿@inject IFuncionarioService FuncionarioService
+@inject IGestorService GestorService
+
+<div class="modal-header">
+    <h5 class="modal-title">
+        <span>Vinculação</span>
+    </h5>
+    <button type="button" class="close" @onclick="FormularioFechado">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+    @if (Usuario.TipoDeUsuario == RolesUsuario.Funcionario)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Funcionario</th>
+                    <th>Gestores</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Usuario.Username</td>
+                    <td>
+                        <select id="funcionarios" class="form-select">
+                            <option>Selecione</option>
+                            @foreach (var gestor in Manutencao.Gestores)
+                            {
+
+                                if (gestor.Id == funcionario.GestorId)
+                                {
+                                    <option value="@gestor.Id" selected>@gestor.Username</option>
+                                }
+                                else
+                                {
+                                    <option value="@gestor.Id">@gestor.Username</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Gestor</th>
+                    <th>Funcionarios</th>
+                    <th>Edição</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td>
+                        <select id="funcionariosPendentes" @onchange="SelecionarFuncionario" class="form-select">
+                            <option value="0">Selecione</option>
+                            @foreach (var funcionario in Manutencao.Funcionarios.Where(f => f.GestorId == 0))
+                            {
+                                <option value="@funcionario.Id">@funcionario.Username</option>
+                            }
+                        </select>
+                    </td>
+                    <td><button class="btn btn-primary @CssClassBotaoAdicionar" @onclick="Vincular">Adicionar <i class="bi bi-plus-circle"></i></button></td>
+                </tr>
+
+                <tr>
+                    <td>@Usuario.Username</td>
+                    @if (gestor.Funcionarios.Count > 0)
+                    {
+                        <td><span>@gestor.Funcionarios[0].Username</span></td>
+                        <td><button class="btn btn-danger" @onclick="(() => RemoverVinculo(gestor.Funcionarios[0].Id))">Desvincular <i class="fa fa-unlink"></i></button></td>
+                    }
+                </tr>
+                @for (int i = 1; i < gestor.Funcionarios.Count; i++)
+                {
+                    <tr>
+                        <td></td>
+                        <td><span>@gestor.Funcionarios[i].Username</span></td>
+                        <td><button class="btn btn-danger" @onclick="(() => RemoverVinculo(gestor.Funcionarios[0].Id))">Desvincular <i class="fa fa-unlink"></i></button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public UsuarioDTO Usuario { get; set; } = new();
+    [Parameter]
+    public EventCallback FormularioFechado { get; set; }
+    [Parameter]
+    public AdminManutencaoDTO Manutencao { get; set; } = new();
+
+    private GestorDTO gestor = new();
+    private FuncionarioDTO funcionario = new();
+
+    private string CssClassBotaoAdicionar = "disabled";
+
+    private FuncionarioDTO funcionarioSelecionado = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Usuario.TipoDeUsuario == RolesUsuario.Funcionario)
+            funcionario = await FuncionarioService.GetFuncionario(Usuario.Id);
+        else
+            gestor = await GestorService.GetGestor(Usuario.Id);
+
+    }
+
+    private async Task RemoverVinculo(int IdFuncionario)
+    {
+        Console.WriteLine(IdFuncionario + " " + Usuario.Id);
+    }
+
+    private async Task Vincular()
+    {
+        Console.WriteLine(funcionarioSelecionado.Id + " " + Usuario.Id);
+    }
+
+    private async Task SelecionarFuncionario(ChangeEventArgs e)
+    {
+        if (e.Value is null || !int.TryParse(e.Value.ToString(), out int idFuncionario))
+            return;
+
+        if (idFuncionario == 0)
+            CssClassBotaoAdicionar = "disabled";
+        else
+        {
+            funcionarioSelecionado = await FuncionarioService.GetFuncionario(idFuncionario);
+            CssClassBotaoAdicionar = "";
+        }
+    }
+}

@@ -42,5 +42,31 @@ namespace DespesaViagem.Client.Services.Services
                 return new();
             }
         }
+
+        public async Task<AdminManutencaoDTO> ObterListaDeUsuarios()
+        {
+            try
+            {
+                var response = await _http.GetFromJsonAsync< ServiceResponse<AdminManutencaoDTO>>("api/admin/ObterUsuarios") ?? new();
+                Console.WriteLine("Sucesso - AdminService - Client");
+
+                if (response.Conteudo is null)
+                {
+                    Mensagem = response.Mensagem;
+                    return new();
+                }
+                else
+                {
+                    Console.WriteLine("Sucesso - AdminService - Client");
+                    return response.Conteudo;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Falha - AdminService - Client");
+                Mensagem = ex.Message;
+                return new();
+            }
+        }
     }
 }

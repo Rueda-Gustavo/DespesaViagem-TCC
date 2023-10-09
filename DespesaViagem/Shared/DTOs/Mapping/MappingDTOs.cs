@@ -330,7 +330,7 @@ namespace DespesaViagem.Server.Mapping
             {
                 cfg.CreateMap<FuncionarioDTO, Funcionario>()
                 .ForMember(dst => dst.PasswordHash, opt => opt.Ignore())
-                .ForMember(dst => dst.PasswordSalt, opt => opt.Ignore())
+                .ForMember(dst => dst.PasswordSalt, opt => opt.Ignore())                
                 //.ForMember(dst => dst.Endereco, opt => opt.Ignore())
                 //.ForMember(dst => dst.TotalDespesa, opt => opt.Ignore());
                 ;
@@ -343,10 +343,13 @@ namespace DespesaViagem.Server.Mapping
 
         public static FuncionarioDTO ConverterDTO(Funcionario funcionario)
         {
+            //funcionario.Gestor ??= new();
+
             MapperConfiguration config = new(cfg =>
             {
-                cfg.CreateMap<Funcionario, FuncionarioDTO>();
-                //.ForMember(dst => dst., opt => opt.Ignore())
+                cfg.CreateMap<Funcionario, FuncionarioDTO>()
+                .ForMember(dst => dst.GestorId, opt => opt.MapFrom(src => src.Gestor!.Id))
+                //.ForMember(dst => dst.GestorUsername, opt => opt.MapFrom(src => src.Gestor!.Username))
                 //.ForMember(dst => dst.PasswordSalt, opt => opt.Ignore())
                 //.ForMember(dst => dst.Endereco, opt => opt.Ignore())
                 //.ForMember(dst => dst.TotalDespesa, opt => opt.Ignore());
@@ -405,7 +408,8 @@ namespace DespesaViagem.Server.Mapping
         {
             MapperConfiguration config = new(cfg =>
             {
-                cfg.CreateMap<Gestor, GestorDTO>();
+                cfg.CreateMap<Gestor, GestorDTO>()
+                .ForMember(dst => dst.Funcionarios, opt => opt.MapFrom(src => ConverterDTO(src.Funcionarios)));
                 //.ForMember(dst => dst., opt => opt.Ignore())
                 //.ForMember(dst => dst.PasswordSalt, opt => opt.Ignore())
                 //.ForMember(dst => dst.Endereco, opt => opt.Ignore())
@@ -422,8 +426,8 @@ namespace DespesaViagem.Server.Mapping
         {
             MapperConfiguration config = new(cfg =>
             {
-                cfg.CreateMap<Gestor, GestorDTO>();               
-                //.ForMember(dst => dst.Funcionario, opt => opt.Ignore())
+                cfg.CreateMap<Gestor, GestorDTO>()
+                .ForMember(dst => dst.Funcionarios, opt => opt.MapFrom(src => ConverterDTO(src.Funcionarios)));
                 //.ForMember(dst => dst.StatusViagem, opt => opt.MapFrom(src => src.StatusViagem));
                 //.ForMember(dst => dst.StatusViagem, opt => opt.MapFrom(src => src.StatusViagem.ToString()));
             });
@@ -440,13 +444,40 @@ namespace DespesaViagem.Server.Mapping
             return gestoresDTO;
         }
 
+        public static UsuarioDTO ConverterDTO(Usuario usuario)
+        {
+            MapperConfiguration config = new(cfg =>
+            {
+                cfg.CreateMap<Usuario, UsuarioDTO>();                
+            });
+
+            Mapper mapper = new(config);
+
+            return mapper.Map<UsuarioDTO>(usuario);
+        }
+
+        public static Usuario ConverterDTO(UsuarioDTO usuarioDTO)
+        {
+            MapperConfiguration config = new(cfg =>
+            {
+                cfg.CreateMap<UsuarioDTO, Usuario>();
+            });
+
+            Mapper mapper = new(config);
+
+            return mapper.Map<Usuario>(usuarioDTO);
+        }
+
         public static AdminManutencaoDTO ConverterDTO(AdminManutencao manutencao)
         {
             MapperConfiguration config = new(cfg =>
             {
                 cfg.CreateMap<AdminManutencao, AdminManutencaoDTO>();
                 cfg.CreateMap<Gestor, GestorDTO>();
-                cfg.CreateMap<Funcionario, FuncionarioDTO>();
+                cfg.CreateMap<Funcionario, FuncionarioDTO>()
+                //.ForMember(dst => dst.GestorId, opt => opt.MapFrom(src => src.Gestor!.Id))
+                //.ForMember(dst => dst.GestorUsername, opt => opt.MapFrom(src => src.Gestor!.Username))
+                ; 
             });
 
             Mapper mapper = new(config);
