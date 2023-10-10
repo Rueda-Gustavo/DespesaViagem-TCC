@@ -9,5 +9,7 @@ namespace DespesaViagem.Services.Interfaces
         Task<Result<FuncionarioDTO>> ObterPorCPF(string CPF);
         Task<Result<FuncionarioDTO>> Adicionar(Funcionario funcionario, string password);
         Task<Result<FuncionarioDTO>> Alterar(FuncionarioDTO funcionario);
+        Task<Result<FuncionarioDTO>> VincularGestor(VinculoFuncionario vinculo);
+        Task<Result<FuncionarioDTO>> DesvincularGestor(int idFuncionario);
     }
 }

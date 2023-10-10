@@ -30,6 +30,28 @@ namespace DespesaViagem.Server.Controllers
             return Ok(new ServiceResponse<FuncionarioDTO> { Conteudo = result.Value });
         }
 
+        [HttpPatch("vincular")]
+        public async Task<ActionResult> VincularGestor(VinculoFuncionario vinculo)
+        {
+            Result<FuncionarioDTO> result = await _funcionarioService.VincularGestor(vinculo);
+
+            if (result.IsFailure)
+                return BadRequest(new ServiceResponse<FuncionarioDTO> { Sucesso = false, Mensagem = result.Error });
+
+            return Ok(new ServiceResponse<FuncionarioDTO> { Conteudo = result.Value });
+        }
+
+        [HttpPatch("desvincular/{idFuncionario:int}")]
+        public async Task<ActionResult> DesvincularGestor(int idFuncionario)
+        {
+            Result<FuncionarioDTO> result = await _funcionarioService.DesvincularGestor(idFuncionario);
+
+            if (result.IsFailure)
+                return BadRequest(new ServiceResponse<FuncionarioDTO> { Sucesso = false, Mensagem = result.Error });
+
+            return Ok(new ServiceResponse<FuncionarioDTO> { Conteudo = result.Value });
+        }
+
         [HttpPost]
         public async Task<ActionResult> AdicionarFuncionario(CadastroUsuario request)
         {

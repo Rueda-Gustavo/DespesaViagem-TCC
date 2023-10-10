@@ -77,6 +77,13 @@ namespace DespesaViagem.Infra.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task DesvincularGestor(int idFuncionario)
+        {
+            string sql = "UPDATE Usuarios SET GestorId = NULL WHERE Id = {0}";
+            _context.Database.ExecuteSqlRaw(sql, idFuncionario);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task Delete(Funcionario funcionario)
         {
             _context.Remove(funcionario);

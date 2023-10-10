@@ -3,6 +3,7 @@
 @inject IUsuarioService UsuarioService
 @inject IFuncionarioService FuncionarioService
 @inject IGestorService GestorService
+@implements IDisposable
 @attribute [Authorize(Roles = "Administrador")]
 
 <PageTitle>Administração</PageTitle>
@@ -78,7 +79,7 @@
     {
         <div class="modal-overlay">
             <div class="modal-content">
-                <AdminForm Usuario="usuarioSelecionado" FormularioFechado="(() => formManutencaoAberto = false)" Manutencao="manutencao" />
+                <AdminForm Usuario="usuarioSelecionado" FormularioFechado="FecharFormManutencao" Manutencao="manutencao" />
 
             </div>
         </div>
@@ -100,6 +101,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        AdminService.AdminChanged += StateHasChanged;
         manutencao = await AdminService.ObterListaDeUsuarios();
         /*
         gestoresPendentesDeVinculacao = manutencao.Gestores.Where(g => !g.Funcionarios.Any());
@@ -110,11 +112,23 @@
     */
     }
 
+    public void Dispose()
+    {
+        AdminService.AdminChanged -= StateHasChanged;
+    }
+
     private async Task AbrirFormManutencao(int idFuncionario, RolesUsuario tipoDeUsuario)
     {
         Console.WriteLine(idFuncionario);
         usuarioSelecionado = await UsuarioService.GetFuncionario(idFuncionario);
         formManutencaoAberto = true;
+    }
+
+    private async Task FecharFormManutencao()
+    {
+        formManutencaoAberto = false;
+        manutencao = await AdminService.ObterListaDeUsuarios();
+
     }
 
     private void MostrarUsuarios(EnumFiltroAdmin filtro)

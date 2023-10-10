@@ -1,5 +1,9 @@
-﻿@inject IFuncionarioService FuncionarioService
+﻿@inject IAdminService AdminService
+@inject IFuncionarioService FuncionarioService
 @inject IGestorService GestorService
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+@attribute [Authorize(Roles = "Administrador")]
 
 <div class="modal-header">
     <h5 class="modal-title">
@@ -74,7 +78,7 @@
                     @if (gestor.Funcionarios.Count > 0)
                     {
                         <td><span>@gestor.Funcionarios[0].Username</span></td>
-                        <td><button class="btn btn-danger" @onclick="(() => RemoverVinculo(gestor.Funcionarios[0].Id))">Desvincular <i class="fa fa-unlink"></i></button></td>
+                        <td><button class="btn btn-danger" @onclick="(() => Desvincular(gestor.Funcionarios[0].Id))">Desvincular <i class="fa fa-unlink"></i></button></td>
                     }
                 </tr>
                 @for (int i = 1; i < gestor.Funcionarios.Count; i++)
@@ -82,7 +86,7 @@
                     <tr>
                         <td></td>
                         <td><span>@gestor.Funcionarios[i].Username</span></td>
-                        <td><button class="btn btn-danger" @onclick="(() => RemoverVinculo(gestor.Funcionarios[0].Id))">Desvincular <i class="fa fa-unlink"></i></button></td>
+                        <td><button class="btn btn-danger" @onclick="(() => Desvincular(gestor.Funcionarios[0].Id))">Desvincular <i class="fa fa-unlink"></i></button></td>
                     </tr>
                 }
             </tbody>
@@ -91,12 +95,12 @@
 </div>
 
 @code {
-    [Parameter]
-    public UsuarioDTO Usuario { get; set; } = new();
-    [Parameter]
-    public EventCallback FormularioFechado { get; set; }
-    [Parameter]
-    public AdminManutencaoDTO Manutencao { get; set; } = new();
+        [Parameter]
+        public UsuarioDTO Usuario { get; set; } = new();
+        [Parameter]
+        public EventCallback FormularioFechado { get; set; }
+        [Parameter]
+        public AdminManutencaoDTO Manutencao { get; set; } = new();
 
     private GestorDTO gestor = new();
     private FuncionarioDTO funcionario = new();
@@ -107,6 +111,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        AdminService.AdminChanged += StateHasChanged;
+
         if (Usuario.TipoDeUsuario == RolesUsuario.Funcionario)
             funcionario = await FuncionarioService.GetFuncionario(Usuario.Id);
         else
@@ -114,14 +120,37 @@
 
     }
 
-    private async Task RemoverVinculo(int IdFuncionario)
+
+    public void Dispose()
     {
-        Console.WriteLine(IdFuncionario + " " + Usuario.Id);
+        AdminService.AdminChanged -= StateHasChanged;
     }
 
     private async Task Vincular()
     {
         Console.WriteLine(funcionarioSelecionado.Id + " " + Usuario.Id);
+
+        var result = await AdminService.VincularGestor(funcionarioSelecionado.Id, Usuario.Id);
+        if (result.IsSuccess)
+            await JSRuntime.InvokeVoidAsync("alert", $"Sucesso, usuário vinculado ao gestor: {Usuario.Username}");
+        else
+            await JSRuntime.InvokeVoidAsync("alert", "Erro para vincular.");
+
+        await FormularioFechado.InvokeAsync();
+    }
+
+    private async Task Desvincular(int IdFuncionario)
+    {
+        Console.WriteLine(IdFuncionario + " " + Usuario.Id);
+
+        var result = await AdminService.DesvincularGestor(IdFuncionario);
+        if (result.IsSuccess)
+            await JSRuntime.InvokeVoidAsync("alert", $"Sucesso, usuário desvinculado do gestor: {Usuario.Username}");
+    else
+            await JSRuntime.InvokeVoidAsync("alert", "Erro para desvincular.");
+
+        await FormularioFechado.InvokeAsync();
+
     }
 
     private async Task SelecionarFuncionario(ChangeEventArgs e)

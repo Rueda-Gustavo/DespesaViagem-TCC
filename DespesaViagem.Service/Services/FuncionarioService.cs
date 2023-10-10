@@ -48,7 +48,7 @@ namespace DespesaViagem.Services.Services
 
                 return Result.Success(funcionarioDTO);
             }
-            
+
             return Result.Failure<FuncionarioDTO>("Especifique um id válido!!");
         }
 
@@ -125,6 +125,37 @@ namespace DespesaViagem.Services.Services
             //return Result.Success(funcionario);
         }
 
+        public async Task<Result<FuncionarioDTO>> VincularGestor(VinculoFuncionario vinculo)
+        {
+            Funcionario funcionario = await _funcionarioRepository.ObterPorId(vinculo.IdFuncionario);
+            if (funcionario is null)
+                return Result.Failure<FuncionarioDTO>("Funcionario não encontrado!");
+
+            Gestor gestor = await _gestorRepository.ObterPorId(vinculo.IdGestor);
+            if (gestor is null)
+                return Result.Failure<FuncionarioDTO>("Gestor não encontrado!");
+
+            funcionario.Gestor = gestor;
+
+            await _funcionarioRepository.Update(funcionario);
+
+            FuncionarioDTO funcionarioDTO = MappingDTOs.ConverterDTO(funcionario);
+
+            return Result.Success(funcionarioDTO);
+        }
+        public async Task<Result<FuncionarioDTO>> DesvincularGestor(int idFuncionario)
+        {
+            Funcionario funcionario = await _funcionarioRepository.ObterPorId(idFuncionario);
+            if (funcionario is null)
+                return Result.Failure<FuncionarioDTO>("Funcionario não encontrado!");            
+
+            await _funcionarioRepository.DesvincularGestor(idFuncionario);
+
+            FuncionarioDTO funcionarioDTO = MappingDTOs.ConverterDTO(funcionario);
+
+            return Result.Success(funcionarioDTO);
+        }
+
         public async Task<Result<FuncionarioDTO>> Remover(int id)
         {
             Funcionario funcionario = await _funcionarioRepository.ObterPorId(id);
@@ -132,7 +163,7 @@ namespace DespesaViagem.Services.Services
                 return Result.Failure<FuncionarioDTO>("Funcionario não encontrado!");
 
             await _funcionarioRepository.Delete(funcionario);
-            
+
             FuncionarioDTO funcionarioDTO = MappingDTOs.ConverterDTO(funcionario);
 
             return Result.Success(funcionarioDTO);
