@@ -93,8 +93,8 @@
     private AdminManutencaoDTO manutencao = new();
 
     private bool formManutencaoAberto = false;
-    private bool mostrarListagem = false;
-    private EnumFiltroAdmin filtro;
+    private bool mostrarListagem = true;
+    private EnumFiltroAdmin filtro = EnumFiltroAdmin.Funcionarios;
     private string[] apresentacaoListagem = { "Funcionario", "Gestor", "Edição" };
 
     private UsuarioDTO usuarioSelecionado = new();
@@ -102,7 +102,7 @@
     protected override async Task OnInitializedAsync()
     {
         AdminService.AdminChanged += StateHasChanged;
-        manutencao = await AdminService.ObterListaDeUsuarios();
+        manutencao = await AdminService.ObterListaDeUsuarios();        
         /*
         gestoresPendentesDeVinculacao = manutencao.Gestores.Where(g => !g.Funcionarios.Any());
         gestoresVinculados = manutencao.Gestores.Where(g => g.Funcionarios.Any());
@@ -133,8 +133,6 @@
 
     private void MostrarUsuarios(EnumFiltroAdmin filtro)
     {
-
-
         switch (filtro)
         {
             case EnumFiltroAdmin.Funcionarios:
@@ -154,6 +152,11 @@
 
         this.filtro = filtro;
         mostrarListagem = true;
+    }
+
+    public void Reload()
+    {
+        StateHasChanged();
     }
 
 }

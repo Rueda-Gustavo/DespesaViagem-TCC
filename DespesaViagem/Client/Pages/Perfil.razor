@@ -32,10 +32,13 @@ else
                         <label for="Username">Username</label>
                         <input id="Username" class="form-control" @bind-value="usuario.Username" />
                     </div>
-                    <div class="col-auto">
-                        <label for="CPF">CPF</label>
-                        <input id="CPF" class="form-control" @bind-value="usuario.CPF" />
-                    </div>
+                    @if (TipoDeUsuario != RolesUsuario.Funcionario.ToString())
+                    {
+                        <div class="col-auto">
+                            <label for="CPF">CPF</label>
+                            <input id="CPF" class="form-control" @bind-value="usuario.CPF" />
+                        </div>
+                    }
                     @if (TipoDeUsuario == RolesUsuario.Funcionario.ToString())
                     {
                         <div class="col-auto">
