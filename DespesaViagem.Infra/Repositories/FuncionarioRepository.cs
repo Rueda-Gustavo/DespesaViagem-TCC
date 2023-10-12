@@ -79,7 +79,12 @@ namespace DespesaViagem.Infra.Repositories
 
         public async Task DesvincularGestor(int idFuncionario)
         {
-            string sql = "UPDATE Usuarios SET GestorId = NULL WHERE Id = {0}";
+            //string sql = "UPDATE Usuarios SET GestorId = NULL WHERE Id = {0}";
+            string sql = "USE [DespesaViagem] " +                         
+                         "UPDATE [dbo].[Usuarios] " +
+                         "SET [GestorId] = NULL " +
+                         "WHERE Id = {0}";
+
             _context.Database.ExecuteSqlRaw(sql, idFuncionario);
             await _context.SaveChangesAsync();
         }

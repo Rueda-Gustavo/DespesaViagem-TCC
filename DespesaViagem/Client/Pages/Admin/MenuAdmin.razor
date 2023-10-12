@@ -95,7 +95,7 @@
     private bool formManutencaoAberto = false;
     private bool mostrarListagem = true;
     private EnumFiltroAdmin filtro = EnumFiltroAdmin.Funcionarios;
-    private string[] apresentacaoListagem = { "Funcionario", "Gestor", "Edição" };
+    private string[] apresentacaoListagem = { "Funcionario", "Gestor", "Editar" };
 
     private UsuarioDTO usuarioSelecionado = new();
 
@@ -120,7 +120,7 @@
     private async Task AbrirFormManutencao(int idFuncionario, RolesUsuario tipoDeUsuario)
     {
         Console.WriteLine(idFuncionario);
-        usuarioSelecionado = await UsuarioService.GetFuncionario(idFuncionario);
+        usuarioSelecionado = await UsuarioService.GetUsuario(idFuncionario);
         formManutencaoAberto = true;
     }
 
@@ -138,15 +138,15 @@
             case EnumFiltroAdmin.Funcionarios:
                 apresentacaoListagem[0] = "Funcionarios";
                 apresentacaoListagem[1] = "Gestores";
-                apresentacaoListagem[2] = "Edição";
+                apresentacaoListagem[2] = "Editar";
                 break;
             case EnumFiltroAdmin.Gestores:
                 apresentacaoListagem[0] = "Gestores";
-                apresentacaoListagem[1] = "Ediçao";
+                apresentacaoListagem[1] = "Editar";
                 break;
             case EnumFiltroAdmin.Pendentes:
                 apresentacaoListagem[0] = "Pendentes";
-                apresentacaoListagem[1] = "Ediçao";
+                apresentacaoListagem[1] = "Editar";
                 break;
         }
 

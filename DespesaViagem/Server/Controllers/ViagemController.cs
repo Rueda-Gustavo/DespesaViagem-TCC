@@ -155,12 +155,27 @@ namespace DespesaViagem.Server.Controllers
         [Route("status/{statusViagem}")]
         public async Task<ActionResult> ObterViagensPorEstado(StatusViagem statusViagem)
         {
-            Result<List<ViagemDTO>> result = await _viagemService.ObterViagemPorStatus(statusViagem);
+            string idFuncionario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
+
+            Result<List<ViagemDTO>> result = await _viagemService.ObterViagemPorStatus(statusViagem, int.Parse(idFuncionario));
 
             if (result.IsFailure)
                 return BadRequest(new ServiceResponse<List<ViagemDTO>> { Sucesso = false, Mensagem = result.Error });
 
             return Ok(new ServiceResponse<List<ViagemDTO>> { Conteudo = result.Value });
+        }
+
+        [HttpGet("ViagemAbertaOuEmAndamento")]        
+        public async Task<ActionResult> ObterViagemAbertaOuEmAndamento()
+        {
+            string idFuncionario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
+
+            Result<ViagemDTO?> result = await _viagemService.ObterViagemAbertaOuEmAndamento(int.Parse(idFuncionario));
+
+            if (result.IsFailure)
+                return BadRequest(new ServiceResponse<ViagemDTO> { Sucesso = false, Mensagem = result.Error });
+
+            return Ok(new ServiceResponse<ViagemDTO> { Conteudo = result.Value });
         }
 
         [HttpPatch("Iniciar")]

@@ -20,6 +20,7 @@ namespace DespesaViagem.Client.Services.Interfaces
         Task<DespesasPorPagina> ObterDespesasPorPagina(int idViagem, int page);
         Task<DespesasPorPagina> ObterTodasDespesasPaginadasPorTipo(int idViagem, int pagina, string stringTipoDespesa);
         Task<List<DespesaPorCategoria>> ObterTotalDespesasPorCategoria(int idViagem);
+        Task<ViagemDTO> ObterViagemAbertaOuEmAndamento();
         Task<Result<ViagemDTO>> AdicionarViagem(ViagemDTO viagem);
         Task<Result<ViagemDTO>> AtualizarViagem(ViagemDTO viagem);
         Task<Result<ViagemDTO>> IniciarViagem();

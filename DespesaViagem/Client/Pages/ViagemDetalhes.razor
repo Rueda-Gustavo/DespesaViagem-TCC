@@ -23,10 +23,10 @@
                         </button>
                     </AuthorizeView>
                     <ul class="dropdown-menu">
-                        <li><buttton class="dropdown-item" @onclick="(() => AbrirFormularioDespesa(TiposDespesas.Alimentação, Viagem.Id))">Alimentação</buttton></li>
-                        <li><button class="dropdown-item" @onclick="(() => AbrirFormularioDespesa(TiposDespesas.Deslocamento, Viagem.Id))">Deslocamento</button></li>
-                        <li><button class="dropdown-item" @onclick="(() => AbrirFormularioDespesa(TiposDespesas.Hospedagem, Viagem.Id))">Hospedagem</button></li>
-                        <li><button class="dropdown-item" @onclick="(() => AbrirFormularioDespesa(TiposDespesas.Passagem, Viagem.Id))">Passagem</button></li>
+                        <li><buttton class="dropdown-item" @onclick="(() => AbrirFormularioDespesa(TiposDespesas.Alimentação, 0))">Alimentação</buttton></li>
+                        <li><button class="dropdown-item" @onclick="(() => AbrirFormularioDespesa(TiposDespesas.Deslocamento, 0))">Deslocamento</button></li>
+                        <li><button class="dropdown-item" @onclick="(() => AbrirFormularioDespesa(TiposDespesas.Hospedagem, 0))">Hospedagem</button></li>
+                        <li><button class="dropdown-item" @onclick="(() => AbrirFormularioDespesa(TiposDespesas.Passagem, 0))">Passagem</button></li>
                     </ul>
                 </div>
             }

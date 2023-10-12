@@ -8,14 +8,15 @@ namespace DespesaViagem.Services.Interfaces
 {
     public interface IViagemService
     {
-        Task<Result<List<ViagemDTO>>> ObterTodasViagens(int idFuncionario);        
+        Task<Result<List<ViagemDTO>>> ObterTodasViagens(int idFuncionario);
         Task<Result<ViagemDTO>> ObterViagemPorId(int id);
-        Task<Result<List<ViagemDTO>>> ObterViagemPorFiltro(string filtro);        
+        Task<Result<List<ViagemDTO>>> ObterViagemPorFiltro(string filtro);
         Task<Result<List<DespesaDTO>>> ObterTodasDespesas(int idViagem);
         Task<DespesasPorPagina> ObterDespesasPorPagina(int idViagem, int pagina);
         Task<DespesasPorPagina> ObterTodasDespesasPaginadasPorTipo(int idViagem, int pagina, string stringTipoDespesa);
         Task<List<DespesaPorCategoria>> ObterTotalDasDespesasPorCategoria(int viagemId);
-        Task<Result<List<ViagemDTO>>> ObterViagemPorStatus(StatusViagem statusViagem);      
+        Task<Result<List<ViagemDTO>>> ObterViagemPorStatus(StatusViagem statusViagem, int idFuncionario);
+        Task<Result<ViagemDTO?>> ObterViagemAbertaOuEmAndamento(int idFuncionario);
         Task<Result<ViagemDTO>> AdicionarViagem(ViagemDTO viagemDTO, int idFuncionario);
         Task<Result<ViagemDTO>> AlterarViagem(ViagemDTO viagemDTO, int idFuncionario);
         Task<Result<ViagemDTO>> RemoverViagem(int id);

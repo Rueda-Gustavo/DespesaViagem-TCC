@@ -1,9 +1,95 @@
 ﻿@page "/"
+@inject IViagemService ViagemService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@implements IDisposable
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<!--Mostrar <a href="/viagens">Viagens</a>-->
 
-Mostrar
-<a href="/viagens">Viagens</a>
+<section class="hero">
+    <div class="container">
+        <h1>Bem-vindo ao Spensify</h1>
+        <p>Gerencie suas Viagens Corporativas de forma eficaz e eficiente.</p>
+        <a href="/viagens" class="btn btn-primary btn-lg">Minhas Viagens</a>
+    </div>
+</section>
+
+<section class="features">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <a href="/viagens" class="feature-link">
+                    <div class="feature">
+                        <i class="bi bi-calendar"></i>
+                        <h2>Agende Viagens</h2>
+                        <p>Agende suas viagens de negócios de maneira conveniente.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <a @onclick="IrParaViagemAbertaOuEmAndamento" class="feature-link">
+                    <div class="feature">
+                        <i class="bi bi-check2"></i>
+                        <h2>Acompanhe Despesas</h2>
+                        <p>Registre e acompanhe suas despesas de viagem de forma fácil.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <a href="/perfil" class="feature-link">
+                    <div class="feature">
+                        <i class="bi bi-person"></i>
+                        <h2>Perfil Personalizado</h2>
+                        <p>Gerencie seu perfil e preferências de viagem.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <p>&copy; 2023 Controle de Viagens Corporativas</p>
+</footer>
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViagemService.ViagensChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        ViagemService.ViagensChanged -= StateHasChanged;
+    }
+
+    private async Task IrParaViagemAbertaOuEmAndamento()
+    {
+        string role = (await AuthenticationStateProvider.GetAuthenticationStateAsync())
+        .User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Role).Value;
+
+        if (!role.Contains(RolesUsuario.Funcionario.ToString()))
+        {
+            NavigationManager.NavigateTo("/viagens");
+            return;
+        }
+
+        ViagemDTO? viagem = await ViagemService.ObterViagemAbertaOuEmAndamento();
+        if (viagem is null || viagem.Id == 0)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", ViagemService.Mensagem);
+        }
+        else
+        {
+            NavigationManager.NavigateTo($"/viagens/{viagem.Id}/0");
+        }
+    }    
+}
+
 

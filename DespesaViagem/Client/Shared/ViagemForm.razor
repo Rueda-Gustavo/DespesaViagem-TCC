@@ -106,7 +106,12 @@
             await GetViagem();
         }
 
-        if (!Adicionar) AdicionarOuEditar = "Editar";
+        if (!Adicionar)
+        {
+            AdicionarOuEditar = "Editar";
+            if (Viagem.StatusViagem != StatusViagem.Aberta)
+                await JSRuntime.InvokeVoidAsync("travarCampos");
+        }
     }
 
     public void Dispose()
@@ -133,12 +138,15 @@
             if (Adicionar)
                 viagem = await ViagemService.AdicionarViagem(Viagem);
             else
-                viagem = await ViagemService.AtualizarViagem(Viagem);
+                viagem = await ViagemService.AtualizarViagem(Viagem);            
 
-            await JSRuntime.InvokeVoidAsync("alert",ViagemService.Mensagem);
-            //await JSRuntime.InvokeVoidAsync("alert", "Dados salvos com sucesso!");
-
-            if (viagem.IsSuccess) await FecharFormulario();
+            if (viagem.IsSuccess)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Dados salvos com sucesso!");
+                await FecharFormulario();
+            }
+            else
+                await JSRuntime.InvokeVoidAsync("alert", "Erro! Alguns campos só podem ser modificados com a viagem em Aberto.");
         }
         catch (Exception ex)
         {

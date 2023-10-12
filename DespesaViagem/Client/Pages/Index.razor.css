@@ -1,0 +1,64 @@
+﻿body {
+    background-color: #f5f5f5;
+}
+
+.hero {
+    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    color: #fff;
+    text-align: center;
+    padding: 100px 0;
+}
+
+    .hero h1 {
+        font-size: 36px;
+    }
+
+    .hero p {
+        font-size: 18px;
+    }
+
+.features {
+    text-align: center;
+    padding: 50px 0;
+}
+
+.feature {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    margin: 0 20px;
+}
+
+    .feature i {
+        font-size: 48px;
+        color: #3a0647;
+    }
+
+    .feature h2 {
+        font-size: 24px;
+    }
+
+    .feature p {
+        font-size: 16px;
+    }
+
+footer {
+    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+    background-color: #fff;
+}
+.feature-link {
+    text-decoration: none; /* Remove o sublinhado padrão do link */
+    color: #000; /* Cor do texto do link */
+    display: block; /* Faz o link ocupar todo o espaço da div */
+    border: 1px solid #ccc; /* Adicione uma borda para parecer um botão */
+    border-radius: 5px; /* Arredonde as bordas */
+    padding: 10px; /* Espaçamento interno para melhor aparência */
+    transition: background-color 0.3s; /* Adicione uma transição suave de cor de fundo */
+}
+
+    .feature-link:hover {
+        border-color: #5101d4; /* Cor de fundo quando o mouse está sobre o link */        
+    }

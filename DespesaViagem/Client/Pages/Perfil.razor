@@ -32,7 +32,7 @@ else
                         <label for="Username">Username</label>
                         <input id="Username" class="form-control" @bind-value="usuario.Username" />
                     </div>
-                    @if (TipoDeUsuario != RolesUsuario.Funcionario.ToString())
+                    @if (TipoDeUsuario != RolesUsuario.Administrador.ToString())
                     {
                         <div class="col-auto">
                             <label for="CPF">CPF</label>
@@ -148,13 +148,14 @@ else
         else if (tipoUsuario == RolesUsuario.Gestor)
             usuario = await GestorService.GetGestor(idUsuario);
         else
-            await JSRuntime.InvokeVoidAsync("alert", "Página de perfil do Administrador ainda não implementada");
+            //await JSRuntime.InvokeVoidAsync("alert", "Página de perfil do Administrador ainda não implementada");
+            usuario = await UsuarioService.GetUsuario(idUsuario);
 
         /*
         string a = Usuario.NomeCompleto;
 
         await JSRuntime.InvokeVoidAsync("alert", a);
-    */
+        */
     }
 
     private async Task HandlePerfilUsuario()
@@ -166,10 +167,14 @@ else
                 sucesso = (await FuncionarioService.AtualizarPerfil(funcionario)).IsSuccess;
                 await JSRuntime.InvokeVoidAsync("alert", FuncionarioService.Mensagem);
             }
-            else
+            else if (TipoDeUsuario == RolesUsuario.Gestor.ToString())
             {
                 sucesso = (await GestorService.AtualizarPerfil((GestorDTO)usuario)).IsSuccess;
                 await JSRuntime.InvokeVoidAsync("alert", GestorService.Mensagem);
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Não é possível alterar o perfil do administrador.");
             }
 
             //await JSRuntime.InvokeVoidAsync("alert", "Dados salvos com sucesso!");

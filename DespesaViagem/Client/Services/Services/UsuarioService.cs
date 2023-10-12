@@ -18,7 +18,7 @@ namespace DespesaViagem.Client.Services.Services
             _http = http;
         }
 
-        public async Task<UsuarioDTO> GetFuncionario(int idUsuario)
+        public async Task<UsuarioDTO> GetUsuario(int idUsuario)
         {
             try
             {

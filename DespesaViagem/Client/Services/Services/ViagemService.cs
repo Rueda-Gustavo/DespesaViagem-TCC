@@ -4,6 +4,7 @@ using DespesaViagem.Server.Mapping;
 using DespesaViagem.Shared.DTOs.Despesas;
 using DespesaViagem.Shared.DTOs.Helpers;
 using DespesaViagem.Shared.DTOs.Viagens;
+using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
 using DespesaViagem.Shared.Models.Viagens;
 using System.Diagnostics;
@@ -78,7 +79,7 @@ namespace DespesaViagem.Client.Services.Services
             {
                 Console.WriteLine("Falha - ViagemService - Client");
                 Mensagem = ex.Message;
-                return new();
+                return Result.Failure<ViagemDTO>(ex.Message);
             }
         }
 
@@ -107,7 +108,7 @@ namespace DespesaViagem.Client.Services.Services
             {
                 Console.WriteLine("Falha - ViagemService - Client");
                 Mensagem = ex.Message;
-                return new();
+                return Result.Failure<ViagemDTO>(ex.Message);
             }
         }
 
@@ -189,6 +190,35 @@ namespace DespesaViagem.Client.Services.Services
             {
                 Console.WriteLine("Falha - ViagemService - Client");
                 Mensagem = "Nenhuma viagem encontrada!";
+                ViagensChanged.Invoke();
+                return new ViagemDTO();
+            }
+        }
+
+        public async Task<ViagemDTO> ObterViagemAbertaOuEmAndamento()
+        {
+            try
+            {
+                var response = await _http
+                    .GetFromJsonAsync<ServiceResponse<ViagemDTO>>($"api/Viagem/ViagemAbertaOuEmAndamento") ?? new() { Sucesso = false };
+
+                if (response.Conteudo is null)
+                {
+                    //Mensagem = "Nenhuma viagem encontrada!";
+                    Mensagem = response.Mensagem;
+                    return new ViagemDTO();
+                }
+                else
+                {
+                    Console.WriteLine("Sucesso - ViagemService - Client");
+                    ViagensChanged.Invoke();
+                    return response.Conteudo;
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Falha - ViagemService - Client");
+                Mensagem = "Nenhuma viagem Aberta ou em Andamento foi encontrada!";
                 ViagensChanged.Invoke();
                 return new ViagemDTO();
             }

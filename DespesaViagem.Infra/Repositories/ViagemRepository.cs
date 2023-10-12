@@ -67,7 +67,7 @@ namespace DespesaViagem.Infra.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<Viagem?>> ObterViagemPorStatus(StatusViagem statusViagem, int idFuncionario)
+        public async Task<List<Viagem>> ObterViagemPorStatus(StatusViagem statusViagem, int idFuncionario)
         {
             return await _context.Viagens
                 .Include(f => f.Funcionario)
