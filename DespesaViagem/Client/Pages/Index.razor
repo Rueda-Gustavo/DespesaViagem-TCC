@@ -71,10 +71,17 @@
 
     private async Task IrParaViagemAbertaOuEmAndamento()
     {
-        string role = (await AuthenticationStateProvider.GetAuthenticationStateAsync())
-        .User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Role).Value;
+        AuthenticationState state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
-        if (!role.Contains(RolesUsuario.Funcionario.ToString()))
+        if (state.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Role) is null)
+        {
+            NavigationManager.NavigateTo("/viagens");
+            return;
+        }
+
+        string role = state.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Role).Value;
+
+        if (role is not null && role != string.Empty && !role.Contains(RolesUsuario.Funcionario.ToString()))
         {
             NavigationManager.NavigateTo("/viagens");
             return;

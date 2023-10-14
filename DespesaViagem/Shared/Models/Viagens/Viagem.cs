@@ -90,7 +90,10 @@ namespace DespesaViagem.Shared.Models.Viagens
         public decimal GerarPrestacaoDeContas()
         {
             if (StatusViagem != StatusViagem.Aberta || StatusViagem != StatusViagem.Cancelada)
-                return Adiantamento - TotalDespesas;
+                return (Adiantamento - TotalDespesas) * (-1); //Essa prestação de contas é referente ao que o Funcionário deve receber ou devolver. Por exemplo:
+                                                              //R$-50,00 quer dizer que ele precisa devolver 50 reais para a empresa
+                                                              //R$50,00 quer dizer que ele receber 50 reais da empresa
+
             throw new ArgumentException("A viagem está em aberta ou foi cancelada. Não é possível gerar prestação de contas.");
         }
 

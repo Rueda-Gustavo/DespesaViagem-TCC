@@ -75,7 +75,7 @@ namespace DespesaViagem.Services.Services
                 if (viagem is null)
                     return Result.Failure<ViagemDTO>("Não existem viagens com o filtro especificado!");
 
-                viagem = await AdicionarDespesaParaAViagem(viagem);
+                //viagem = await AdicionarDespesaParaAViagem(viagem);
                 viagem.AdicionarFuncionario(await _funcionarioRepository.ObterPorId(viagem.IdFuncionario));
 
                 ViagemDTO viagemDTO = MappingDTOs.ConverterDTO(viagem);

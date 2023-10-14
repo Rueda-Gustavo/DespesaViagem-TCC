@@ -317,6 +317,7 @@
             await ViagemService.IniciarViagem();
             await JSRuntime.InvokeVoidAsync("alert", ViagemService.Mensagem);
         }
+        Viagem = await ViagemService.GetViagem(IdViagem);
     }
 
     private async Task CancelarViagem()
@@ -327,6 +328,7 @@
             await ViagemService.CancelarViagem();
             await JSRuntime.InvokeVoidAsync("alert", ViagemService.Mensagem);
         }
+        Viagem = await ViagemService.GetViagem(IdViagem);
     }
 
     private async Task EncerrarViagem()
@@ -337,6 +339,7 @@
             await ViagemService.EncerrarViagem();
             await JSRuntime.InvokeVoidAsync("alert", ViagemService.Mensagem);
         }
+        Viagem = await ViagemService.GetViagem(IdViagem);
     }
 
     private void LimparFiltro()
@@ -384,6 +387,8 @@
         FormularioDespesaAberto = false;
         Viagem = await ViagemService.GetViagem(IdViagem);
         await ObterDespesas();
+        DespesasPorCategoria = await ViagemService.ObterTotalDespesasPorCategoria(IdViagem);
+
         DespesaForm = null;
     }
 

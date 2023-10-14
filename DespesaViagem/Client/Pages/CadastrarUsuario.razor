@@ -11,7 +11,7 @@
     <EditForm Model="usuario" OnValidSubmit="HandleCadastro">
         <DataAnnotationsValidator />
         <div class="mb-3">
-            <label for="nomeCompleto">NomeCompleto</label>
+            <label for="nomeCompleto">Nome Completo</label>
             <InputText id="nomeCompleto" @bind-Value="usuario.NomeCompleto" class="form-control"></InputText>
             <ValidationMessage For="@(() => usuario.NomeCompleto)" />
         </div>

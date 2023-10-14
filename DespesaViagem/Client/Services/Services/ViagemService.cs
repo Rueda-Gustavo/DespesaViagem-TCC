@@ -101,7 +101,7 @@ namespace DespesaViagem.Client.Services.Services
                 Viagens.Add(response.Conteudo);
 
                 Console.WriteLine("Sucesso - ViagemService - Client");
-                ViagensChanged.Invoke();
+                //ViagensChanged.Invoke();
                 return Result.Success(response.Conteudo); //await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
             }
             catch (Exception ex)
@@ -407,7 +407,7 @@ namespace DespesaViagem.Client.Services.Services
                 Viagens.Add(response.Conteudo);
 
                 Console.WriteLine("Sucesso - ViagemService - Client");
-                ViagensChanged.Invoke();
+                //ViagensChanged.Invoke();
                 return Result.Success(response.Conteudo); //await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
             }
             catch (Exception ex)
@@ -436,7 +436,7 @@ namespace DespesaViagem.Client.Services.Services
                 Viagens.Add(response.Conteudo);
 
                 Console.WriteLine("Sucesso - ViagemService - Client");
-                ViagensChanged.Invoke();
+                //ViagensChanged.Invoke();
                 return Result.Success(response.Conteudo); //await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
             }
             catch (Exception ex)

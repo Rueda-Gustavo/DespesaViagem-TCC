@@ -28,7 +28,7 @@
     <ul class="dropdown-menu">
         @foreach (var funcionario in Funcionarios)
         {
-            <li><button @onclick="(() => ObterDespesasFuncionario(funcionario.Id))" class="btn btn-outline-secondary dropdown-item">@funcionario.NomeCompleto</button></li>
+            <li><button @onclick="(() => ObterDespesasFuncionario(funcionario.Id))" class="btn btn-outline-secondary dropdown-item">@funcionario.Username</button></li>
         }
         <li class="dropdown-divider"></li>
         <li><button @onclick="(() => ObterDespesasFuncionario(0))" class="btn btn-outline-secondary dropdown-item">Limpar filtro</button></li>

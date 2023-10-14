@@ -28,7 +28,7 @@ else
 
         <div class="card" style="opacity:@opacidade">
             <AuthorizeView Roles="Gestor, Administrador">
-                <small class="nome-funcionario">@viagem.Funcionario.NomeCompleto</small>
+                <small class="nome-funcionario">@viagem.Funcionario.Username</small>                
             </AuthorizeView>
             <h2 class="card-header title">@viagem.NomeViagem <button class="btn-exibir-despesas" title="Detalhes da viagem" @onclick="() => VerDetalhesViagem(viagem.Id)"><FeatherList Size="24" Color="#000" StrokeWidth="1.7f" /></button></h2>
             <div>
