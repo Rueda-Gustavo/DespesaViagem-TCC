@@ -1,0 +1,10 @@
+﻿.btn-add-departamento {
+    color: #fff;
+    background-color: #0fa825;
+    position: absolute;
+}
+
+    .btn-add-departamento:hover {
+        background-color: #00de64;
+        border-color: #31ff00
+    }

@@ -1,0 +1,44 @@
+﻿@page "/admin/manutencao"
+@attribute [Authorize(Roles = "Administrador")]
+
+<PageTitle>Administração</PageTitle>
+
+<h3>Administração</h3>
+
+<AuthorizeView Roles="Administrador">
+    <div class="menu">
+        <button class="btn btn-menu-manutencao" id="btnVinculacao" @onclick="VinculacaoClick">Vinculação</button>
+        <button class="btn btn-menu-manutencao" id="btnCadastro" @onclick="DepartamentosClick">Departamentos</button>
+    </div>
+
+    @if (menuVinculacaoAberto)
+    {
+        <div class="mt-3">
+            <MenuAdmin />
+        </div>
+    }
+
+    @if (menuDepartamentoAberto)
+    {
+        <div class="mt-3">
+            <MenuDepartamentos />
+        </div>
+    }
+</AuthorizeView>
+
+@code {
+    private bool menuVinculacaoAberto = false;
+    private bool menuDepartamentoAberto = false;
+
+    private void VinculacaoClick()
+    {
+        menuVinculacaoAberto = !menuVinculacaoAberto;
+        menuDepartamentoAberto = false;
+    }
+
+    private void DepartamentosClick()
+    {
+        menuDepartamentoAberto = !menuDepartamentoAberto;
+        menuVinculacaoAberto = false;
+    }
+}

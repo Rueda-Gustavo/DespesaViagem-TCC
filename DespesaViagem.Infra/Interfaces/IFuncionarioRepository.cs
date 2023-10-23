@@ -8,5 +8,6 @@ namespace DespesaViagem.Infra.Interfaces
         Task<bool> FuncionarioJaExiste(string filtro);
         Task<IEnumerable<Funcionario>> ObterFuncionariosPorGestor(int gestorId);
         Task DesvincularGestor(int idFuncionario);
+        Task DesvincularDepartamento(int idFuncionario);
     }
 }

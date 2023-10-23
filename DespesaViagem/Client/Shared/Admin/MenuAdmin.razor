@@ -1,21 +1,18 @@
-﻿@page "/admin/manutencao"
-@inject IAdminService AdminService
+﻿@inject IAdminService AdminService
 @inject IUsuarioService UsuarioService
 @inject IFuncionarioService FuncionarioService
 @inject IGestorService GestorService
 @implements IDisposable
 @attribute [Authorize(Roles = "Administrador")]
 
-<PageTitle>Administração</PageTitle>
-
-<h3>Administração</h3>
+<PageTitle>Vinculação</PageTitle>
 
 <AuthorizeView Roles="Administrador">
     <div class="container text-center">
         <div class="btn-group" role="group">
-            <button class="btn btn-outline-secondary" @onclick="(() => MostrarUsuarios(EnumFiltroAdmin.Funcionarios))">Funcionários</button>
-            <button class="btn btn-outline-secondary" @onclick="(() => MostrarUsuarios(EnumFiltroAdmin.Gestores))">Gestores</button>
-            <button class="btn btn-outline-secondary" @onclick="(() => MostrarUsuarios(EnumFiltroAdmin.Pendentes))">Pendentes</button>
+            <button class="btn btn-outline-secondary" @onclick="(() => MostrarUsuarios(EnumFiltroRolesAdmin.Funcionarios))">Funcionários</button>
+            <button class="btn btn-outline-secondary" @onclick="(() => MostrarUsuarios(EnumFiltroRolesAdmin.Gestores))">Gestores</button>
+            <button class="btn btn-outline-secondary" @onclick="(() => MostrarUsuarios(EnumFiltroRolesAdmin.Pendentes))">Pendentes</button>
             <button class="btn btn-outline-secondary" @onclick="(() => mostrarListagem = false)">Limpar</button>
         </div>
     </div>
@@ -28,7 +25,7 @@
                     <tr>
                         <th>@apresentacaoListagem[0]</th>
                         <th>@apresentacaoListagem[1]</th>
-                        @if (filtro == EnumFiltroAdmin.Funcionarios)
+                        @if (filtro == EnumFiltroRolesAdmin.Funcionarios)
                         {
                             <th>@apresentacaoListagem[2]</th>
                         }
@@ -37,7 +34,7 @@
                 <tbody>
                     @switch (filtro)
                     {
-                        case EnumFiltroAdmin.Funcionarios:
+                        case EnumFiltroRolesAdmin.Funcionarios:
                             foreach (var funcionario in manutencao.Funcionarios)
                             {
                                 <tr>
@@ -48,7 +45,7 @@
                             }
                             break;
 
-                        case EnumFiltroAdmin.Gestores:
+                        case EnumFiltroRolesAdmin.Gestores:
                             foreach (var gestor in manutencao.Gestores)
                             {
                                 <tr>
@@ -58,7 +55,7 @@
                             }
                             break;
 
-                        case EnumFiltroAdmin.Pendentes:
+                        case EnumFiltroRolesAdmin.Pendentes:
                             List<FuncionarioDTO> funcionarios = manutencao.Funcionarios.Where(f => f.GestorId == 0).ToList();
 
                             foreach (var funcionario in funcionarios)
@@ -84,9 +81,6 @@
             </div>
         </div>
     }
-
-
-
 </AuthorizeView>
 
 @code {
@@ -94,7 +88,7 @@
 
     private bool formManutencaoAberto = false;
     private bool mostrarListagem = true;
-    private EnumFiltroAdmin filtro = EnumFiltroAdmin.Funcionarios;
+    private EnumFiltroRolesAdmin filtro = EnumFiltroRolesAdmin.Funcionarios;
     private string[] apresentacaoListagem = { "Funcionario", "Gestor", "Editar" };
 
     private UsuarioDTO usuarioSelecionado = new();
@@ -131,20 +125,22 @@
 
     }
 
-    private void MostrarUsuarios(EnumFiltroAdmin filtro)
+    //private async Task
+
+    private void MostrarUsuarios(EnumFiltroRolesAdmin filtro)
     {
         switch (filtro)
         {
-            case EnumFiltroAdmin.Funcionarios:
+            case EnumFiltroRolesAdmin.Funcionarios:
                 apresentacaoListagem[0] = "Funcionarios";
                 apresentacaoListagem[1] = "Gestores";
                 apresentacaoListagem[2] = "Editar";
                 break;
-            case EnumFiltroAdmin.Gestores:
+            case EnumFiltroRolesAdmin.Gestores:
                 apresentacaoListagem[0] = "Gestores";
                 apresentacaoListagem[1] = "Editar";
                 break;
-            case EnumFiltroAdmin.Pendentes:
+            case EnumFiltroRolesAdmin.Pendentes:
                 apresentacaoListagem[0] = "Pendentes";
                 apresentacaoListagem[1] = "Editar";
                 break;

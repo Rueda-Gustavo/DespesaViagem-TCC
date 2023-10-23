@@ -12,7 +12,8 @@ namespace DespesaViagem.Shared.Models.Core.Helpers
         [Column(TypeName = "varchar(15)")]        
         //public int GestorId { get; set; }
         //[JsonIgnore]
-        public Gestor? Gestor { get; set; }     
+        public Gestor? Gestor { get; set; }
+        public Departamento? Departamento { get; set; }
         [JsonIgnore]
         public ICollection<Viagem> Viagens { get; set; } = new Collection<Viagem>();
 

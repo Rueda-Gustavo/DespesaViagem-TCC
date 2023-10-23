@@ -21,6 +21,7 @@ namespace DespesaViagem.Infra.Database
         public DbSet<Endereco> Enderecos { get; set; }
         public DbSet<Funcionario> Funcionarios { get; set; }
         public DbSet<Gestor> Gestores { get; set; }
+        public DbSet<Departamento> Departamentos { get; set; }
         public DespesaViagemContext(DbContextOptions<DespesaViagemContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -63,10 +64,14 @@ namespace DespesaViagem.Infra.Database
             modelBuilder.Entity<Endereco>().HasKey(k => k.Id);
 
             modelBuilder.Entity<Funcionario>()
-                .HasOne(f => f.Gestor)
-                .WithMany(g => g.Funcionarios)
-                //.HasForeignKey(f => f.IdGestor)
-                .OnDelete(DeleteBehavior.Restrict);            
+                        .HasOne(f => f.Gestor)
+                        .WithMany(g => g.Funcionarios)
+                        //.HasForeignKey(f => f.IdGestor)
+                        .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Departamento>()
+                        .HasIndex(d => d.Descricao)
+                        .IsUnique(true);
 
             modelBuilder.ApplyConfiguration(new DespesaHospedagemEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DespesaAlimentacaoEntityTypeConfiguration());

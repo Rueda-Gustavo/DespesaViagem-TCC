@@ -18,6 +18,7 @@ namespace DespesaViagem.Infra.Repositories
         {
             return await _context.Funcionarios
                 .Include(f => f.Gestor)
+                .Include(f => f.Departamento)                
                 .ToListAsync();
         }
 
@@ -25,6 +26,7 @@ namespace DespesaViagem.Infra.Repositories
         {
             return await _context.Funcionarios
                 .Include(f => f.Gestor)
+                .Include(f => f.Departamento)                
                 .FirstOrDefaultAsync(f => f.Id == id);
         }
 
@@ -32,6 +34,7 @@ namespace DespesaViagem.Infra.Repositories
         {
             return await _context.Funcionarios
                 .Include(f => f.Gestor)
+                .Include(f => f.Departamento)                
                 .Where(f => f.Gestor.Id == gestorId).ToListAsync();
         }
 
@@ -39,6 +42,7 @@ namespace DespesaViagem.Infra.Repositories
         {
             return await _context.Funcionarios
                 .Include(f => f.Gestor)
+                .Include(f => f.Departamento)                
                 .FirstOrDefaultAsync(f => f.CPF == CPF);
         }
 
@@ -46,6 +50,7 @@ namespace DespesaViagem.Infra.Repositories
         {
             return await _context.Funcionarios
             .Include(f => f.Gestor)
+            .Include(f => f.Departamento)                
             .Where(funcionario => funcionario.CPF.ToLower().Contains(filtro.ToLower()) || 
                                   funcionario.NomeCompleto.ToLower().Contains(filtro.ToLower()) || 
                                   funcionario.Matricula.ToLower().Contains(filtro.ToLower()) ||
@@ -84,6 +89,17 @@ namespace DespesaViagem.Infra.Repositories
                          "UPDATE [dbo].[Usuarios] " +
                          "SET [GestorId] = NULL " +
                          "WHERE Id = {0}";
+
+            _context.Database.ExecuteSqlRaw(sql, idFuncionario);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DesvincularDepartamento(int idFuncionario)
+        {
+            string sql = "USE [DespesaViagem] " +
+             "UPDATE [dbo].[Usuarios] " +
+             "SET [DepartamentoId] = NULL " +
+             "WHERE Id = {0}";
 
             _context.Database.ExecuteSqlRaw(sql, idFuncionario);
             await _context.SaveChangesAsync();

@@ -1,0 +1,20 @@
+﻿.menu {
+    display: flex;
+    justify-content: center;
+}
+
+.btn-menu-manutencao {
+    padding: 10px 20px;
+    margin: 10px;
+    background-color: #ffffff; /* Cor de fundo verde */
+    border: 2px solid #0034dc;
+    color: #0034dc;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 4px;
+}
+
+    .btn-menu-manutencao:hover {
+        color: #fff;
+        background: linear-gradient(to bottom, #294eff, #5100ad);
+    }

@@ -22,7 +22,7 @@ builder.Services.AddScoped<IFuncionarioService, FuncionarioService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IGestorService, GestorService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
-
+builder.Services.AddScoped<IDepartamentoService, DepartamentoService>();
 
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddOptions();

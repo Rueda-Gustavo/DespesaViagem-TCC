@@ -54,6 +54,14 @@ namespace DespesaViagem.Services.Services
 
             IEnumerable<FuncionarioDTO> funcionariosDTO = MappingDTOs.ConverterDTO(funcionarios.ToList());
 
+
+            funcionariosDTO = funcionariosDTO.Select(f =>
+            {
+                if (f.Departamento is not null && !f.Departamento.Ativo)
+                    f.Departamento = null;
+                return f;
+            });
+
             return Result.Success(funcionariosDTO);
         }
     }

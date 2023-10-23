@@ -1,8 +1,7 @@
-﻿using DespesaViagem.Services.Services;
-using DespesaViagem.Services.Interfaces;
+﻿using DespesaViagem.Services.Interfaces;
+using DespesaViagem.Services.Services;
 using DespesaViagem.Shared.Models.Despesas;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
 
 
 namespace DespesaViagem.Services
@@ -22,7 +21,8 @@ namespace DespesaViagem.Services
             service.AddScoped<IDespesasService<DespesaDeslocamento>, DespesaDeslocamentoService>();
             service.AddScoped<IDespesasService<DespesaPassagem>, DespesaPassagemService>();
             service.AddScoped<IUsuarioService, UsuarioService>();
-            service.AddScoped<IAdminService, AdminService>();            
+            service.AddScoped<IAdminService, AdminService>();
+            service.AddScoped<IDepartamentoService, DepartamentoService>();
             return service;
         }
     }

@@ -31,6 +31,14 @@ namespace DespesaViagem.Services.Services
 
             IEnumerable<FuncionarioDTO> funcionariosDTO = MappingDTOs.ConverterDTO(funcionarios.ToList());
 
+            //funcionariosDTO = funcionariosDTO.Where(f => f.Departamento is null || (f.Departamento is not null && f.Departamento.Ativo));
+            funcionariosDTO = funcionariosDTO.Select(f =>
+            {
+                if (f.Departamento is not null && !f.Departamento.Ativo)
+                    f.Departamento = null;
+                return f;
+            });
+
             return Result.Success(funcionariosDTO);
         }
 
@@ -46,7 +54,10 @@ namespace DespesaViagem.Services.Services
 
                 FuncionarioDTO funcionarioDTO = MappingDTOs.ConverterDTO(funcionario);
 
-                return Result.Success(funcionarioDTO);
+                if (funcionarioDTO.Departamento is not null && !funcionarioDTO.Departamento.Ativo)
+                    funcionarioDTO.Departamento = null;
+
+                    return Result.Success(funcionarioDTO);
             }
 
             return Result.Failure<FuncionarioDTO>("Especifique um id válido!!");
@@ -61,6 +72,10 @@ namespace DespesaViagem.Services.Services
 
             FuncionarioDTO funcionarioDTO = MappingDTOs.ConverterDTO(funcionario);
 
+            if (funcionarioDTO.Departamento is not null && !funcionarioDTO.Departamento.Ativo)
+                funcionarioDTO.Departamento = null;
+
+
             return Result.Success(funcionarioDTO);
             //return Result.Success(funcionario);
         }
@@ -73,6 +88,13 @@ namespace DespesaViagem.Services.Services
                 return Result.Failure<IEnumerable<FuncionarioDTO>>("Esses funcionarios não foram encontrados, por favor faça o cadastro dos mesmos!");
 
             IEnumerable<FuncionarioDTO> funcionariosDTO = MappingDTOs.ConverterDTO(funcionarios.ToList());
+
+            funcionariosDTO = funcionariosDTO.Select(f =>
+            {
+                if (f.Departamento is not null && !f.Departamento.Ativo)
+                    f.Departamento = null;
+                return f;
+            });
 
             return Result.Success(funcionariosDTO);
             //return Result.Success(funcionarios);
@@ -110,13 +132,21 @@ namespace DespesaViagem.Services.Services
             funcionario.CPF = funcionarioDTO.CPF;
             funcionario.Matricula = funcionarioDTO.Matricula;
 
+            if(funcionarioDTO.Departamento is null && funcionario.Departamento is not null)
+            {
+                await _funcionarioRepository.DesvincularDepartamento(funcionario.Id);
+                return Result.Success(funcionarioDTO);
+            }
+
+            funcionario.Departamento = funcionarioDTO.Departamento;
+
             funcionario.Gestor = (await _funcionarioRepository.ObterPorId(funcionario.Id)).Gestor;
 
             var duplicidadesFuncionario = await VerificaDuplicidades(funcionario);
 
             if (duplicidadesFuncionario.IsFailure)
                 return Result.Failure<FuncionarioDTO>(duplicidadesFuncionario.Error);
-
+            
             await _funcionarioRepository.Update(funcionario);
 
             funcionarioDTO = MappingDTOs.ConverterDTO(funcionario);

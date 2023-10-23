@@ -1,0 +1,179 @@
+﻿@using Microsoft.AspNetCore.Components
+@inject IDepartamentoService DepartamentoService
+@inject IAdminService AdminService
+@inject IJSRuntime JSRuntime
+@attribute [Authorize(Roles = "Administrador")]
+@implements IDisposable
+
+<PageTitle>Departamentos</PageTitle>
+
+<AuthorizeView Roles="Administrador">
+
+    <button class="btn btn-add-departamento" @onclick="(() => AbrirFormulario(0))">
+        Departamento <i class="bi bi-plus-lg"></i>
+    </button>
+
+    <div class="container text-center">
+        <div class="btn-group" role="group">
+            <button class="btn btn-outline-secondary" @onclick="(() => MostrarDepartamentos(EnumFiltroDepartamentos.Departamentos))">Departamentos</button>
+            <button class="btn btn-outline-secondary" @onclick="(() => MostrarDepartamentos(EnumFiltroDepartamentos.Funcionarios))">Funcionarios</button>
+        </div>
+    </div>
+
+    <div class="container-md">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@apresentacaoListagem[0]</th>
+                    <th>@apresentacaoListagem[1]</th>
+                    <th>@apresentacaoListagem[2]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @switch (filtro)
+                {
+                    case EnumFiltroDepartamentos.Departamentos:
+                        @foreach (Departamento departamento in Departamentos)
+                        {
+                            string btnStatus = departamento.Ativo ? "btn-danger" : "btn-add-departamento";
+                            string iconeStatus = departamento.Ativo ? "Desativar <i class=\"bi bi-x - octagon\"></i>" : "Ativar <i class=\"bi bi-check - circle\"></i>";
+                            <tr>
+                                <td>@departamento.Descricao</td>
+                                <td><button class="btn btn-edit-vinculo" @onclick="(() => AbrirFormulario(departamento.Id))"><i class="bi bi-pencil-square"></i></button></td>
+                                <td><button class="btn @btnStatus" @onclick="(() => AlterarStatusDepartamento(departamento))">@((MarkupString)iconeStatus)</button></td>
+                            </tr>
+                        }
+                        break;
+                    case EnumFiltroDepartamentos.Funcionarios:
+                        @foreach (FuncionarioDTO funcionario in Funcionarios)
+                        {                                   
+                            <tr>
+                                <td>@funcionario.Username</td>
+                                @if (funcionario.Departamento is not null)
+                                {
+                                    <td>@funcionario.Departamento.Descricao</td>
+                                }
+                                else
+                                {
+                                    <td>Não selecionado.</td>
+                                }
+                                <td><button class="btn btn-edit-vinculo" @onclick="(() => AbrirFormularioVinculacao(funcionario.Id))"><i class="bi bi-pencil-square"></i></button></td>
+                            </tr>
+                        }
+                        break;
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (FormularioDepartamentoAberto)
+    {
+        <div class="modal-overlay">
+            <div class="modal-content">
+                <DepartamentoForm IdDepartamento="idDepartamentoSelecionado" IdFuncionario="idFuncionarioSelecionado" FormularioFechado="FecharFormulario" />
+            </div>
+        </div>
+    }
+
+</AuthorizeView>
+
+@code {
+    private List<Departamento> Departamentos { get; set; } = new();
+    private List<FuncionarioDTO> Funcionarios { get; set; } = new();
+    private bool FormularioDepartamentoAberto = false;    
+    private int idDepartamentoSelecionado = 0;
+
+    private int idFuncionarioSelecionado = 0;
+
+    private EnumFiltroDepartamentos filtro = EnumFiltroDepartamentos.Departamentos;
+    private string[] apresentacaoListagem = { "Departamento", "Editar", "Status" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        DepartamentoService.DepartamentosChanged += StateHasChanged;
+        await ObterDepartamentos();
+        Funcionarios = await AdminService.ObterListaDeFuncionarios();
+    }
+
+    public void Dispose()
+    {
+        DepartamentoService.DepartamentosChanged -= StateHasChanged;
+    }
+
+    private async Task ObterDepartamentos()
+    {
+        var result = await DepartamentoService.ObterDepartamentos();
+        if (result.IsSuccess)
+            Departamentos = result.Value.ToList();
+        else
+            await JSRuntime.InvokeVoidAsync("alert", "Erro para carregar os departamentos. \n" + result.Error);
+    }
+
+    private async Task AlterarStatusDepartamento(Departamento departamento)
+    {
+        bool confirma = await JSRuntime.InvokeAsync<bool>("confirm", "Tem certeza de que deseja realizar essa operação?");
+        if (!confirma)
+            return;
+
+        Result<Departamento> result;
+        if (departamento.Ativo)
+        {
+            result = await DepartamentoService.DesativarDepartamento(departamento.Id);
+        }
+        else
+        {
+            result = await DepartamentoService.AtivarDepartamento(departamento.Id);
+        }
+
+
+        if (result.IsSuccess)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Alteração realizada com sucesso.");
+            await ObterDepartamentos();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Erro:" + result.Error);
+        }
+
+    }
+
+    private async Task MostrarDepartamentos(EnumFiltroDepartamentos filtro)
+    {
+        switch (filtro)
+        {
+            case EnumFiltroDepartamentos.Departamentos:
+                apresentacaoListagem[0] = "Departamento";
+                apresentacaoListagem[1] = "Editar";
+                apresentacaoListagem[2] = "Status";
+                break;
+            case EnumFiltroDepartamentos.Funcionarios:
+                apresentacaoListagem[0] = "Funcionario";
+                apresentacaoListagem[1] = "Departamento";
+                apresentacaoListagem[2] = "Editar";
+                Funcionarios = await AdminService.ObterListaDeFuncionarios();
+                break;
+        }
+
+        this.filtro = filtro;
+    }
+
+    private void AbrirFormulario(int idDepartamento)
+    {
+        idDepartamentoSelecionado = idDepartamento;
+        FormularioDepartamentoAberto = true;
+    }
+
+    private void AbrirFormularioVinculacao(int idFuncionario)
+    {
+        idFuncionarioSelecionado = idFuncionario;
+        FormularioDepartamentoAberto = true;
+    }
+
+    private async Task FecharFormulario()
+    {
+        FormularioDepartamentoAberto = false;
+        await ObterDepartamentos();
+        Funcionarios = await AdminService.ObterListaDeFuncionarios();
+    }
+}

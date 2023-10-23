@@ -61,7 +61,6 @@ namespace DespesaViagem.Server.Controllers
             return Ok(new ServiceResponse<decimal> { Conteudo = result.Value });
         }
 
-
         [HttpPost]
         public async Task<ActionResult> InserirViagem(ViagemDTO viagemDTO)
         {

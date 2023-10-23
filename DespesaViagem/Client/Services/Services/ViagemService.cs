@@ -1,13 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Client.Services.Interfaces;
-using DespesaViagem.Server.Mapping;
 using DespesaViagem.Shared.DTOs.Despesas;
-using DespesaViagem.Shared.DTOs.Helpers;
 using DespesaViagem.Shared.DTOs.Viagens;
-using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
-using DespesaViagem.Shared.Models.Viagens;
-using System.Diagnostics;
 using System.Net.Http.Json;
 
 namespace DespesaViagem.Client.Services.Services

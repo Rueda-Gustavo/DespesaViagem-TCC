@@ -1,4 +1,5 @@
 ﻿@inject IDespesasService<DespesaHospedagemDTO> DespesaHospedagemService
+@inject IViagemService ViagemService
 @inject IEnderecoService EnderecoService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
@@ -70,9 +71,14 @@
             <button type="button" class="btn btn-secondary mx-2" @onclick="FecharFormulario">
                 <span>Cancelar</span>
             </button>
-            <button type="submit" class="btn btn-primary">
-                <span>@AdicionarOuEditar</span>
-            </button>
+            <AuthorizeView Roles="Funcionario">
+                @if (viagem.StatusViagem == StatusViagem.EmAndamento)
+                {
+                    <button type="submit" class="btn btn-primary">
+                        <span>@AdicionarOuEditar</span>
+                    </button>
+                }
+            </AuthorizeView>
         </div>
     </form>
 </div>
@@ -85,6 +91,7 @@
     public int IdViagem { get; set; }
     private bool Adicionar = true;
     private string AdicionarOuEditar = "Adicionar";
+    private ViagemDTO viagem = new();
 
     //[Parameter]
     private DespesaHospedagemDTO Despesa { get; set; } = new();
@@ -100,6 +107,7 @@
         {
             Adicionar = false;
             await GetDespesaHospedagem();
+            viagem = await ViagemService.GetViagem(IdViagem);
         }
 
         if (!Adicionar) AdicionarOuEditar = "Editar";

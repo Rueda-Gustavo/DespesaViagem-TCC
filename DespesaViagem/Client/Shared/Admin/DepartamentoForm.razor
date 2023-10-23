@@ -1,0 +1,195 @@
+﻿@inject IDepartamentoService DepartamentoService
+@inject IFuncionarioService FuncionarioService
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+<div class="modal-header">
+    <h5 class="modal-title">@Acao Departamento</h5>
+    <button type="button" class="close" @onclick="FecharFormulario">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+    <form @onsubmit="HandleFormDepartamento">
+
+        @if (IdFuncionario != 0)
+        {
+            <div class="form-group row">
+                <div class="col">
+                    <label for="Funcionario">Funcionario</label>
+                    <input id="Funcionario" class="form-control" @bind="Funcionario.Username" disabled readonly />
+                </div>
+                <!--
+                <div class="col">
+                    <label for="Departamento">Funcionario</label>
+                @if(Funcionario.Departamento is null)
+                {
+                        <input id="Departamento" class="form-control" value="Não selecionado" disabled readonly />
+                }
+                else
+                {
+                        <input id="Departamento" class="form-control" @bind="Funcionario.Username" disabled readonly />
+                }
+
+                </div>
+                -->
+                <div class="col">
+                    <label for="Departamentos">Departamento</label>
+                    <select id="Departamentos" @onchange="SelecionarDepartamento" class="form-select">
+                        <option value="0">Selecione</option>
+                        @foreach (Departamento departamento in Departamentos)
+                        {
+                            if (Funcionario.Departamento is not null && departamento.Id == Funcionario.Departamento.Id)
+                            {
+                                <option value="@departamento.Id" selected>@departamento.Descricao</option>
+                            }
+                            else
+                            {
+                                <option value="@departamento.Id">@departamento.Descricao</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="form-group row">
+                <div class="col">
+                    <label for="Departamento">Departamento</label>
+                    <input id="Departamento" class="form-control" @bind="Departamento.Descricao" />
+                </div>
+            </div>
+        }
+
+
+
+        <div style="float:right;">
+            <button type="button" class="btn btn-secondary mx-2" @onclick="FecharFormulario">
+                <span>Cancelar</span>
+            </button>
+
+            <AuthorizeView Roles="Administrador">
+                <button type="submit" class="btn btn-primary">
+                    <span>@Acao</span>
+                </button>
+            </AuthorizeView>
+        </div>
+    </form>
+</div>
+
+@code {
+    private Departamento Departamento { get; set; } = new();
+    private List<Departamento> Departamentos { get; set; } = new();
+    private FuncionarioDTO Funcionario { get; set; } = new();
+    private string Acao = "Adicionar";
+
+    private Departamento? departamentoSelecionado;
+
+    [Parameter]
+    public int IdFuncionario { get; set; }
+    [Parameter]
+    public int IdDepartamento { get; set; }
+    [Parameter]
+    public EventCallback FormularioFechado { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        DepartamentoService.DepartamentosChanged += StateHasChanged;
+
+        if (IdDepartamento != 0)
+        {
+            Acao = "Editar";
+            await ObterDepartamentos();
+        }
+        if (IdFuncionario != 0)
+        {
+            Acao = "Salvar";
+            Funcionario = await FuncionarioService.GetFuncionario(IdFuncionario);
+
+            await ObterDepartamentos();
+        }
+    }
+
+    private async Task FecharFormulario()
+    {
+        await FormularioFechado.InvokeAsync();
+    }
+
+    public void Dispose()
+    {
+        DepartamentoService.DepartamentosChanged -= StateHasChanged;
+    }
+
+    private async Task HandleFormDepartamento()
+    {
+        if (IdFuncionario != 0)
+        {
+            await SalvarVinculacao();
+        }
+        else
+        {
+            await SalvarDepartamento();
+        }
+    }
+
+    private async Task ObterDepartamentos()
+    {
+        var result = await DepartamentoService.ObterDepartamentos();
+        if (result.IsSuccess)
+            Departamentos = result.Value.ToList();
+    }
+
+    private async Task SalvarDepartamento()
+    {
+        try
+        {
+            Result<Departamento> departamento = new();
+
+            if (IdDepartamento == 0)
+                departamento = await DepartamentoService.AdicionarDepartamento(Departamento.Descricao);
+            else
+                departamento = await DepartamentoService.AtualizarDepartamento(Departamento);
+
+            if (departamento.IsSuccess) await FecharFormulario();
+            else await JSRuntime.InvokeVoidAsync("alert", departamento.Error);
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Erro para adicionar/alterar o departamento. \n" + ex.Message);
+        }
+    }
+
+    private async Task SalvarVinculacao()
+    {
+        try
+        {
+            Funcionario.Departamento = departamentoSelecionado;
+            Result<FuncionarioDTO> result = await FuncionarioService.AtualizarPerfil(Funcionario);
+
+            if (result.IsSuccess) await FecharFormulario();
+            else await JSRuntime.InvokeVoidAsync("alert", result.Error);
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Erro na vinculação. \n" + ex.Message);
+        }
+    }
+
+    private async Task SelecionarDepartamento(ChangeEventArgs e)
+    {
+        if (e.Value is null || !int.TryParse(e.Value.ToString(), out int idDepartamento))
+            return;
+
+        if (idDepartamento == 0)
+            Funcionario.Departamento = null;
+        else
+        {
+            var result = await DepartamentoService.ObterDepartamento(idDepartamento);
+            if (result.IsSuccess)
+                departamentoSelecionado = result.Value;
+        }
+    }
+
+}
