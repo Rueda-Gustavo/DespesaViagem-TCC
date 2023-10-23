@@ -30,7 +30,7 @@ namespace DespesaViagem.Client.Services.Services
                 }
                 
                 IEnumerable<Departamento> result = response.Conteudo;
-                Console.WriteLine("Sucesso - DepartamentoService - Client");
+                Console.WriteLine("Sucesso - DepartamentoService - Client");                
 
                 DepartamentosChanged.Invoke();
                 return Result.Success(result);

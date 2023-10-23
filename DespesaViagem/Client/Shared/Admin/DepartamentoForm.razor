@@ -38,7 +38,7 @@
                     <label for="Departamentos">Departamento</label>
                     <select id="Departamentos" @onchange="SelecionarDepartamento" class="form-select">
                         <option value="0">Selecione</option>
-                        @foreach (Departamento departamento in Departamentos)
+                        @foreach (Departamento departamento in Departamentos.Where(d => d.Ativo))
                         {
                             if (Funcionario.Departamento is not null && departamento.Id == Funcionario.Departamento.Id)
                             {
