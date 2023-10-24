@@ -1,6 +1,7 @@
 ﻿@page "/login"
 @inject IUsuarioService UsuarioService
 @inject ILocalStorageService LocalStorage
+@inject IFuncionarioService FuncionarioService
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJSRuntime JSRuntime
@@ -45,6 +46,8 @@
 
     private string mensagemErro = string.Empty;
     private string returnUrl = string.Empty;
+
+    private Departamento? departamento;
 
     private bool carregando = false;
 

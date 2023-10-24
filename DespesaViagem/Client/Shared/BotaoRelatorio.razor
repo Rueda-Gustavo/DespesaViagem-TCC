@@ -1,0 +1,21 @@
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@if (autorizado)
+{
+    <a class="dropdown-item btn-usuario mb-1" style="margin-left: 0; max-width: 7.5rem;" href="/relatorios">Relatórios</a>
+}
+
+
+@code {
+    //@using System.Security.Claims
+    private bool autorizado = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string role = (await AuthenticationStateProvider.GetAuthenticationStateAsync())
+        .User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Role).Value;
+
+        if (role.Contains(RolesUsuario.Gestor.ToString()) || role.Contains(RolesUsuario.Administrador.ToString()))
+            autorizado = true;
+    }
+}

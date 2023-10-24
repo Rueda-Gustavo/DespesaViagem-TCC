@@ -45,6 +45,11 @@ else
                             <label for="Matricula">Matrícula</label>
                             <input id="Matricula" class="form-control" @bind-value="funcionario.Matricula" />
                         </div>
+
+                        <div class="col">
+                            <label for="Departamento">Departamento</label>
+                            <input id="Departamento" class="form-control" disabled @bind-value="funcionario.Departamento.Descricao" />
+                        </div>
                     }
                 </div>
             </div>
@@ -144,7 +149,11 @@ else
         TipoDeUsuario = tipoUsuario.ToString();
 
         if (tipoUsuario == RolesUsuario.Funcionario)
+        {
             usuario = funcionario = await FuncionarioService.GetFuncionario(idUsuario);
+            if (funcionario.Departamento is null)
+                funcionario.Departamento = new() { Descricao = string.Empty };
+        }
         else if (tipoUsuario == RolesUsuario.Gestor)
             usuario = await GestorService.GetGestor(idUsuario);
         else
@@ -163,7 +172,9 @@ else
         try
         {
             bool sucesso = false;
-            if (TipoDeUsuario == RolesUsuario.Funcionario.ToString()){
+            if (TipoDeUsuario == RolesUsuario.Funcionario.ToString())
+            {
+                funcionario.Departamento = (await FuncionarioService.GetFuncionario(funcionario.Id)).Departamento;
                 sucesso = (await FuncionarioService.AtualizarPerfil(funcionario)).IsSuccess;
                 await JSRuntime.InvokeVoidAsync("alert", FuncionarioService.Mensagem);
             }

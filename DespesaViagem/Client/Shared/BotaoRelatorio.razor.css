@@ -1,0 +1,16 @@
+﻿.btn-usuario {
+    background-color: #fff;
+    border: 2px solid #5101d4;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none !important;
+}
+
+    .btn-usuario:hover {
+        background: linear-gradient(to bottom, #7a29ff, #5100ad);
+        /*background: #5100ad;*/
+        border-radius: 10px;
+        color: #fff;
+        border: 2px solid #ffb400;
+    }
