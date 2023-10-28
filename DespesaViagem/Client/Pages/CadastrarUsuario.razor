@@ -1,8 +1,11 @@
 ﻿@page "/cadastro"
 @inject IFuncionarioService FuncionarioService
 @inject IGestorService GestorService
+@inject IDepartamentoService DepartamentoService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
+@implements IDisposable
+
 
 <PageTitle>Cadastro</PageTitle>
 
@@ -46,16 +49,35 @@
             <InputText id="confirmPassword" @bind-Value="usuario.ConfirmPassword" class="form-control" type="password"></InputText>
             <ValidationMessage For="@(() => usuario.ConfirmPassword)" />
         </div>
-        <InputRadioGroup @bind-Value="usuario.TipoDeUsuario">
-            <InputRadio Value="RolesUsuario.Gestor" /> @RolesUsuario.Gestor.ToString()
-            <InputRadio Value="RolesUsuario.Funcionario" /> @RolesUsuario.Funcionario.ToString()
-        </InputRadioGroup>
-        <div class="float-end">
-            <button type="submit" class="btn btn-primary">Cadastrar</button>
+
+
+        @if (usuario.TipoDeUsuario == RolesUsuario.Funcionario)
+        {
+            <label for="departamentoFuncionario">Departamento</label>
+            <InputSelect id="departamentoFuncionario" class="form-select" @bind-Value="usuario.Departamento.Id">
+                <option value="0">Selecione</option>
+                @foreach (var departamento in departamentos)
+                {
+                    <option value="@departamento.Id"> @departamento.Descricao </option>
+                }
+            </InputSelect>
+        }
+
+        <div class="col mt-3">
+            <InputRadioGroup id="escolhaTipoDeUsuario" @bind-Value="usuario.TipoDeUsuario">
+                <InputRadio Value="RolesUsuario.Gestor" /> @RolesUsuario.Gestor.ToString()
+                <InputRadio Value="RolesUsuario.Funcionario" /> @RolesUsuario.Funcionario.ToString()
+            </InputRadioGroup>
+
+            <div class="float-end">
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
+            </div>
         </div>
+
         <div class="text-danger">
             <span>@mensagemErro</span>
         </div>
+
     </EditForm>
 </div>
 @if (carregando)
@@ -70,8 +92,24 @@
 @code {
     CadastroUsuario usuario = new();
 
+    List<Departamento> departamentos = new();
+
     private string mensagemErro = string.Empty;
     private bool carregando = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        DepartamentoService.DepartamentosChanged += StateHasChanged;
+        usuario.Departamento = new Departamento() { Id = 0 };
+        var result = await DepartamentoService.ObterDepartamentos();
+        if (result.IsSuccess)
+            departamentos = result.Value.ToList();
+    }
+
+    public void Dispose()
+    {
+        DepartamentoService.DepartamentosChanged -= StateHasChanged;
+    }
 
     private async Task HandleCadastro()
     {
@@ -80,14 +118,35 @@
         //Início - Bloco de cadastro
         carregando = true;
 
+        bool confirma = false;
+        if (usuario.TipoDeUsuario == RolesUsuario.Gestor)
+            confirma = await JSRuntime.InvokeAsync<bool>("confirm", "Deseja se cadastrar como gestor?\nVocê não conseguirá criar viagens e precisará entrar em contato com o administrador para liberar seus acessos.");
+        else
+            confirma = await JSRuntime.InvokeAsync<bool>("confirm", "Deseja prosseguir com o cadastro?");
+
         if (usuario.TipoDeUsuario == RolesUsuario.Gestor)
         {
-            bool confirma = await JSRuntime.InvokeAsync<bool>("confirm", "Deseja se cadastrar como gestor?\nVocê não conseguirá criar viagens e precisará entrar em contato com o administrador para liberar seus acessos.");
-            if (confirma)
-                result = await GestorService.Cadastrar(usuario);
+            if (!confirma)
+            {
+                carregando = false;
+                return;
+            }
+            usuario.Departamento = null;
+            result = await GestorService.Cadastrar(usuario);
         }
         else
+        {
+            if (!confirma)
+            {
+                carregando = false;
+                return;
+            }
+
+            if (usuario.Departamento is not null && usuario.Departamento.Id == 0)
+                usuario.Departamento = null;
             result = await FuncionarioService.Cadastrar(usuario);
+        }
+
 
         carregando = false;
         //Fim - Bloco de cadastro

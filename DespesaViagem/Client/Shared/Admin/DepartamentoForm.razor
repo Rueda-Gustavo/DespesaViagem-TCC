@@ -102,6 +102,7 @@
         {
             Acao = "Editar";
             await ObterDepartamentos();
+            Departamento = Departamentos.FirstOrDefault(d => d.Id == IdDepartamento) ?? new();
         }
         if (IdFuncionario != 0)
         {

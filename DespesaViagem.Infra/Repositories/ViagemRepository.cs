@@ -21,6 +21,7 @@ namespace DespesaViagem.Infra.Repositories
         {
             return await _context.Viagens                
                 .Include(f => f.Funcionario)
+                .Include(f => f.Funcionario.Departamento)
                 .Include(d => d.Despesas)
                 .OrderByDescending(viagem => viagem.Id)
                 .ToListAsync();
@@ -31,10 +32,22 @@ namespace DespesaViagem.Infra.Repositories
             return await _context.Viagens
                 .Where(v => v.IdFuncionario == idFuncionario)
                 .Include(f => f.Funcionario)
+                .Include(f => f.Funcionario.Departamento)
                 .Include(d => d.Despesas)
                 .OrderByDescending(viagem => viagem.Id)
                 .ToListAsync();
         }
+        public async Task<List<Viagem>> ObterPorDepartamento(int idDepartamento)
+        {
+            return await _context.Viagens
+                .Where(v => v.Funcionario.Departamento != null && v.Funcionario.Departamento.Id == idDepartamento)
+                .Include(f => f.Funcionario)
+                .Include(f => f.Funcionario.Departamento)
+                .Include(d => d.Despesas)
+                .OrderByDescending(viagem => viagem.Id)
+                .ToListAsync();
+        }
+
 
         //Esse método irá retornar todas as viagens dos funcionários que estão na equipe do gestor que está logado
         public async Task<List<Viagem>> ObterTodosGestor(int idGestor)

@@ -3,6 +3,7 @@
 @inject IViagemService ViagemService
 @inject IGestorService GestorService
 @inject IAdminService AdminService
+@inject IDepartamentoService DepartamentoService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @implements IDisposable
 @attribute [Authorize]
@@ -22,17 +23,66 @@
 </AuthorizeView>
 
 <AuthorizeView Roles="Gestor, Administrador">
+<!--
     <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
         Filtro <i class="bi bi-funnel"></i>
     </button>
     <ul class="dropdown-menu">
-        @foreach (var funcionario in Funcionarios)
-        {
-            <li><button @onclick="(() => ObterDespesasFuncionario(funcionario.Id))" class="btn btn-outline-secondary dropdown-item">@funcionario.Username</button></li>
-        }
+    @foreach (var funcionario in Funcionarios)
+    {
+            <li><button @onclick="(() => ObterViagensFuncionario(funcionario.Id))" class="btn btn-outline-secondary dropdown-item">@funcionario.Username</button></li>
+    }
         <li class="dropdown-divider"></li>
-        <li><button @onclick="(() => ObterDespesasFuncionario(0))" class="btn btn-outline-secondary dropdown-item">Limpar filtro</button></li>
+        <li><button @onclick="(() => ObterViagensFuncionario(0))" class="btn btn-outline-secondary dropdown-item">Limpar filtro</button></li>
     </ul>
+
+-->
+    <button class="btn btn-outline-secondary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltros" aria-expanded="false" aria-controls="collapseFiltros">
+        Filtro <i class="bi bi-funnel"></i>
+    </button>
+
+    <div class="btn-group-horizontal collapse" id="collapseFiltros" role="group">
+        <div class="btn-group-horizontal" role="group" aria-label="Vertical button group">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    Funcionarios
+                </button>
+                <ul class="dropdown-menu">
+                    @foreach (var funcionario in Funcionarios)
+                    {
+                        <li><button @onclick="(() => ObterViagensFuncionario(funcionario.Id))" class="btn btn-outline-secondary dropdown-item">@funcionario.Username</button></li>
+                    }
+                    <li class="dropdown-divider"></li>
+                    <li><button @onclick="(() => ObterViagensFuncionario(0))" class="btn btn-outline-secondary dropdown-item">Limpar filtro</button></li>
+                </ul>
+            </div>
+
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    Departamentos
+                </button>
+                <ul class="dropdown-menu">
+                    @foreach (var departamento in Departamentos)
+                    {
+                        <li><button @onclick="(() => ObterViagensDepartamento(departamento.Id))" class="btn btn-outline-secondary dropdown-item">@departamento.Descricao</button></li>
+                    }
+                    <li class="dropdown-divider"></li>
+                    <li><button @onclick="(() => ObterViagensDepartamento(0))" class="btn btn-outline-secondary dropdown-item">Limpar filtro</button></li>
+                </ul>
+            </div>
+
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    Dropdown
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Dropdown link</a></li>
+                    <li><a class="dropdown-item" href="#">Dropdown link</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
 </AuthorizeView>
 
 <div class="d-flex card-container-viagens">
@@ -42,7 +92,7 @@
 
     @if (FormularioAberto)
     {
-        <div class="modal-overlay">            
+        <div class="modal-overlay">
             <div class="modal-content">
                 <ViagemForm IdViagem="0" FormularioFechado="FecharFormulario" />
             </div>
@@ -57,9 +107,13 @@
     private bool PossuiViagemAbertaOuEmAndamento = false;
 
     private List<FuncionarioDTO> Funcionarios = new();
+    private List<Departamento> Departamentos = new();
 
     protected override async Task OnInitializedAsync()
     {
+        DepartamentoService.DepartamentosChanged += StateHasChanged;
+        ViagemService.ViagensChanged += StateHasChanged;
+
         /*var usuario = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         string tipoDeUsuario = usuario.User.FindFirst(ClaimTypes.Role).Value.ToString() ?? string.Empty;
         */
@@ -67,21 +121,23 @@
         .User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Role).Value;
 
         if (!tipoDeUsuario.Contains(RolesUsuario.Funcionario.ToString()))
+        {
             await ObterListaFuncionarios(tipoDeUsuario);
+            await ObterDepartamentos();
+        }
 
         await ViagemService.GetViagens();
         PossuiViagemAbertaOuEmAndamento = await FuncionarioPossuiViagemEmAndamentoOuAberta();
-
-        ViagemService.ViagensChanged += StateHasChanged;
     }
 
     public void Dispose()
     {
+        DepartamentoService.DepartamentosChanged -= StateHasChanged;
         ViagemService.ViagensChanged -= StateHasChanged;
     }
 
     private async Task ObterListaFuncionarios(string tipoDeUsuario)
-    {       
+    {
         if (tipoDeUsuario.Contains(RolesUsuario.Administrador.ToString()))
             Funcionarios = await AdminService.ObterListaDeFuncionarios();
         else if (tipoDeUsuario.Contains(RolesUsuario.Gestor.ToString()))
@@ -90,12 +146,27 @@
         Console.WriteLine(Funcionarios.Count);
     }
 
-    private async Task ObterDespesasFuncionario(int idFuncionario)
+    private async Task ObterViagensFuncionario(int idFuncionario)
     {
         if (idFuncionario == 0)
             await ViagemService.GetViagens();
         else
             await ViagemService.GetViagens(idFuncionario);
+    }
+
+    private async Task ObterDepartamentos()
+    {
+        var result = await DepartamentoService.ObterDepartamentos();
+        if (result.IsSuccess)
+            Departamentos = result.Value.ToList();
+    }
+
+    private async Task ObterViagensDepartamento(int idDepartamento)
+    {
+        if (idDepartamento == 0)
+            await ViagemService.GetViagens();
+        else
+            await ViagemService.GetViagensPorDepartamento(idDepartamento);
     }
 
     private async Task<bool> FuncionarioPossuiViagemEmAndamentoOuAberta()
@@ -114,8 +185,9 @@
 
     private void AbrirFormulario() => FormularioAberto = true;
 
-    private async Task FecharFormulario() {        
-        FormularioAberto = false; 
+    private async Task FecharFormulario()
+    {
+        FormularioAberto = false;
         await ViagemService.GetViagens();
-    } 
+    }
 }

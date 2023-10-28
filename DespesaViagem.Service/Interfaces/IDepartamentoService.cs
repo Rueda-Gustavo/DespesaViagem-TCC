@@ -5,7 +5,7 @@ namespace DespesaViagem.Services.Interfaces
 {
     public interface IDepartamentoService
     {
-        Task<Result<IEnumerable<Departamento>>> ObterDepartamentos(int idAdmin);
+        Task<Result<IEnumerable<Departamento>>> ObterDepartamentos(/*int idAdmin*/);
         Task<Result<Departamento>> ObterDepartamento(int id);
         Task<Result<Departamento>> ObterDepartamento(string descricao);
         Task<Result<Departamento>> AdicionarDepartamento(string descricao);

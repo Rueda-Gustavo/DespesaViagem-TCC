@@ -13,6 +13,7 @@ namespace DespesaViagem.Client.Services.Interfaces
         string Mensagem { get; set; }
         Task GetViagens();
         Task GetViagens(int idFuncionario);
+        Task GetViagensPorDepartamento(int idDepartamento);
         Task<ViagemDTO> GetViagem(int idViagem);
         //Task<FuncionarioDTO> GetFuncionario(string CPF);
         //Task<FuncionarioDTO> GetFuncionario(int idFuncionario);

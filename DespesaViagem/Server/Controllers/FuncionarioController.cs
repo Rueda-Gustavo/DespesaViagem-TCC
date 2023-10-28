@@ -61,7 +61,8 @@ namespace DespesaViagem.Server.Controllers
                     NomeCompleto = request.NomeCompleto,
                     CPF = request.CPF,
                     Matricula = request.Matricula ?? string.Empty,
-                    Username = request.Username
+                    Username = request.Username,
+                    Departamento = request.Departamento
                 }, request.Password);
 
             if (result.IsFailure)

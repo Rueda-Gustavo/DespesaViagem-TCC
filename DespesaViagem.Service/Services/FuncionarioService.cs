@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Infra.Interfaces;
+using DespesaViagem.Infra.Repositories;
 using DespesaViagem.Server.Mapping;
 using DespesaViagem.Services.Interfaces;
 using DespesaViagem.Shared.DTOs.Helpers;
@@ -12,14 +13,17 @@ namespace DespesaViagem.Services.Services
         private readonly IFuncionarioRepository _funcionarioRepository;
         private readonly IGestorRepository _gestorRepository;
         private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IDepartamentoRepository _departamentoRepository;
 
         public FuncionarioService(IFuncionarioRepository funcionarioRepository,
                                   IGestorRepository gestorRepository,
-                                  IUsuarioRepository usuarioRepository)
+                                  IUsuarioRepository usuarioRepository,
+                                  IDepartamentoRepository departamentoRepository)
         {
             _funcionarioRepository = funcionarioRepository;
             _gestorRepository = gestorRepository;
             _usuarioRepository = usuarioRepository;
+            _departamentoRepository = departamentoRepository;
         }
 
         public async Task<Result<IEnumerable<FuncionarioDTO>>> ObterTodos()
@@ -111,6 +115,9 @@ namespace DespesaViagem.Services.Services
 
             funcionario.PasswordHash = passwordHash;
             funcionario.PasswordSalt = passwordSalt;
+
+            if (funcionario.Departamento is not null)
+                funcionario.Departamento = await _departamentoRepository.ObterDepartamento(funcionario.Departamento.Id);
 
             await _funcionarioRepository.Insert(funcionario);
 

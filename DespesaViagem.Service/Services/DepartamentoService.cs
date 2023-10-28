@@ -10,20 +10,20 @@ namespace DespesaViagem.Services.Services
     public class DepartamentoService : IDepartamentoService
     {
         private readonly IDepartamentoRepository _departamentoRepository;
-        private readonly IUsuarioRepository _usuarioRepository;
+        //private readonly IUsuarioRepository _usuarioRepository;
 
-        public DepartamentoService(IDepartamentoRepository departamentoRepository, IUsuarioRepository usuarioRepository)
+        public DepartamentoService(IDepartamentoRepository departamentoRepository/*, IUsuarioRepository usuarioRepository*/)
         {
             _departamentoRepository = departamentoRepository;
-            _usuarioRepository = usuarioRepository;
+            //_usuarioRepository = usuarioRepository;
         }
 
-        public async Task<Result<IEnumerable<Departamento>>> ObterDepartamentos(int idAdmin)
+        public async Task<Result<IEnumerable<Departamento>>> ObterDepartamentos(/*int idAdmin*/)
         {
-            Usuario? usuario = await _usuarioRepository.ObterUsuario(idAdmin);
+            /*Usuario? usuario = await _usuarioRepository.ObterUsuario(idAdmin);
 
             if (usuario is null || usuario.TipoDeUsuario != RolesUsuario.Administrador)
-                return Result.Failure<IEnumerable<Departamento>>("Usuário não encontrado ou não está autorizado!");
+                return Result.Failure<IEnumerable<Departamento>>("Usuário não encontrado ou não está autorizado!");*/
 
             IEnumerable<Departamento> departamentos = await _departamentoRepository.ObterDepartamentos();
 
@@ -65,7 +65,7 @@ namespace DespesaViagem.Services.Services
 
         public async Task<Result<Departamento>> AlterarDepartamento(Departamento departamento)
         {
-            Departamento departamentoExistente = await _departamentoRepository.ObterDepartamento(departamento.Descricao);
+            Departamento departamentoExistente = await _departamentoRepository.ObterDepartamento(departamento.Id);
             if (departamentoExistente is null)
                 return Result.Failure<Departamento>("Departamento não encontrado.");
 

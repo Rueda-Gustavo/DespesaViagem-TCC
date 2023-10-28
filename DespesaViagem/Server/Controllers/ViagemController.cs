@@ -49,8 +49,28 @@ namespace DespesaViagem.Server.Controllers
             return Ok(new ServiceResponse<ViagemDTO> { Conteudo = result.Value });
         }
 
+        [HttpGet("PorFuncionario/{idFuncionario}")]
+        public async Task<ActionResult> ObterViagemPorFuncionario(int idFuncionario)
+        {
+            Result<List<ViagemDTO>> result = await _viagemService.ObterViagensPorFuncionario(idFuncionario);
 
-        [HttpGet("/PrestacaoDeContas/{idViagem:int}")]
+            if (result.IsFailure) return BadRequest(new ServiceResponse<List<ViagemDTO>> { Sucesso = false, Mensagem = result.Error });
+
+            return Ok(new ServiceResponse<List<ViagemDTO>> { Conteudo = result.Value });
+        }
+        
+        [HttpGet("PorDepartamento/{idDepartamento:int}")]
+        public async Task<ActionResult> ObterViagemPorDepartamento(int idDepartamento)
+        {
+            Result<List<ViagemDTO>> result = await _viagemService.ObterViagensPorDepartamento(idDepartamento);
+
+            if (result.IsFailure) return BadRequest(new ServiceResponse<List<ViagemDTO>> { Sucesso = false, Mensagem = result.Error });
+
+            return Ok(new ServiceResponse<List<ViagemDTO>> { Conteudo = result.Value });
+        }
+
+
+        [HttpGet("PrestacaoDeContas/{idViagem:int}")]
         public async Task<ActionResult> ObterPrestacaoDeContas(int idViagem)
         {
             Result<decimal> result = await _viagemService.ObterPrestacaoDeContas(idViagem);
@@ -152,7 +172,7 @@ namespace DespesaViagem.Server.Controllers
 
         [HttpGet]
         [Route("status/{statusViagem}")]
-        public async Task<ActionResult> ObterViagensPorEstado(StatusViagem statusViagem)
+        public async Task<ActionResult> ObterViagensPorStatus(StatusViagem statusViagem)
         {
             string idFuncionario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
 

@@ -63,6 +63,40 @@ namespace DespesaViagem.Services.Services
             return Result.Success(viagensDTO);
         }
 
+        public async Task<Result<List<ViagemDTO>>> ObterViagensPorFuncionario(int idFuncionario)
+        {
+            Funcionario? funcionario = await _funcionarioRepository.ObterPorId(idFuncionario);
+
+            if (funcionario is null)
+                return Result.Failure<List<ViagemDTO>>("Funcionário não encontrado.");
+
+            List<Viagem> viagens;
+
+            viagens = await _viagemRepository.ObterTodos(idFuncionario);
+
+            if (!viagens.Any())
+                return Result.Failure<List<ViagemDTO>>("Não existem viagens cadastradas.");
+
+            List<ViagemDTO> viagensDTO = MappingDTOs.ConverterDTO(viagens);
+
+            return Result.Success(viagensDTO);
+        }
+
+        public async Task<Result<List<ViagemDTO>>> ObterViagensPorDepartamento(int idDepartamento)
+        {
+                        
+            List<Viagem> viagens;
+
+            viagens = await _viagemRepository.ObterPorDepartamento(idDepartamento);
+
+            if (!viagens.Any())
+                return Result.Failure<List<ViagemDTO>>("Não existem viagens cadastradas.");
+
+            List<ViagemDTO> viagensDTO = MappingDTOs.ConverterDTO(viagens);
+
+            return Result.Success(viagensDTO);
+        }
+
 
         public async Task<Result<ViagemDTO>> ObterViagemPorId(int idViagem)
         {

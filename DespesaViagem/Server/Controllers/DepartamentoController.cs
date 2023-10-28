@@ -22,9 +22,9 @@ namespace DespesaViagem.Server.Controllers
         [HttpGet]
         public async Task<ActionResult> ObterTodosDepartamentos()
         {
-            string idUsuario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
+            //string idUsuario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
 
-            Result<IEnumerable<Departamento>> result = await _departamentoService.ObterDepartamentos(int.Parse(idUsuario));
+            Result<IEnumerable<Departamento>> result = await _departamentoService.ObterDepartamentos(/*int.Parse(idUsuario)*/);
 
             if (result.IsFailure)
                 return BadRequest(new ServiceResponse<IEnumerable<Departamento>> { Sucesso = false, Mensagem = result.Error });
