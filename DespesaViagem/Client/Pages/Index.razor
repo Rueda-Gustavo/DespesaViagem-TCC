@@ -21,7 +21,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-4">
-                <a href="/viagens" class="feature-link">
+                <a href="/viagens/1" class="feature-link">
                     <div class="feature">
                         <i class="bi bi-calendar"></i>
                         <h2>Agende Viagens</h2>
@@ -75,7 +75,7 @@
 
         if (state.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Role) is null)
         {
-            NavigationManager.NavigateTo("/viagens");
+            NavigationManager.NavigateTo("/viagens/1");
             return;
         }
 
@@ -83,7 +83,7 @@
 
         if (role is not null && role != string.Empty && !role.Contains(RolesUsuario.Funcionario.ToString()))
         {
-            NavigationManager.NavigateTo("/viagens");
+            NavigationManager.NavigateTo("/viagens/1");
             return;
         }
 
@@ -94,7 +94,7 @@
         }
         else
         {
-            NavigationManager.NavigateTo($"/viagens/{viagem.Id}/0");
+            NavigationManager.NavigateTo($"/viagens/{viagem.Id}/1");
         }
     }    
 }

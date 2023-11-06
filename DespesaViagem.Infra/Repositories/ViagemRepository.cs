@@ -23,7 +23,7 @@ namespace DespesaViagem.Infra.Repositories
                 .Include(f => f.Funcionario)
                 .Include(f => f.Funcionario.Departamento)
                 .Include(d => d.Despesas)
-                .OrderByDescending(viagem => viagem.Id)
+                .OrderByDescending(viagem => viagem.IdFuncionario)
                 .ToListAsync();
         }
 
@@ -34,7 +34,7 @@ namespace DespesaViagem.Infra.Repositories
                 .Include(f => f.Funcionario)
                 .Include(f => f.Funcionario.Departamento)
                 .Include(d => d.Despesas)
-                .OrderByDescending(viagem => viagem.Id)
+                .OrderByDescending(viagem => viagem.IdFuncionario)
                 .ToListAsync();
         }
         public async Task<List<Viagem>> ObterPorDepartamento(int idDepartamento)
@@ -44,7 +44,7 @@ namespace DespesaViagem.Infra.Repositories
                 .Include(f => f.Funcionario)
                 .Include(f => f.Funcionario.Departamento)
                 .Include(d => d.Despesas)
-                .OrderByDescending(viagem => viagem.Id)
+                .OrderByDescending(viagem => viagem.IdFuncionario)
                 .ToListAsync();
         }
 

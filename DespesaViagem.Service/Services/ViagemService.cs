@@ -1,8 +1,5 @@
-﻿using AutoMapper;
-using AutoMapper.Configuration.Annotations;
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Infra.Interfaces;
-using DespesaViagem.Infra.Repositories;
 using DespesaViagem.Server.Mapping;
 using DespesaViagem.Services.Interfaces;
 using DespesaViagem.Shared.DTOs.Despesas;
@@ -21,6 +18,7 @@ namespace DespesaViagem.Services.Services
         private readonly IFuncionarioRepository _funcionarioRepository;
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly float _despesasPorPagina = 6f;
+        private readonly float _viagensPorPagina = 4f;
         public ViagemService(IViagemRepository viagemRepository,
             IDespesaRepository despesaRepository,
             IFuncionarioRepository funcionarioRepository,
@@ -63,6 +61,8 @@ namespace DespesaViagem.Services.Services
             return Result.Success(viagensDTO);
         }
 
+        //*Trecho antigo, inutilizado------------------------------------------------------------------------------------
+
         public async Task<Result<List<ViagemDTO>>> ObterViagensPorFuncionario(int idFuncionario)
         {
             Funcionario? funcionario = await _funcionarioRepository.ObterPorId(idFuncionario);
@@ -70,9 +70,7 @@ namespace DespesaViagem.Services.Services
             if (funcionario is null)
                 return Result.Failure<List<ViagemDTO>>("Funcionário não encontrado.");
 
-            List<Viagem> viagens;
-
-            viagens = await _viagemRepository.ObterTodos(idFuncionario);
+            List<Viagem> viagens = await _viagemRepository.ObterTodos(idFuncionario);
 
             if (!viagens.Any())
                 return Result.Failure<List<ViagemDTO>>("Não existem viagens cadastradas.");
@@ -81,13 +79,44 @@ namespace DespesaViagem.Services.Services
 
             return Result.Success(viagensDTO);
         }
+        //-------------------------------------------------------------------------------------------------------------*/
 
+        public async Task<Result<ViagensPorPagina>> ObterViagensPorFuncionario(int idFuncionario, int pagina)
+        {
+            Funcionario? funcionario = await _funcionarioRepository.ObterPorId(idFuncionario);
+
+            if (funcionario is null)
+                return Result.Failure<ViagensPorPagina>("Funcionário não encontrado.");
+
+            List<Viagem> viagens = await _viagemRepository.ObterTodos(idFuncionario);
+
+            if (!viagens.Any())
+                return Result.Failure<ViagensPorPagina>("Não existem viagens cadastradas.");
+
+            double quantidadeDePaginas = Math.Ceiling(viagens.Count / _viagensPorPagina);
+            viagens = viagens
+                .Skip((pagina - 1) * (int)_viagensPorPagina)
+                .Take((int)_viagensPorPagina)
+                .ToList();
+
+            List<ViagemDTO> viagensDTO = MappingDTOs.ConverterDTO(viagens);
+
+            ViagensPorPagina result = new()
+            {
+                Viagens = viagensDTO,
+                PaginaAtual = pagina,
+                QuantidadeDePaginas = (int)quantidadeDePaginas
+            };
+
+            return Result.Success(result);
+        }
+
+
+        //*Trecho antigo, inutilizado------------------------------------------------------------------------------------
         public async Task<Result<List<ViagemDTO>>> ObterViagensPorDepartamento(int idDepartamento)
         {
                         
-            List<Viagem> viagens;
-
-            viagens = await _viagemRepository.ObterPorDepartamento(idDepartamento);
+            List<Viagem> viagens = await _viagemRepository.ObterPorDepartamento(idDepartamento);
 
             if (!viagens.Any())
                 return Result.Failure<List<ViagemDTO>>("Não existem viagens cadastradas.");
@@ -96,7 +125,32 @@ namespace DespesaViagem.Services.Services
 
             return Result.Success(viagensDTO);
         }
+        //-------------------------------------------------------------------------------------------------------------*/
 
+        public async Task<Result<ViagensPorPagina>> ObterViagensPorDepartamento(int idDepartamento, int pagina)
+        {
+            List<Viagem> viagens = await _viagemRepository.ObterPorDepartamento(idDepartamento);
+
+            if (!viagens.Any())
+                return Result.Failure<ViagensPorPagina>("Não existem viagens cadastradas.");
+
+            double quantidadeDePaginas = Math.Ceiling(viagens.Count / _viagensPorPagina);
+            viagens = viagens
+                .Skip((pagina - 1) * (int)_viagensPorPagina)
+                .Take((int)_viagensPorPagina)
+                .ToList();
+
+            List<ViagemDTO> viagensDTO = MappingDTOs.ConverterDTO(viagens);
+
+            ViagensPorPagina result = new()
+            {
+                Viagens = viagensDTO,
+                PaginaAtual = pagina,
+                QuantidadeDePaginas = (int)quantidadeDePaginas
+            };
+
+            return Result.Success(result);
+        }
 
         public async Task<Result<ViagemDTO>> ObterViagemPorId(int idViagem)
         {
@@ -120,7 +174,8 @@ namespace DespesaViagem.Services.Services
             return Result.Failure<ViagemDTO>("Especifique um id válido!!");
         }
 
-        public async Task<Result<List<ViagemDTO>>> ObterViagemPorFiltro(string filtro)
+        //*Trecho antigo, inutilizado------------------------------------------------------------------------------------
+        public async Task<Result<List<ViagemDTO>>> ObterViagensPorFiltro(string filtro)
         {
             List<Viagem> viagens = await _viagemRepository.ObterPorFiltro(filtro);
 
@@ -133,7 +188,35 @@ namespace DespesaViagem.Services.Services
 
             return Result.Success(viagensDTO);
         }
+        //-------------------------------------------------------------------------------------------------------------*/
 
+        public async Task<Result<ViagensPorPagina>> ObterViagensPorFiltro(string filtro, int pagina)
+        {
+            List<Viagem> viagens = await _viagemRepository.ObterPorFiltro(filtro);
+
+            if (!viagens.Any())
+                return Result.Failure<ViagensPorPagina>("Não existem viagens com o filtro especificado!");
+            
+            double quantidadeDePaginas = Math.Ceiling(viagens.Count / _viagensPorPagina);
+            viagens = viagens
+                .Skip((pagina - 1) * (int)_viagensPorPagina)
+                .Take((int)_viagensPorPagina)
+                .ToList();
+
+            List<ViagemDTO> viagensDTO = MappingDTOs.ConverterDTO(viagens);
+
+            ViagensPorPagina result = new()
+            {
+                Viagens = viagensDTO,
+                PaginaAtual = pagina,
+                QuantidadeDePaginas = (int)quantidadeDePaginas
+            };
+
+            return Result.Success(result);
+        }
+
+
+        //*Trecho antigo, inutilizado------------------------------------------------------------------------------------
         public async Task<Result<List<ViagemDTO>>> ObterViagemPorStatus(StatusViagem statusViagem, int idFuncionario)
         {
             List<Viagem> viagens = await _viagemRepository.ObterViagemPorStatus(statusViagem, idFuncionario) ?? new();
@@ -146,6 +229,32 @@ namespace DespesaViagem.Services.Services
 
             return Result.Success(viagensDTO);
         }
+        //-------------------------------------------------------------------------------------------------------------*/ 
+
+        public async Task<Result<ViagensPorPagina>> ObterViagemPorStatus(StatusViagem statusViagem, int idFuncionario, int pagina)
+        {
+            var viagens = await _viagemRepository.ObterViagemPorStatus(statusViagem, idFuncionario) ?? new();
+
+            if (viagens is null || !viagens.Any())
+                return Result.Failure<ViagensPorPagina>("Não existem viagens com o status especificado!");
+
+            double quantidadeDePaginas = Math.Ceiling(viagens.Count / _viagensPorPagina);
+            viagens = viagens
+                .Skip((pagina - 1) * (int)_viagensPorPagina)
+                .Take((int)_viagensPorPagina)
+                .ToList();
+
+            List<ViagemDTO> viagensDTO = MappingDTOs.ConverterDTO(viagens);
+
+            ViagensPorPagina result = new()
+            {
+                Viagens = viagensDTO,
+                PaginaAtual = pagina,
+                QuantidadeDePaginas = (int)quantidadeDePaginas
+            };
+
+            return Result.Success(result);
+        }
 
         public async Task<Result<List<DespesaDTO>>> ObterTodasDespesas(int idViagem)
         {
@@ -154,7 +263,7 @@ namespace DespesaViagem.Services.Services
             return Result.Success(despesasDTO);
         }
 
-        public async Task<DespesasPorPagina> ObterDespesasPorPagina(int idViagem, int pagina)
+        public async Task<Result<DespesasPorPagina>> ObterDespesasPorPagina(int idViagem, int pagina)
         {
             double quantidadeDePaginas = Math.Ceiling((await _viagemRepository.ObterTodasDepesas(idViagem)).Count / _despesasPorPagina);
             List<Despesa> despesas = await _viagemRepository.ObterTodasDepesas(idViagem);
@@ -173,7 +282,28 @@ namespace DespesaViagem.Services.Services
             };
         }
 
-        public async Task<DespesasPorPagina> ObterTodasDespesasPaginadasPorTipo(int idViagem, int pagina, string stringTipoDespesa)
+        public async Task<Result<ViagensPorPagina>> ObterViagensPaginadas(int idUsuario, int pagina)
+        {
+            var todasViagens = await ObterTodasViagens(idUsuario);
+
+            if (todasViagens.IsFailure)
+                return Result.Failure<ViagensPorPagina> (todasViagens.Error);
+
+            double quantidadeDePaginas = Math.Ceiling(todasViagens.Value.Count / _viagensPorPagina);
+            List<ViagemDTO> viagens = todasViagens.Value
+                .Skip((pagina - 1) * (int)_viagensPorPagina)
+                .Take((int)_viagensPorPagina)
+                .ToList();
+
+            return new ViagensPorPagina()
+            {
+                Viagens = viagens,
+                PaginaAtual = pagina,
+                QuantidadeDePaginas = (int)quantidadeDePaginas
+            };
+        }
+
+        public async Task<Result<DespesasPorPagina>> ObterTodasDespesasPaginadasPorTipo(int idViagem, int pagina, string stringTipoDespesa)
         {
             TiposDespesas tipoDespesa = ConverterStringParaEnumTipoDespesa(stringTipoDespesa);
             double quantidadeDePaginas = Math.Ceiling((await _viagemRepository.ObterDespesasPorTipo(idViagem, tipoDespesa)).Count / _despesasPorPagina);
@@ -189,11 +319,10 @@ namespace DespesaViagem.Services.Services
                 PaginaAtual = pagina,
                 QuantidadeDePaginas = (int)quantidadeDePaginas
             };
-
         }
 
 
-        public async Task<List<DespesaPorCategoria>> ObterTotalDasDespesasPorCategoria(int viagemId)
+        public async Task<Result<List<DespesaPorCategoria>>> ObterTotalDasDespesasPorCategoria(int viagemId)
         {
             List<DespesaPorCategoria> despesas = await _viagemRepository.ObterTotalDasDespesasPorCategoria(viagemId);
 

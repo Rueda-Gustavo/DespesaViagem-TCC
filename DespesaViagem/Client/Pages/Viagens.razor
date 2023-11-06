@@ -1,4 +1,6 @@
-﻿@page "/viagens"
+﻿@page "/viagens/{Pagina:int}"
+@page "/viagens/PorFuncionario/{IdFuncionario:int}/{Pagina:int}"
+@page "/viagens/PorDepartamento/{IdDepartamento:int}/{Pagina:int}"
 @inject NavigationManager NavigationManager
 @inject IViagemService ViagemService
 @inject IGestorService GestorService
@@ -23,20 +25,20 @@
 </AuthorizeView>
 
 <AuthorizeView Roles="Gestor, Administrador">
-<!--
-    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Filtro <i class="bi bi-funnel"></i>
-    </button>
-    <ul class="dropdown-menu">
+    <!--
+        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Filtro <i class="bi bi-funnel"></i>
+        </button>
+        <ul class="dropdown-menu">
     @foreach (var funcionario in Funcionarios)
     {
-            <li><button @onclick="(() => ObterViagensFuncionario(funcionario.Id))" class="btn btn-outline-secondary dropdown-item">@funcionario.Username</button></li>
+                <li><button @onclick="(() => ObterViagensFuncionario(funcionario.Id))" class="btn btn-outline-secondary dropdown-item">@funcionario.Username</button></li>
     }
-        <li class="dropdown-divider"></li>
-        <li><button @onclick="(() => ObterViagensFuncionario(0))" class="btn btn-outline-secondary dropdown-item">Limpar filtro</button></li>
-    </ul>
+            <li class="dropdown-divider"></li>
+            <li><button @onclick="(() => ObterViagensFuncionario(0))" class="btn btn-outline-secondary dropdown-item">Limpar filtro</button></li>
+        </ul>
 
--->
+    -->
     <button class="btn btn-outline-secondary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltros" aria-expanded="false" aria-controls="collapseFiltros">
         Filtro <i class="bi bi-funnel"></i>
     </button>
@@ -70,7 +72,7 @@
                     <li><button @onclick="(() => ObterViagensDepartamento(0))" class="btn btn-outline-secondary dropdown-item">Limpar filtro</button></li>
                 </ul>
             </div>
-
+            <!--
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                     Dropdown
@@ -80,14 +82,30 @@
                     <li><a class="dropdown-item" href="#">Dropdown link</a></li>
                 </ul>
             </div>
+            -->
         </div>
     </div>
 
 </AuthorizeView>
 
+@if (ViagemService.ViagensPorPagina.QuantidadeDePaginas > 1)
+{
+    <div class="mt-2">
+        @for (int i = 1; i <= ViagemService.ViagensPorPagina.QuantidadeDePaginas; i++)
+        {
+            int pagina = i;
+            <button class="btn
+                    @(pagina == ViagemService.ViagensPorPagina.PaginaAtual ? "btn-secondary" : "btn-outline-secondary") page-selection" @onclick="(() => MudarPagina(pagina))">
+                @pagina
+            </button>
+        }
+    </div>
+}
+
 <div class="d-flex card-container-viagens">
+
     <div class="card-container" style="flex-wrap:wrap">
-        <ExibirViagens />
+        <ExibirViagens Pagina="Pagina" Filtro="filtro" />
     </div>
 
     @if (FormularioAberto)
@@ -102,6 +120,17 @@
 
 
 @code {
+    [Parameter]
+    public int Pagina { get; set; } = 0;
+
+    [Parameter]
+    public int IdFuncionario { get; set; } = 0;
+
+    [Parameter]
+    public int IdDepartamento { get; set; } = 0;
+
+    public string filtro = string.Empty;
+
     //private IEnumerable<Viagem> TodasViagens { get; set; } = new List<Viagem>();
     private bool FormularioAberto = false;
     private bool PossuiViagemAbertaOuEmAndamento = false;
@@ -126,14 +155,52 @@
             await ObterDepartamentos();
         }
 
-        await ViagemService.GetViagens();
+        //await ViagemService.GetViagens();
+
+        await ObterViagens();
+
         PossuiViagemAbertaOuEmAndamento = await FuncionarioPossuiViagemEmAndamentoOuAberta();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await ObterViagens();
     }
 
     public void Dispose()
     {
         DepartamentoService.DepartamentosChanged -= StateHasChanged;
         ViagemService.ViagensChanged -= StateHasChanged;
+    }
+
+    private void MudarPagina(int pagina)
+    {
+        NavigationManager.NavigateTo($"/viagens{filtro}/{pagina}");
+        /*
+        List<ViagemDTO> viagens = ViagemService.ViagensPorPagina.Viagens;
+
+        float viagensPorPagina = 6f;
+
+        double quantidadeDePaginas = Math.Ceiling(viagens.Count / viagensPorPagina);
+            viagens = viagens
+            .Skip((pagina - 1) * (int)viagensPorPagina)
+            .Take((int)viagensPorPagina)
+        .ToList();
+
+        ViagemService.ViagensPorPagina.Viagens = viagens;
+        ViagemService.ViagensPorPagina.PaginaAtual = pagina;
+        */
+        StateHasChanged();
+    }
+
+    private async Task ObterViagens()
+    {
+        if (IdFuncionario > 0)
+            await ViagemService.GetViagensPorFuncionario(IdFuncionario, Pagina);        
+        else if (IdDepartamento > 0)
+            await ViagemService.GetViagensPorDepartamento(IdDepartamento, Pagina);
+        else
+            await ViagemService.GetViagens(Pagina);        
     }
 
     private async Task ObterListaFuncionarios(string tipoDeUsuario)
@@ -143,15 +210,31 @@
         else if (tipoDeUsuario.Contains(RolesUsuario.Gestor.ToString()))
             Funcionarios = await GestorService.ObterListaDeFuncionarios();
 
-        Console.WriteLine(Funcionarios.Count);
+        //Console.WriteLine(Funcionarios.Count);
     }
 
     private async Task ObterViagensFuncionario(int idFuncionario)
     {
+        /*
         if (idFuncionario == 0)
             await ViagemService.GetViagens();
+            else
+            await ViagemService.GetViagensPorFuncionario(idFuncionario);
+        */
+        IdFuncionario = idFuncionario;
+
+        if (idFuncionario == 0)
+        {
+            filtro = string.Empty;
+            await ViagemService.GetViagens(Pagina);
+        }
         else
-            await ViagemService.GetViagens(idFuncionario);
+        {
+            filtro = $"/PorFuncionario/{IdFuncionario}";
+            await ViagemService.GetViagensPorFuncionario(idFuncionario, Pagina);            
+        }
+        MudarPagina(Pagina);
+        
     }
 
     private async Task ObterDepartamentos()
@@ -163,10 +246,25 @@
 
     private async Task ObterViagensDepartamento(int idDepartamento)
     {
+        /*
         if (idDepartamento == 0)
             await ViagemService.GetViagens();
-        else
+            else
             await ViagemService.GetViagensPorDepartamento(idDepartamento);
+        */
+        IdDepartamento = idDepartamento;
+
+        if (idDepartamento == 0)
+        {
+            filtro = string.Empty;
+            await ViagemService.GetViagens(Pagina);
+        }
+        else
+        {
+            filtro = $"/PorDepartamento/{IdDepartamento}";
+            await ViagemService.GetViagensPorDepartamento(idDepartamento, Pagina);
+        }
+        MudarPagina(Pagina);
     }
 
     private async Task<bool> FuncionarioPossuiViagemEmAndamentoOuAberta()

@@ -3,32 +3,28 @@
 @inject IJSRuntime JSRuntime
 @implements IDisposable
 
-@if (ViagemService.Viagens == null || !ViagemService.Viagens.Any())
+
+@if (ViagemService.ViagensPorPagina.Viagens == null || !ViagemService.ViagensPorPagina.Viagens.Any())
+//@if (ViagemService.Viagens == null || !ViagemService.Viagens.Any()) //Antigo
 {
     <span>@ViagemService.Mensagem</span>
 }
 else
 {
-    @foreach (var viagem in ViagemService.Viagens)
+    //@foreach (var viagem in ViagemService.Viagens)
+    @foreach (var viagem in ViagemService.ViagensPorPagina.Viagens)
     {
         string descricao = viagem.DescricaoViagem;
         string opacidade = OpacidadeStatus.GetValueOrDefault(viagem.StatusViagem) ?? string.Empty;
         string statusViagem = viagem.StatusViagem.ToString();
         if (descricao.Length > 60)
             descricao = descricao.Substring(0, 60) + "...";
-        /*
-        if (viagem.StatusViagem == StatusViagem.Aberta || viagem.StatusViagem == StatusViagem.EmAndamento)
-            opacidade = "100%";
-        else
-            opacidade = "50%";
-        */
 
         if (viagem.StatusViagem == StatusViagem.EmAndamento) statusViagem = "Em andamento";
 
-
         <div class="card" style="opacity:@opacidade">
             <AuthorizeView Roles="Gestor, Administrador">
-                <small class="nome-funcionario">@viagem.Funcionario.Username</small>                
+                <small class="nome-funcionario">@viagem.Funcionario.Username</small>
             </AuthorizeView>
             <h2 class="card-header title">@viagem.NomeViagem <button class="btn-exibir-despesas" title="Detalhes da viagem" @onclick="() => VerDetalhesViagem(viagem.Id)"><FeatherList Size="24" Color="#000" StrokeWidth="1.7f" /></button></h2>
             <div>
@@ -66,10 +62,10 @@ else
                             <button class="btn btn-iniciar-viagem mx-2" @onclick="IniciarViagem">Iniciar <i class="bi bi-play-circle"></i></button>
                         </div>
                     </AuthorizeView>
-
                 }
             </div>
         </div>
+
     }
 }
 
@@ -84,6 +80,13 @@ else
 
 
 @code {
+    [Parameter]
+    public int Pagina { get; set; }
+    [Parameter]
+    public string Filtro { get; set; } = string.Empty;
+
+    private ViagensPorPagina viagens { get; set; } = new() { PaginaAtual = 1, QuantidadeDePaginas = 0 };
+
     private Dictionary<StatusViagem, string> OpacidadeStatus { get; set; } = new();
 
     private bool FormularioDespesaAberto = false;
@@ -115,6 +118,26 @@ else
         */
 
         NavigationManager.NavigateTo($"/viagens/{idViagem}/1");
+    }
+
+    private void MudarPagina(int pagina)
+    {
+        NavigationManager.NavigateTo($"/viagens{Filtro}/{Pagina}");
+        /*
+        List<ViagemDTO> viagens = ViagemService.ViagensPorPagina.Viagens;
+
+        float viagensPorPagina = 6f;
+
+        double quantidadeDePaginas = Math.Ceiling(viagens.Count / viagensPorPagina);
+        viagens = viagens
+            .Skip((pagina - 1) * (int)viagensPorPagina)
+            .Take((int)viagensPorPagina)
+            .ToList();
+
+        ViagemService.ViagensPorPagina.Viagens = viagens;
+        ViagemService.ViagensPorPagina.PaginaAtual = pagina;
+        */
+        StateHasChanged();
     }
 
     /*
@@ -150,7 +173,7 @@ else
     {
         FormularioDespesaAberto = false;
         DespesaForm = null;
-        NavigationManager.NavigateTo($"/viagens");
+        NavigationManager.NavigateTo($"/viagens/1");
     }
 
     private async Task IniciarViagem()

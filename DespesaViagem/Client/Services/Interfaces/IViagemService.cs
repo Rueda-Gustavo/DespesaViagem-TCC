@@ -10,10 +10,14 @@ namespace DespesaViagem.Client.Services.Interfaces
     {
         event Action ViagensChanged;
         List<ViagemDTO> Viagens { get; set; }
+        ViagensPorPagina ViagensPorPagina { get; set; }
         string Mensagem { get; set; }
         Task GetViagens();
-        Task GetViagens(int idFuncionario);
+        Task GetViagens(int pagina);
+        Task GetViagensPorFuncionario(int idFuncionario);
+        Task GetViagensPorFuncionario(int idFuncionario, int pagina);
         Task GetViagensPorDepartamento(int idDepartamento);
+        Task GetViagensPorDepartamento(int idDepartamento, int pagina);
         Task<ViagemDTO> GetViagem(int idViagem);
         //Task<FuncionarioDTO> GetFuncionario(string CPF);
         //Task<FuncionarioDTO> GetFuncionario(int idFuncionario);

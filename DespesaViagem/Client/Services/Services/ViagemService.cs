@@ -15,6 +15,7 @@ namespace DespesaViagem.Client.Services.Services
         //private readonly ILogger<ViagemService> _logger;
 
         public List<ViagemDTO> Viagens { get; set; } = new List<ViagemDTO>();
+        public ViagensPorPagina ViagensPorPagina { get; set; } = new();
 
         public string Mensagem { get; set; } = "Carregando viagens...";
 
@@ -135,7 +136,35 @@ namespace DespesaViagem.Client.Services.Services
             }
         }
 
-        public async Task GetViagens(int idFuncionario)
+        public async Task GetViagens(int pagina)
+        {
+            try
+            {
+                var response = await _http
+                   .GetFromJsonAsync<ServiceResponse<ViagensPorPagina>>($"api/viagem/ObterViagensPorPagina/{pagina}") ?? new() { Sucesso = false };
+
+                if (response.Conteudo is null || !response.Conteudo.Viagens.Any())
+                {
+                    //Mensagem = "Nenhuma viagem encontrada!";             
+                    ViagensPorPagina = new();
+                    Mensagem = response.Mensagem;
+                }
+                else
+                {
+                    ViagensPorPagina = response.Conteudo;
+                    Console.WriteLine("Sucesso - ViagemService - Client");
+                }
+                ViagensChanged.Invoke();
+            }
+            catch
+            {
+                Console.WriteLine("Falha - ViagemService - Client");
+                Mensagem = "Nenhuma viagem encontrada!";
+                ViagensChanged.Invoke();
+            }
+        }
+
+        public async Task GetViagensPorFuncionario(int idFuncionario)
         {
             try
             {
@@ -157,15 +186,48 @@ namespace DespesaViagem.Client.Services.Services
 
                 ViagensChanged.Invoke();
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
-                                
-                Console.WriteLine("Falha - ViagemService - Client\n"+ex.Message);
+
+                Console.WriteLine("Falha - ViagemService - Client\n" + ex.Message);
                 Mensagem = "Viagens não encontradas!";
                 Viagens = new();
                 ViagensChanged.Invoke();
             }
         }
+
+        public async Task GetViagensPorFuncionario(int idFuncionario, int pagina)
+        {
+            try
+            {
+                var response = await _http
+                    .GetFromJsonAsync<ServiceResponse<ViagensPorPagina>>($"api/viagem/PorFuncionario/{idFuncionario}/{pagina}") ?? new() { Sucesso = false };
+
+                if (response.Conteudo is null || !response.Conteudo.Viagens.Any())
+                {
+                    //Mensagem = "Nenhuma viagem encontrada!";
+                    Mensagem = response.Mensagem;
+                    ViagensPorPagina = new();
+                }
+                else
+                {
+                    ViagensPorPagina = response.Conteudo;
+
+                    Console.WriteLine("Sucesso - ViagemService - Client");
+                }
+
+                ViagensChanged.Invoke();
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine("Falha - ViagemService - Client\n" + ex.Message);
+                Mensagem = "Viagens não encontradas!";
+                ViagensPorPagina = new();
+                ViagensChanged.Invoke();
+            }
+        }
+
 
         public async Task GetViagensPorDepartamento(int idDepartamento)
         {
@@ -193,7 +255,40 @@ namespace DespesaViagem.Client.Services.Services
             {
                 Console.WriteLine("Falha - ViagemService - Client");
                 Mensagem = "Viagens não encontradas!";
-                Viagens = new();
+                ViagensPorPagina = new();
+                ViagensChanged.Invoke();
+            }
+        }
+
+        public async Task GetViagensPorDepartamento(int idDepartamento, int pagina)
+        {
+            try
+            {
+                var response = await _http
+                    .GetFromJsonAsync<ServiceResponse<ViagensPorPagina>>($"api/Viagem/PorDepartamento/{idDepartamento}/{pagina}") ?? new() { Sucesso = false };
+
+                if (response.Conteudo is null || !response.Conteudo.Viagens.Any())
+                {
+                    //Mensagem = "Nenhuma viagem encontrada!";
+                    Mensagem = response.Mensagem;
+                    Viagens = new();
+                }
+                else
+                {
+                    /*response.Conteudo.Viagens = response.Conteudo.Viagens
+                        .Where(v => v.Funcionario.Departamento is not null && v.Funcionario.Departamento.Id == idDepartamento).ToList();*/
+
+                    ViagensPorPagina = response.Conteudo;
+
+                    Console.WriteLine("Sucesso - ViagemService - Client");
+                }
+                ViagensChanged.Invoke();
+            }
+            catch
+            {
+                Console.WriteLine("Falha - ViagemService - Client");
+                Mensagem = "Viagens não encontradas!";
+                ViagensPorPagina = new();
                 ViagensChanged.Invoke();
             }
         }

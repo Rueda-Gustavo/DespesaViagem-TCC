@@ -39,6 +39,19 @@ namespace DespesaViagem.Server.Controllers
             return Ok(new ServiceResponse<List<ViagemDTO>> { Conteudo = result.Value });
         }
 
+        [HttpGet("ObterViagensPorPagina/{pagina}")]
+        public async Task<ActionResult> ObterTodasDespesasPorPagina(int pagina)
+        {
+            string idUsuario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
+
+            Result<ViagensPorPagina> result = await _viagemService.ObterViagensPaginadas(int.Parse(idUsuario), pagina);
+
+            if (result.IsFailure)
+                return BadRequest(new ServiceResponse<ViagensPorPagina> { Sucesso = false, Mensagem = result.Error });
+
+            return Ok(new ServiceResponse<ViagensPorPagina> { Conteudo = result.Value });
+        }
+
         [HttpGet("{idViagem:int}")]
         public async Task<ActionResult> ObterViagemPorId(int idViagem)
         {
@@ -48,7 +61,7 @@ namespace DespesaViagem.Server.Controllers
 
             return Ok(new ServiceResponse<ViagemDTO> { Conteudo = result.Value });
         }
-
+        //*Trecho antigo, inutilizado------------------------------------------------------------------------------------
         [HttpGet("PorFuncionario/{idFuncionario}")]
         public async Task<ActionResult> ObterViagemPorFuncionario(int idFuncionario)
         {
@@ -58,7 +71,19 @@ namespace DespesaViagem.Server.Controllers
 
             return Ok(new ServiceResponse<List<ViagemDTO>> { Conteudo = result.Value });
         }
-        
+        //-------------------------------------------------------------------------------------------------------------*/
+
+        [HttpGet("PorFuncionario/{idFuncionario}/{pagina}")]
+        public async Task<ActionResult> ObterViagemPorFuncionario(int idFuncionario, int pagina)
+        {
+            Result<ViagensPorPagina> result = await _viagemService.ObterViagensPorFuncionario(idFuncionario, pagina);
+
+            if (result.IsFailure) return BadRequest(new ServiceResponse<ViagensPorPagina> { Sucesso = false, Mensagem = result.Error });
+
+            return Ok(new ServiceResponse<ViagensPorPagina> { Conteudo = result.Value });
+        }
+
+        //*Trecho antigo, inutilizado------------------------------------------------------------------------------------
         [HttpGet("PorDepartamento/{idDepartamento:int}")]
         public async Task<ActionResult> ObterViagemPorDepartamento(int idDepartamento)
         {
@@ -67,6 +92,17 @@ namespace DespesaViagem.Server.Controllers
             if (result.IsFailure) return BadRequest(new ServiceResponse<List<ViagemDTO>> { Sucesso = false, Mensagem = result.Error });
 
             return Ok(new ServiceResponse<List<ViagemDTO>> { Conteudo = result.Value });
+        }
+        //-------------------------------------------------------------------------------------------------------------*/
+
+        [HttpGet("PorDepartamento/{idDepartamento:int}/{pagina:int}")]
+        public async Task<ActionResult> ObterViagemPorDepartamento(int idDepartamento, int pagina)
+        {
+            Result<ViagensPorPagina> result = await _viagemService.ObterViagensPorDepartamento(idDepartamento, pagina);
+
+            if (result.IsFailure) return BadRequest(new ServiceResponse<ViagensPorPagina> { Sucesso = false, Mensagem = result.Error });
+
+            return Ok(new ServiceResponse<ViagensPorPagina> { Conteudo = result.Value });
         }
 
 
@@ -109,15 +145,28 @@ namespace DespesaViagem.Server.Controllers
             return Ok(new ServiceResponse<ViagemDTO> { Conteudo = result.Value });
         }
 
+        //*Trecho antigo, inutilizado------------------------------------------------------------------------------------
         [HttpGet("{filtro}")]
         public async Task<ActionResult> ObterViagensPorFiltro(string filtro)
         {
-            Result<List<ViagemDTO>> result = await _viagemService.ObterViagemPorFiltro(filtro);
+            Result<List<ViagemDTO>> result = await _viagemService.ObterViagensPorFiltro(filtro);
 
             if (result.IsFailure)
                 return BadRequest(new ServiceResponse<List<ViagemDTO>> { Sucesso = false, Mensagem = result.Error });
 
             return Ok(new ServiceResponse<List<ViagemDTO>> { Conteudo = result.Value });
+        }
+        //-------------------------------------------------------------------------------------------------------------*/
+
+
+        [HttpGet("{filtro}/{pagina:int}")]
+        public async Task<ActionResult> ObterViagensPorFiltro(string filtro, int pagina)
+        {
+            Result<ViagensPorPagina> result = await _viagemService.ObterViagensPorFiltro(filtro, pagina);
+
+            if (result.IsFailure) return BadRequest(new ServiceResponse<ViagensPorPagina> { Sucesso = false, Mensagem = result.Error });
+
+            return Ok(new ServiceResponse<ViagensPorPagina> { Conteudo = result.Value });
         }
 
         [HttpGet("ObterDespesas/{idViagem}")]
@@ -183,6 +232,20 @@ namespace DespesaViagem.Server.Controllers
 
             return Ok(new ServiceResponse<List<ViagemDTO>> { Conteudo = result.Value });
         }
+
+        //*Trecho antigo, inutilizado------------------------------------------------------------------------------------
+        [HttpGet("status/{statusViagem}/{pagina:int}")]
+        public async Task<ActionResult> ObterViagensPorStatus(StatusViagem statusViagem, int pagina)
+        {
+            string idFuncionario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
+
+            Result<ViagensPorPagina> result = await _viagemService.ObterViagemPorStatus(statusViagem, int.Parse(idFuncionario), pagina);
+
+            if (result.IsFailure) return BadRequest(new ServiceResponse<ViagensPorPagina> { Sucesso = false, Mensagem = result.Error });
+
+            return Ok(new ServiceResponse<ViagensPorPagina> { Conteudo = result.Value });
+        }
+        //-------------------------------------------------------------------------------------------------------------*/
 
         [HttpGet("ViagemAbertaOuEmAndamento")]        
         public async Task<ActionResult> ObterViagemAbertaOuEmAndamento()
