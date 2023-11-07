@@ -46,30 +46,31 @@
     <div class="btn-group-horizontal collapse" id="collapseFiltros" role="group">
         <div class="btn-group-horizontal" role="group" aria-label="Vertical button group">
             <div class="btn-group" role="group">
+
                 <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    Funcionarios
+                    @UsernameFiltro
                 </button>
                 <ul class="dropdown-menu">
                     @foreach (var funcionario in Funcionarios)
                     {
-                        <li><button @onclick="(() => ObterViagensFuncionario(funcionario.Id))" class="btn btn-outline-secondary dropdown-item">@funcionario.Username</button></li>
+                        <li><button @onclick="(() => ObterViagensFuncionario(funcionario.Id, funcionario.Username))" class="btn btn-outline-secondary dropdown-item">@funcionario.Username</button></li>
                     }
                     <li class="dropdown-divider"></li>
-                    <li><button @onclick="(() => ObterViagensFuncionario(0))" class="btn btn-outline-secondary dropdown-item">Limpar filtro</button></li>
+                    <li><button @onclick="(() => ObterViagensFuncionario(0, string.Empty))" class="btn btn-outline-secondary dropdown-item">Limpar filtro</button></li>
                 </ul>
             </div>
 
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    Departamentos
+                    @DepartamentoFiltro
                 </button>
                 <ul class="dropdown-menu">
                     @foreach (var departamento in Departamentos)
                     {
-                        <li><button @onclick="(() => ObterViagensDepartamento(departamento.Id))" class="btn btn-outline-secondary dropdown-item">@departamento.Descricao</button></li>
+                        <li><button @onclick="(() => ObterViagensDepartamento(departamento.Id, departamento.Descricao))" class="btn btn-outline-secondary dropdown-item">@departamento.Descricao</button></li>
                     }
                     <li class="dropdown-divider"></li>
-                    <li><button @onclick="(() => ObterViagensDepartamento(0))" class="btn btn-outline-secondary dropdown-item">Limpar filtro</button></li>
+                    <li><button @onclick="(() => ObterViagensDepartamento(0, string.Empty))" class="btn btn-outline-secondary dropdown-item">Limpar filtro</button></li>
                 </ul>
             </div>
             <!--
@@ -88,20 +89,6 @@
 
 </AuthorizeView>
 
-@if (ViagemService.ViagensPorPagina.QuantidadeDePaginas > 1)
-{
-    <div class="mt-2">
-        @for (int i = 1; i <= ViagemService.ViagensPorPagina.QuantidadeDePaginas; i++)
-        {
-            int pagina = i;
-            <button class="btn
-                    @(pagina == ViagemService.ViagensPorPagina.PaginaAtual ? "btn-secondary" : "btn-outline-secondary") page-selection" @onclick="(() => MudarPagina(pagina))">
-                @pagina
-            </button>
-        }
-    </div>
-}
-
 <div class="d-flex card-container-viagens">
 
     <div class="card-container" style="flex-wrap:wrap">
@@ -119,6 +106,21 @@
 </div>
 
 
+@if (ViagemService.ViagensPorPagina.QuantidadeDePaginas > 1)
+{
+    <div class="mt-2">
+        @for (int i = 1; i <= ViagemService.ViagensPorPagina.QuantidadeDePaginas; i++)
+        {
+            int pagina = i;
+            <button class="btn
+                    @(pagina == ViagemService.ViagensPorPagina.PaginaAtual ? "btn-secondary" : "btn-outline-secondary") page-selection" @onclick="(() => MudarPagina(pagina))">
+                @pagina
+            </button>
+        }
+    </div>
+}
+
+
 @code {
     [Parameter]
     public int Pagina { get; set; } = 0;
@@ -129,6 +131,8 @@
     [Parameter]
     public int IdDepartamento { get; set; } = 0;
 
+    private string DepartamentoFiltro { get; set; } = "Departamentos";
+    private string UsernameFiltro { get; set; } = "Funcionários";
     public string filtro = string.Empty;
 
     //private IEnumerable<Viagem> TodasViagens { get; set; } = new List<Viagem>();
@@ -213,7 +217,7 @@
         //Console.WriteLine(Funcionarios.Count);
     }
 
-    private async Task ObterViagensFuncionario(int idFuncionario)
+    private async Task ObterViagensFuncionario(int idFuncionario, string username)
     {
         /*
         if (idFuncionario == 0)
@@ -222,7 +226,8 @@
             await ViagemService.GetViagensPorFuncionario(idFuncionario);
         */
         IdFuncionario = idFuncionario;
-
+        UsernameFiltro = username == string.Empty ? "Funcionários" : username;
+        DepartamentoFiltro = "Departamentos";
         if (idFuncionario == 0)
         {
             filtro = string.Empty;
@@ -234,7 +239,7 @@
             await ViagemService.GetViagensPorFuncionario(idFuncionario, Pagina);            
         }
         MudarPagina(Pagina);
-        
+
     }
 
     private async Task ObterDepartamentos()
@@ -244,7 +249,7 @@
             Departamentos = result.Value.ToList();
     }
 
-    private async Task ObterViagensDepartamento(int idDepartamento)
+    private async Task ObterViagensDepartamento(int idDepartamento, string departamento)
     {
         /*
         if (idDepartamento == 0)
@@ -253,7 +258,8 @@
             await ViagemService.GetViagensPorDepartamento(idDepartamento);
         */
         IdDepartamento = idDepartamento;
-
+        DepartamentoFiltro = departamento == string.Empty ? "Departamentos" : departamento;
+        UsernameFiltro = "Funcionários";
         if (idDepartamento == 0)
         {
             filtro = string.Empty;
