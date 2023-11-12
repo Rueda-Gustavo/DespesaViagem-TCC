@@ -2,13 +2,14 @@
 @inject IFuncionarioService FuncionarioService
 @inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
 @implements IDisposable
 
 <PageTitle>@AdicionarOuEditar - Viagem</PageTitle>
 
 <div class="modal-header">
     <h5 class="modal-title">
-        <span>@AdicionarOuEditar Viagem</span>         
+        <span>@AdicionarOuEditar Viagem</span>
     </h5>
     <button type="button" class="close" @onclick="FecharFormulario">
         <span aria-hidden="true">&times;</span>
@@ -48,30 +49,32 @@
             <div class="col">
                 <label for="Nome">Nome</label>
                 <input id="Nome" class="form-control" @bind-value="Viagem.Funcionario.NomeCompleto" readonly />
-            </div>            
+            </div>
             <div class="form-group row">
 
                 <div class="col">
-                <label for="Username">Username</label>
+                    <label for="Username">Username</label>
                     <input id="Username" class="form-control" @bind-value="Viagem.Funcionario.Username" readonly />
-            </div>
+                </div>
                 <div class="col">
-                <label for="CPF">CPF</label>
+                    <label for="CPF">CPF</label>
                     <input id="CPF" class="form-control" @bind-value="Viagem.Funcionario.CPF" readonly />
-            </div>
+                </div>
                 <div class="col">
-                <label for="Matricula">Matrícula</label>
+                    <label for="Matricula">Matrícula</label>
                     <input id="Matricula" class="form-control" @bind-value="Viagem.Funcionario.Matricula" readonly />
-            </div>
+                </div>
             </div>
         </div>
         <div style="float:right;">
             <button type="button" class="btn btn-secondary mx-2" @onclick="FecharFormulario">
                 <span>Cancelar</span>
             </button>
-            <button type="submit" class="btn btn-primary">
-                <span>@AdicionarOuEditar</span>
-            </button>
+            <AuthorizeView Roles="Funcionario">
+                <button type="submit" class="btn btn-primary">
+                    <span>@AdicionarOuEditar</span>
+                </button>
+            </AuthorizeView>
         </div>
     </form>
 </div>
@@ -138,7 +141,7 @@
             if (Adicionar)
                 viagem = await ViagemService.AdicionarViagem(Viagem);
             else
-                viagem = await ViagemService.AtualizarViagem(Viagem);            
+                viagem = await ViagemService.AtualizarViagem(Viagem);
 
             if (viagem.IsSuccess)
             {

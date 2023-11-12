@@ -164,7 +164,39 @@ namespace DespesaViagem.Client.Services.Services
                 ViagensChanged.Invoke();
             }
         }
-        
+
+        public async Task GetViagens(List<StatusViagem> statusViagem)
+        {
+            try
+            {
+                var result = await _http.PostAsJsonAsync($"api/viagem/listaStatus/TodasViagens", statusViagem);
+
+                var response = await result.Content.ReadFromJsonAsync<ServiceResponse<List<ViagemDTO>>>() ?? new() { Sucesso = false };
+                /*
+                var response = await _http
+                   .GetFromJsonAsync<ServiceResponse<List<ViagemDTO>>>($"api/viagem/listaStatus/{statusViagem}/TodasViagens") ?? new() { Sucesso = false };
+                */
+                if (response.Conteudo is null || !response.Conteudo.Any())
+                {
+                    //Mensagem = "Nenhuma viagem encontrada!";
+                    Viagens = new List<ViagemDTO>();
+                    Mensagem = response.Mensagem;
+                }
+                else
+                {
+                    Viagens = response.Conteudo;
+                    Console.WriteLine("Sucesso - ViagemService - Client");
+                }
+                ViagensChanged.Invoke();
+            }
+            catch
+            {
+                Console.WriteLine("Falha - ViagemService - Client");
+                Mensagem = "Nenhuma viagem encontrada!";
+                ViagensChanged.Invoke();
+            }
+        }
+
         public async Task GetViagens(int pagina)
         {
             try

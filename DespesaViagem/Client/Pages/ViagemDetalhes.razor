@@ -9,7 +9,7 @@
 @attribute [Authorize]
 
 <h3>Detalhes da viagem</h3>
-<a href="/viagens" class="btn btn-outline-primary">Voltar</a>
+<a href="/viagens/1" class="btn btn-outline-primary">Voltar</a>
 <button class="btn btn-primary d-xl-none m-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasResponsive" aria-controls="offcanvasResponsive">Detalhes da viagem</button>
 <div class="container" style="margin: 0 0;">
     <div class="d-flex">
@@ -101,12 +101,10 @@
                     <div class="col">
                         <div class="row">
                             <div class="card-viagem m-2">
-                                <AuthorizeView Roles="Funcionario">
-                                    @if (Viagem.StatusViagem == StatusViagem.Aberta || Viagem.StatusViagem == StatusViagem.EmAndamento)
-                                    {
-                                        <button class="btn pt-0 btn-edit-viagem" @onclick="AbrirFormularioViagem"><FeatherEdit Size="24" Color="#000" StrokeWidth="1.9f" /></button>
-                                    }
-                                </AuthorizeView>
+                                @if (Viagem.StatusViagem == StatusViagem.Aberta || Viagem.StatusViagem == StatusViagem.EmAndamento)
+                                {
+                                    <button class="btn pt-0 btn-edit-viagem" @onclick="AbrirFormularioViagem"><FeatherEdit Size="24" Color="#000" StrokeWidth="1.9f" /></button>
+                                }
                                 <div class="card-header-viagem">
                                     <h5 class="card-title-viagem">@Viagem.NomeViagem</h5>
                                 </div>

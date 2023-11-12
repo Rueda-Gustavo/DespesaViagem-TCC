@@ -55,9 +55,15 @@
             <label for="viagensRelatorio">Estados das Viagens</label> <br />
             @foreach (var estado in EstadosViagem)
             {
+                string apresentacao = estado.ToString() ?? string.Empty;
+                @if((StatusViagem) estado == StatusViagem.EmAndamento)
+                {
+                    apresentacao = "Em andamento";
+                }
+
                 <div class="form-check">
                     <input id="estado@(estado)" type="checkbox" class="form-check-input" @onchange="((e) => SelecionarEstadoViagem(e, (int)estado))">
-                    <label class="form-check-label">@estado</label>
+                    <label class="form-check-label">@apresentacao</label>
                 </div>
             }
             <div class="form-check">
@@ -186,14 +192,29 @@
         if (EstadosViagemSelecionados is null) return;
 
         if (indice >= 0 && indice < EstadosViagemSelecionados.Length)
-            EstadosViagemSelecionados[indice] = (bool)e.Value!;
+        {
+            EstadosViagemSelecionados[indice] = (bool)e.Value!;    
+
+            List<StatusViagem> listaStatus = new();
+
+            for (int i = 0; i < EstadosViagemSelecionados.Length; i++)
+            {
+                StatusViagem estado = (StatusViagem)EstadosViagem.GetValue(i)!;
+
+                if (EstadosViagemSelecionados[i])
+                    listaStatus.Add(estado);
+                else
+                    listaStatus.Remove(estado);
+            }
+            await ViagemService.GetViagens(listaStatus);
+
+        }
         else if (indice < 0)
         {
             todosEstadosViagemSelecionado = !todosEstadosViagemSelecionado;
             await JSRuntime.InvokeVoidAsync("mudarVisibilidadeCheckboxEstadosViagem");
-        }        
-
-        //EstadosViagemSelecionados![indice] = (bool)e.Value!;
+            await ViagemService.GetViagens();
+        }
     }
 
 

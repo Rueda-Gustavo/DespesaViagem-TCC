@@ -291,6 +291,40 @@ namespace DespesaViagem.Services.Services
             return Result.Success(viagensDTO);
         }
 
+
+        public async Task<Result<List<ViagemDTO>>> ObterTodasViagensStatus(List<StatusViagem> statusViagem, int idUsuario)
+        {
+            Usuario? usuario = await _usuarioRepository.ObterUsuario(idUsuario);
+
+            if (usuario is null)
+                return Result.Failure<List<ViagemDTO>>("Usuário não encontrado.");
+
+            List<Viagem> viagens;
+
+            if (usuario.TipoDeUsuario == RolesUsuario.Gestor)
+            {
+                viagens = await _viagemRepository.ObterTodosGestor(idUsuario);
+            }
+            else if (usuario.TipoDeUsuario == RolesUsuario.Administrador)
+            {
+                viagens = await _viagemRepository.ObterTodos();
+            }
+            else
+            {
+                viagens = await _viagemRepository.ObterTodos(idUsuario);
+            }
+
+
+            if (!viagens.Any())
+                return Result.Failure<List<ViagemDTO>>("Não existem viagens cadastradas.");
+
+            List<ViagemDTO> viagensDTO = MappingDTOs.ConverterDTO(viagens);
+
+            viagensDTO = viagensDTO.Where(v => statusViagem.Contains(v.StatusViagem)).ToList();            
+
+            return Result.Success(viagensDTO);
+        }
+
         public async Task<Result<List<DespesaDTO>>> ObterTodasDespesas(int idViagem)
         {
             List<Despesa> despesas = await _viagemRepository.ObterTodasDepesas(idViagem);

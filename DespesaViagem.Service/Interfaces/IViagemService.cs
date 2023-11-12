@@ -21,6 +21,7 @@ namespace DespesaViagem.Services.Interfaces
         Task<Result<List<ViagemDTO>>> ObterViagemPorStatus(StatusViagem statusViagem, int idFuncionario); //Antigo
         Task<Result<ViagensPorPagina>> ObterViagemPorStatus(StatusViagem statusViagem, int idFuncionario, int pagina);
         Task<Result<List<ViagemDTO>>> ObterTodasViagensStatus(StatusViagem statusViagem, int idUsuario);
+        Task<Result<List<ViagemDTO>>> ObterTodasViagensStatus(List<StatusViagem> statusViagem, int idUsuario);
         Task<Result<ViagemDTO?>> ObterViagemAbertaOuEmAndamento(int idFuncionario);
         
         /*Consulta de despesas relacionadas a viagem*/
