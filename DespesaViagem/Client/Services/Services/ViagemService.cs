@@ -2,6 +2,7 @@
 using DespesaViagem.Client.Services.Interfaces;
 using DespesaViagem.Shared.DTOs.Despesas;
 using DespesaViagem.Shared.DTOs.Viagens;
+using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
 using System.Net.Http.Json;
 
@@ -136,6 +137,34 @@ namespace DespesaViagem.Client.Services.Services
             }
         }
 
+        public async Task GetViagens(StatusViagem statusViagem)
+        {
+            try
+            {
+                var response = await _http
+                   .GetFromJsonAsync<ServiceResponse<List<ViagemDTO>>>($"api/viagem/status/{statusViagem}/TodasViagens") ?? new() { Sucesso = false };
+
+                if (response.Conteudo is null || !response.Conteudo.Any())
+                {
+                    //Mensagem = "Nenhuma viagem encontrada!";             
+                    Viagens = new List<ViagemDTO>();
+                    Mensagem = response.Mensagem;
+                }
+                else
+                {
+                    Viagens = response.Conteudo;
+                    Console.WriteLine("Sucesso - ViagemService - Client");
+                }
+                ViagensChanged.Invoke();
+            }
+            catch
+            {
+                Console.WriteLine("Falha - ViagemService - Client");
+                Mensagem = "Nenhuma viagem encontrada!";
+                ViagensChanged.Invoke();
+            }
+        }
+        
         public async Task GetViagens(int pagina)
         {
             try

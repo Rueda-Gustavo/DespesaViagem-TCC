@@ -37,3 +37,18 @@ function travaAdiantamento() {
         alert('Esse campo s\u00F3 pode ser alterado com a viagem Aberta.');        
     });
 };
+
+async function salvarArquivo(name, Content) {
+    var link = document.createElement('a');
+    link.download = name;
+    link.href = "data:text/plain;charset=utf-8," + encodeURIComponent(Content)
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function mudarVisibilidadeCheckboxEstadosViagem() {
+    let campos = document.getElementsByClassName('container-relatorio-opcoes')[0].querySelectorAll('input[type="checkbox"]') && document.querySelectorAll('input[id^="estado"]');
+
+    campos.forEach((e) => e.disabled = !(e.disabled));
+}

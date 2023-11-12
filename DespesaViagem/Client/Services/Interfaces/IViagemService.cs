@@ -2,6 +2,7 @@
 using DespesaViagem.Shared.DTOs.Despesas;
 using DespesaViagem.Shared.DTOs.Helpers;
 using DespesaViagem.Shared.DTOs.Viagens;
+using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
 
 namespace DespesaViagem.Client.Services.Interfaces
@@ -14,6 +15,7 @@ namespace DespesaViagem.Client.Services.Interfaces
         string Mensagem { get; set; }
         Task GetViagens();
         Task GetViagens(int pagina);
+        Task GetViagens(StatusViagem statusViagem);
         Task GetViagensPorFuncionario(int idFuncionario);
         Task GetViagensPorFuncionario(int idFuncionario, int pagina);
         Task GetViagensPorDepartamento(int idDepartamento);

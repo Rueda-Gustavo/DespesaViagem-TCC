@@ -233,6 +233,19 @@ namespace DespesaViagem.Server.Controllers
             return Ok(new ServiceResponse<List<ViagemDTO>> { Conteudo = result.Value });
         }
 
+        [HttpGet("status/{statusViagem}/TodasViagens")]
+        public async Task<ActionResult> ObterTodasViagensPorStatus(StatusViagem statusViagem)
+        {
+            string idUsuario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
+
+            Result<List<ViagemDTO>> result = await _viagemService.ObterTodasViagensStatus(statusViagem, int.Parse(idUsuario));
+
+            if (result.IsFailure)
+                return BadRequest(new ServiceResponse<List<ViagemDTO>> { Sucesso = false, Mensagem = result.Error });
+
+            return Ok(new ServiceResponse<List<ViagemDTO>> { Conteudo = result.Value });
+        }
+
         //*Trecho antigo, inutilizado------------------------------------------------------------------------------------
         [HttpGet("status/{statusViagem}/{pagina:int}")]
         public async Task<ActionResult> ObterViagensPorStatus(StatusViagem statusViagem, int pagina)

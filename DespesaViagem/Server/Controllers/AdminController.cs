@@ -15,12 +15,14 @@ namespace DespesaViagem.Server.Controllers
         private readonly IAdminService _adminService;
         private readonly IFuncionarioService _funcionarioService;
         private readonly IGestorService _gestorService;
+        private readonly IWebHostEnvironment _environment;
 
-        public AdminController(IAdminService adminService, IFuncionarioService funcionarioService, IGestorService gestorService)
+        public AdminController(IAdminService adminService, IFuncionarioService funcionarioService, IGestorService gestorService, IWebHostEnvironment environment)
         {
             _adminService = adminService;
             _funcionarioService = funcionarioService;
             _gestorService = gestorService;
+            _environment = environment;
         }
 
         [HttpGet("ObterUsuarios")]
@@ -48,6 +50,6 @@ namespace DespesaViagem.Server.Controllers
                 return BadRequest(new ServiceResponse<List<FuncionarioDTO>> { Sucesso = false, Mensagem = result.Error });
 
             return Ok(new ServiceResponse<List<FuncionarioDTO>> { Conteudo = result.Value.ToList() });
-        }
+        }                       
     }
 }

@@ -18,7 +18,7 @@ namespace DespesaViagem.Services.Services
         private readonly IFuncionarioRepository _funcionarioRepository;
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly float _despesasPorPagina = 6f;
-        private readonly float _viagensPorPagina = 4f;
+        private readonly float _viagensPorPagina = 6f;
         public ViagemService(IViagemRepository viagemRepository,
             IDespesaRepository despesaRepository,
             IFuncionarioRepository funcionarioRepository,
@@ -60,6 +60,8 @@ namespace DespesaViagem.Services.Services
 
             return Result.Success(viagensDTO);
         }
+
+
 
         //*Trecho antigo, inutilizado------------------------------------------------------------------------------------
 
@@ -254,6 +256,39 @@ namespace DespesaViagem.Services.Services
             };
 
             return Result.Success(result);
+        }
+
+        public async Task<Result<List<ViagemDTO>>> ObterTodasViagensStatus(StatusViagem statusViagem, int idUsuario)
+        {
+            Usuario? usuario = await _usuarioRepository.ObterUsuario(idUsuario);
+
+            if (usuario is null)
+                return Result.Failure<List<ViagemDTO>>("Usuário não encontrado.");
+
+            List<Viagem> viagens;
+
+            if (usuario.TipoDeUsuario == RolesUsuario.Gestor)
+            {
+                viagens = await _viagemRepository.ObterTodosGestor(idUsuario);
+            }
+            else if (usuario.TipoDeUsuario == RolesUsuario.Administrador)
+            {
+                viagens = await _viagemRepository.ObterTodos();
+            }
+            else
+            {
+                viagens = await _viagemRepository.ObterTodos(idUsuario);
+            }
+
+
+            if (!viagens.Any())
+                return Result.Failure<List<ViagemDTO>>("Não existem viagens cadastradas.");
+
+            List<ViagemDTO> viagensDTO = MappingDTOs.ConverterDTO(viagens);
+
+            viagensDTO = viagensDTO.Where(v => v.StatusViagem == statusViagem).ToList();
+
+            return Result.Success(viagensDTO);
         }
 
         public async Task<Result<List<DespesaDTO>>> ObterTodasDespesas(int idViagem)

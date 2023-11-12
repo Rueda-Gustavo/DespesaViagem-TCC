@@ -34,23 +34,30 @@ h1 {
 .relatorio {
     display: inline-block;
     margin: 10px;
-    background: linear-gradient(to bottom, #8029ff, #1c00ad);
-    border: 2px solid #5717b2;
     border-radius: 5px;
 }
 
+
 .btn-relatorio {
+    background-color: #fff;
     text-decoration: none;
-    color: #fff;
+    color: #5717b2;
     font-weight: bold;
     font-size: 16px;
     padding: 10px 20px;
     display: inline-block;
+    border: 2px solid #5717b2;
+    border-radius: 5px;
     transition: background-color 0.3s, color 0.3s;
 }
     .btn-relatorio:hover {
-        background-color: #fff;
-        color: #5717b2;
+        background: linear-gradient(to bottom, #8029ff, #1c00ad);
+        color: #fff;
+        border-color: #0070e9;
     }
 
+.container-relatorio-opcoes {
+    max-width: 35rem;
+    padding-left: 30px;
+}
 

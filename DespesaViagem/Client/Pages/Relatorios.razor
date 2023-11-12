@@ -1,9 +1,21 @@
 ﻿@page "/relatorios"
+@using iText.Kernel.Colors;
+@using iText.Kernel.Geom;
+@using iText.Kernel.Pdf;
+@using iText.Kernel.Pdf.Canvas;
+@using iText.Layout;
+@using iText.Layout.Element;
+@using iText.Layout.Properties;
+@inject IJSRuntime JSRuntime
+@inject IViagemService ViagemService
+@attribute [Authorize(Roles = "Administrador, Gestor")]
+@implements IDisposable
+
 
 <div class="header">
     <h3>Relatórios</h3>
 </div>
-
+<!--
 <div class="filters">
     <div class="filter">
         <label for="dataInicio">Data de Início:</label>
@@ -14,18 +26,236 @@
         <input type="date" id="dataFim">
     </div>
 </div>
+-->
 <div class="container-relatorio">
     <div class="relatorio">
-        <button class="btn-relatorio">Relatório 1</button>
+        <button class="btn-relatorio" @onclick="(() => MostrarOpcoes(TiposRelatorios.Geral))">Relatório geral</button>
+
+        <button class="btn-relatorio mx-2" @onclick="(() => MostrarOpcoes(TiposRelatorios.Viagens))">Relatório das viagens</button>
+
+        <button class="btn-relatorio" @onclick="(() => MostrarOpcoes(TiposRelatorios.Despesas))">Relatório das despesas</button>
     </div>
-    <div class="relatorio">
-        <button class="btn-relatorio">Relatório 2</button>
-    </div>
-    <div class="relatorio">
-        <button class="btn-relatorio">Relatório 3</button>
-    </div>
+
 </div>
 
-@code {
+@if (mostrarOpcaoRelatorioGeral)
+{
+    <div class="container-relatorio-opcoes">
 
+        <div class="mt-2">
+            <button class="btn btn-outline-secondary" @onclick="GerarRelatorioGeral">Gerar relatório</button>
+        </div>
+    </div>
+}
+
+@if (mostrarOpcaoRelatorioViagens)
+{
+    <div class="container-relatorio-opcoes">
+        <div class="mt-2">
+            <label for="viagensRelatorio">Estados das Viagens</label> <br />
+            @foreach (var estado in EstadosViagem)
+            {
+                <div class="form-check">
+                    <input id="estado@(estado)" type="checkbox" class="form-check-input" @onchange="((e) => SelecionarEstadoViagem(e, (int)estado))">
+                    <label class="form-check-label">@estado</label>
+                </div>
+            }
+            <div class="form-check">
+                <input id="todosEstados" type="checkbox" class="form-check-input" @onchange="((e) => SelecionarEstadoViagem(e,-1))">
+                <label class="form-check-label">Todos</label>
+            </div>
+        </div>
+        @if (mostrarOpcaoRelatorioViagens && EstadosViagemSelecionados is not null && (EstadosViagemSelecionados.Any(e => e) || todosEstadosViagemSelecionado))
+        {
+            <div class="mt-2">
+                <label for="viagensRelatorio">Viagens</label>
+                <InputSelect id="viagens" class="form-select" @bind-Value="idViagemSelecionada">
+                    <option value="0">Selecione</option>
+                    @foreach (var viagem in ViagemService.Viagens)
+                    {
+                        <option value="@viagem.Id"> @viagem.NomeViagem </option>
+                    }
+                    <option value="0">Todas as viagens</option>
+                </InputSelect>
+            </div>
+        }
+        <button class="btn btn-outline-secondary mt-3" style="float:right" @onclick="GerarRelatorioViagens">Gerar relatório</button>
+    </div>
+
+}
+
+@if (mostrarOpcaoRelatorioDespesas)
+{
+    <div class="container-relatorio-opcoes">
+
+        <div class="mt-2">
+            <label for="viagensRelatorio">Viagens</label>
+            <InputSelect id="viagens" class="form-select" @bind-Value="idViagemSelecionada">
+                <option value="-1">Selecione</option>
+                @foreach (var viagem in ViagemService.Viagens)
+                {
+                    <option value="@viagem.Id"> @viagem.NomeViagem </option>
+                }
+                <option value="0">Todas as viagens</option>
+            </InputSelect>
+        </div>
+
+        @if (mostrarOpcaoRelatorioDespesas && idViagemSelecionada > 0)
+        {
+            <div class="mt-2">
+                <label for="despesasRelatorio">Despesas</label>
+                <InputSelect id="despesas" class="form-select" @bind-Value="tipoDespesaSelecionada">
+                    <option value="-1" selected>Todos as despesas</option>
+                    @foreach (var tipo in TiposDespesas)
+                    {
+                        <option value="@((int)tipo)"> @tipo </option>
+                    }
+                </InputSelect>
+            </div>
+        }
+        <button class="btn btn-outline-secondary mt-3" style="float:right" @onclick="GerarRelatorioDespesas">Gerar relatório</button>
+    </div>
+}
+
+@code {
+    private bool mostrarOpcaoRelatorioGeral = false;
+    private bool mostrarOpcaoRelatorioViagens = false;
+    private bool mostrarOpcaoRelatorioDespesas = false;
+
+    private int idViagemSelecionada = 0;
+    private bool todosEstadosViagemSelecionado = false;
+    private int tipoDespesaSelecionada;
+
+    private Array EstadosViagem = Enum.GetValues(typeof(StatusViagem));
+    private Array TiposDespesas = Enum.GetValues(typeof(TiposDespesas));
+    private bool[]? EstadosViagemSelecionados;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViagemService.ViagensChanged += StateHasChanged;
+
+        EstadosViagemSelecionados = new bool[EstadosViagem.Length];
+
+        await ViagemService.GetViagens();
+    }
+
+    public void Dispose()
+    {
+        ViagemService.ViagensChanged -= StateHasChanged;
+    }
+
+    private async Task MostrarOpcoes(TiposRelatorios tipo)
+    {
+        switch (tipo)
+        {
+            case TiposRelatorios.Geral:
+                mostrarOpcaoRelatorioGeral = !mostrarOpcaoRelatorioGeral;
+                mostrarOpcaoRelatorioViagens = false;
+                mostrarOpcaoRelatorioDespesas = false;
+                break;
+            case TiposRelatorios.Viagens:
+                mostrarOpcaoRelatorioGeral = false;
+                mostrarOpcaoRelatorioViagens = !mostrarOpcaoRelatorioViagens;
+                mostrarOpcaoRelatorioDespesas = false;
+                break;
+            case TiposRelatorios.Despesas:
+                mostrarOpcaoRelatorioGeral = false;
+                mostrarOpcaoRelatorioViagens = false;
+                mostrarOpcaoRelatorioDespesas = !mostrarOpcaoRelatorioDespesas;
+                break;
+        }
+
+        /*
+        FileInfo file = new FileInfo(path);
+
+        bool a = file.Directory.Exists;
+        string b = file.FullName;
+        string c = file.Directory.FullName;
+
+        if (!file.Directory.Exists) file.Directory.Create();
+        GerarPDF(path);
+        */
+
+
+        //string path = await JSRuntime.InvokeAsync<string>("obterDiretorio");
+        //Console.WriteLine(path);
+    }
+
+    private async Task SelecionarEstadoViagem(ChangeEventArgs e, int indice)
+    {
+        if (EstadosViagemSelecionados is null) return;
+
+        if (indice >= 0 && indice < EstadosViagemSelecionados.Length)
+            EstadosViagemSelecionados[indice] = (bool)e.Value!;
+        else if (indice < 0)
+        {
+            todosEstadosViagemSelecionado = !todosEstadosViagemSelecionado;
+            await JSRuntime.InvokeVoidAsync("mudarVisibilidadeCheckboxEstadosViagem");
+        }        
+
+        //EstadosViagemSelecionados![indice] = (bool)e.Value!;
+    }
+
+
+    private async Task GerarRelatorioGeral()
+    {
+        //await JSRuntime.InvokeAsync<object>("salvarArquivo", "RelatorioGeral.pdf", string.Empty);
+    }
+
+    private async Task GerarRelatorioViagens()
+    {
+        //await JSRuntime.InvokeAsync<object>("salvarArquivo", "RelatorioViagens.pdf", string.Empty);
+
+    }
+
+    private async Task GerarRelatorioDespesas()
+    {
+
+        if (tipoDespesaSelecionada >= 0)
+            TiposDespesas.GetValue(tipoDespesaSelecionada);
+
+        //await JSRuntime.InvokeAsync<object>("salvarArquivo", "RelatorioDespesas.pdf", string.Empty);
+    }
+        /*
+    private void GerarPDF(string path)
+    {
+    PdfWriter writer = new(path);
+    PdfDocument pdf = new(writer);
+    Document document = new(pdf, PageSize.A4.Rotate());
+
+
+    PdfPage page = pdf.AddNewPage();
+    Rectangle pageSize = page.GetPageSize();
+
+    // Espessura das bordas duplas
+    float espessuraBordas = 1;
+
+    // Espaçamento entre as duas linhas de borda
+    float espacamentoBordas = 2;
+
+    // Desenhe a primeira linha da borda superior
+    PdfCanvas canvas = new PdfCanvas(page.NewContentStreamBefore(), page.GetResources(), pdf);
+    canvas.SetLineWidth(espessuraBordas);
+    canvas.SetStrokeColor(DeviceGray.BLACK); // Cor da borda (preto)
+
+    float bordaSuperior = pageSize.GetTop() - 20;
+    canvas.MoveTo(20, bordaSuperior);
+    canvas.LineTo(pageSize.GetWidth() - 20, bordaSuperior);
+            canvas.Stroke();
+
+    // Desenhe a segunda linha da borda superior com espaçamento
+    canvas.MoveTo(20, bordaSuperior - espessuraBordas - espacamentoBordas);
+    canvas.LineTo(pageSize.GetWidth() - 20, bordaSuperior - espessuraBordas - espacamentoBordas);
+            canvas.Stroke();
+
+    // Adicione conteúdo ao relatório
+    Paragraph paragrafo = new Paragraph("Este é um exemplo de relatório com bordas duplas e espaçamento na página.")
+    .SetTextAlignment(TextAlignment.CENTER)
+    .SetFontSize(12);
+    document.Add(paragrafo);
+
+    // Feche o documento
+    document.Close();
+    }
+    */
 }
