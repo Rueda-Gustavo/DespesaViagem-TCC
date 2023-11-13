@@ -205,3 +205,9 @@ a, .btn-link {
     border: none;
     cursor: pointer;
 }
+
+.logotipo {
+    width: auto;
+    height: auto;
+    margin-right: 10px;
+}

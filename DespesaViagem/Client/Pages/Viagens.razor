@@ -235,6 +235,7 @@
         }
         else
         {
+            Pagina = 1;
             filtro = $"/PorFuncionario/{IdFuncionario}";
             await ViagemService.GetViagensPorFuncionario(idFuncionario, Pagina);            
         }
@@ -267,6 +268,7 @@
         }
         else
         {
+            Pagina = 1;
             filtro = $"/PorDepartamento/{IdDepartamento}";
             await ViagemService.GetViagensPorDepartamento(idDepartamento, Pagina);
         }

@@ -5,15 +5,23 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @implements IDisposable
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Expensify</PageTitle>
 
 <!--Mostrar <a href="/viagens">Viagens</a>-->
 
 <section class="hero">
     <div class="container">
-        <h1>Bem-vindo ao Spensify</h1>
-        <p>Gerencie suas Viagens Corporativas de forma eficaz e eficiente.</p>
-        <a href="/viagens" class="btn btn-primary btn-lg">Minhas Viagens</a>
+        <div class="row">
+            <div class="col align-self-center">
+                <h1>Bem-vindo ao Expensify</h1>
+                <p>Gerencie suas Viagens Corporativas de forma eficaz e eficiente.</p>
+                <a href="/viagens/1" class="btn btn-primary btn-lg">Minhas Viagens</a>
+            </div>
+
+            <div class="col">
+                <img class="logotipo" src="/Imagens/Expensify_Sem_Fundo.png" alt="Ícone do Site">
+            </div>
+        </div>
     </div>
 </section>
 
@@ -96,7 +104,7 @@
         {
             NavigationManager.NavigateTo($"/viagens/{viagem.Id}/1");
         }
-    }    
+    }
 }
 
 

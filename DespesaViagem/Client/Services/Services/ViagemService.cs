@@ -37,7 +37,8 @@ namespace DespesaViagem.Client.Services.Services
                 if (response.Conteudo is null || !response.Sucesso)
                 {
                     Mensagem = response.Mensagem;
-                    return Result.Failure<ViagemDTO>("Erro para adicionar a viagem.");
+                    //Console.WriteLine(response.Mensagem);
+                    return Result.Failure<ViagemDTO>(response.Mensagem);
                 }
 
                 Mensagem = "Viagem adicionada com sucesso.";

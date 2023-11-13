@@ -89,11 +89,12 @@
     protected override async Task OnInitializedAsync()
     {
         DespesaPassagemService.DespesasChanged += StateHasChanged;
+        viagem = await ViagemService.GetViagem(IdViagem);
+
         if (IdDespesa > 0)
         {
             Adicionar = false;
             await GetDespesaHospedagem();
-            viagem = await ViagemService.GetViagem(IdViagem);
         }
 
         if (!Adicionar) AdicionarOuEditar = "Editar";        

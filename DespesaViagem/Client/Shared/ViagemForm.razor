@@ -149,7 +149,10 @@
                 await FecharFormulario();
             }
             else
-                await JSRuntime.InvokeVoidAsync("alert", "Erro! Alguns campos só podem ser modificados com a viagem em Aberto.");
+            {
+                //Console.WriteLine(viagem.Error);
+                await JSRuntime.InvokeVoidAsync("alert", viagem.Error);
+            }
         }
         catch (Exception ex)
         {
