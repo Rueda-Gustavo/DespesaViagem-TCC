@@ -59,7 +59,7 @@ namespace DespesaViagem.Client.Services.Services
                 var response = await result.Content.ReadFromJsonAsync<ServiceResponse<DespesaAlimentacao>>() ?? new();
 
                 if (response.Conteudo is null || !response.Sucesso)
-                    return Result.Failure<DespesaAlimentacaoDTO>("Despesa com alimentação não encontrada!");
+                    return Result.Failure<DespesaAlimentacaoDTO>(response.Mensagem);
 
                 despesa = MappingDTOs.ConverterDTO(response.Conteudo);
 

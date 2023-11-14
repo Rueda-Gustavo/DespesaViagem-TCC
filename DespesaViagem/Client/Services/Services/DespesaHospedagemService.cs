@@ -32,7 +32,7 @@ namespace DespesaViagem.Client.Services.Services
                 var response = await result.Content.ReadFromJsonAsync<ServiceResponse<DespesaHospedagem>>() ?? new();
 
                 if (response.Conteudo is null || !response.Sucesso)
-                    return Result.Failure<DespesaHospedagemDTO>("Falha para adicionar despesa!");
+                    return Result.Failure<DespesaHospedagemDTO>(response.Mensagem);
 
 
                 Console.WriteLine("Sucesso - DespesaHospedagemService - Client");
@@ -60,7 +60,7 @@ namespace DespesaViagem.Client.Services.Services
                 var response = await result.Content.ReadFromJsonAsync<ServiceResponse<DespesaHospedagem>>() ?? new();
 
                 if (response.Conteudo is null || !response.Sucesso)
-                    return Result.Failure<DespesaHospedagemDTO>("Despesa com hospedagem não encontrada!");
+                    return Result.Failure<DespesaHospedagemDTO>(response.Mensagem);
 
 
                 Console.WriteLine("Sucesso - DespesaHospedagemService - Client");

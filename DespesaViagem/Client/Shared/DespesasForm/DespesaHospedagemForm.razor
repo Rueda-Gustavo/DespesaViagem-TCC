@@ -64,13 +64,22 @@
             </div>
             <div class="col-auto">
                 <label for="QuantidadeDias">Quantidade de dias</label>
-                <input id="QuantidadeDias" class="form-control" style="max-width:5rem" @bind="Despesa.QuantidadeDias" />
+                <input id="QuantidadeDias" class="form-control" type="number" style="max-width:5rem" @bind="Despesa.QuantidadeDias" />
             </div>
         </div>
+
+        <div class="form-group row">
+            <div class="col-auto">
+                <label for="Recibo" class="form-label">Recibo</label>
+                <input class="form-control" type="file" id="Recibo">
+            </div>
+        </div>
+
         <div style="float:right;">
             <button type="button" class="btn btn-secondary mx-2" @onclick="FecharFormulario">
                 <span>Cancelar</span>
             </button>
+
             <AuthorizeView Roles="Funcionario">
                 @if (viagem.StatusViagem == StatusViagem.EmAndamento)
                 {
@@ -79,6 +88,7 @@
                     </button>
                 }
             </AuthorizeView>
+
         </div>
     </form>
 </div>
@@ -153,9 +163,11 @@
             Result<DespesaHospedagemDTO> despesa = new();
             Despesa.IdViagem = IdViagem;
 
-            if (Adicionar)
+            //if (Adicionar)
+            if (Adicionar && await JSRuntime.InvokeAsync<bool>("confirm", "Deseja prosseguir com o cadastro?"))
                 despesa = await DespesaHospedagemService.AdicionarDespesa(Despesa);
-            else
+            //else
+            else if (await JSRuntime.InvokeAsync<bool>("confirm", "Deseja salvar as alterações?"))
                 despesa = await DespesaHospedagemService.AtualizarDespesa(Despesa);
 
             if (despesa.IsSuccess) await FecharFormulario();

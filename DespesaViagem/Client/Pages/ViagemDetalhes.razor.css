@@ -14,12 +14,11 @@
     color: #191919;
     border-radius: 10px;
     display: flex;
-    justify-content: center;
-    padding-top: .5rem;
+    justify-content: space-between;    
 }
 
 .card-title-viagem {
-    padding: 0.5rem 0 0 0; 
+    padding: 1rem 0 0 0; 
 }
 
 .lista-despesas {
@@ -71,7 +70,7 @@
     position: relative;
     /*margin-left: 18rem;*/
     align-self:end;
-    margin: 0.5rem 1rem -2.5rem 0;
+    /*margin: 0.5rem 1rem -2.5rem 0;*/
 }
 
     .btn-edit-viagem:hover {

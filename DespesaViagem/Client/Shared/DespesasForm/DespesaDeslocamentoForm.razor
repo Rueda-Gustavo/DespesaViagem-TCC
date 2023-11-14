@@ -54,10 +54,19 @@
                 <input id="ValorPorQuilometro" class="form-control" type="number" min="0.00" max="10000.00" step="0.01" style="max-width:5rem" @bind="Despesa.ValorPorQuilometro" />
             </div>
         </div>
+
+        <div class="form-group row">
+            <div class="col-auto">
+                <label for="Recibo" class="form-label">Recibo</label>
+                <input class="form-control" type="file" id="Recibo">
+            </div>
+        </div>
+
         <div style="float:right;">
             <button type="button" class="btn btn-secondary mx-2" @onclick="FecharFormulario">
                 <span>Cancelar</span>
             </button>
+
             <AuthorizeView Roles="Funcionario">
                 @if (viagem.StatusViagem == StatusViagem.EmAndamento)
                 {
@@ -66,6 +75,7 @@
                     </button>
                 }
             </AuthorizeView>
+
         </div>
     </form>
 </div>
@@ -126,9 +136,11 @@
             Result<DespesaDeslocamentoDTO> despesa = new();
             Despesa.IdViagem = IdViagem;
 
-            if (Adicionar)
+            //if (Adicionar)
+            if (Adicionar && await JSRuntime.InvokeAsync<bool>("confirm", "Deseja prosseguir com o cadastro?"))
                 despesa = await DespesaDeslocamentoService.AdicionarDespesa(Despesa);
-            else
+            //else
+            else if (await JSRuntime.InvokeAsync<bool>("confirm", "Deseja salvar as alterações?"))
                 despesa = await DespesaDeslocamentoService.AtualizarDespesa(Despesa);
 
             if (despesa.IsSuccess) await FecharFormulario();

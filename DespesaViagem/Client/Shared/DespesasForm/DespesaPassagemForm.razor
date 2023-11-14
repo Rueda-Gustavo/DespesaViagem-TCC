@@ -57,10 +57,19 @@
                 <input id="DataHoraEmbarque" class="form-control" type="datetime-local" style="max-width:12rem" @bind="Despesa.DataHoraEmbarque" />
             </div>
         </div>
+
+        <div class="form-group row">
+            <div class="col-auto">
+                <label for="Recibo" class="form-label">Recibo</label>
+                <input class="form-control" type="file" id="Recibo">
+            </div>
+        </div>
+
         <div style="float:right;">
             <button type="button" class="btn btn-secondary mx-2" @onclick="FecharFormulario">
                 <span>Cancelar</span>
             </button>
+
             <AuthorizeView Roles="Funcionario">
                 @if (viagem.StatusViagem == StatusViagem.EmAndamento)
                 {
@@ -69,6 +78,7 @@
                     </button>
                 }
             </AuthorizeView>
+
         </div>
     </form>
 </div>
@@ -129,9 +139,11 @@
             Result<DespesaPassagemDTO> despesa = new();
             Despesa.IdViagem = IdViagem;
 
-            if (Adicionar)
+            //if (Adicionar)
+            if (Adicionar && await JSRuntime.InvokeAsync<bool>("confirm", "Deseja prosseguir com o cadastro?"))
                 despesa = await DespesaPassagemService.AdicionarDespesa(Despesa);
-            else
+            //else
+            else if (await JSRuntime.InvokeAsync<bool>("confirm", "Deseja salvar as alterações?"))
                 despesa = await DespesaPassagemService.AtualizarDespesa(Despesa);
 
             if (despesa.IsSuccess) await FecharFormulario();

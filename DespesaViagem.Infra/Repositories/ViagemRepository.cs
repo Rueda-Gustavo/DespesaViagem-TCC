@@ -23,7 +23,8 @@ namespace DespesaViagem.Infra.Repositories
                 .Include(f => f.Funcionario)
                 .Include(f => f.Funcionario.Departamento)
                 .Include(d => d.Despesas)
-                .OrderByDescending(viagem => viagem.IdFuncionario)
+                //.OrderByDescending(viagem => viagem.IdFuncionario)
+                .OrderByDescending(viagem => viagem.Id)
                 .ToListAsync();
         }
 
@@ -34,7 +35,8 @@ namespace DespesaViagem.Infra.Repositories
                 .Include(f => f.Funcionario)
                 .Include(f => f.Funcionario.Departamento)
                 .Include(d => d.Despesas)
-                .OrderByDescending(viagem => viagem.IdFuncionario)
+                //.OrderByDescending(viagem => viagem.IdFuncionario)
+                .OrderByDescending(viagem => viagem.Id)
                 .ToListAsync();
         }
         public async Task<List<Viagem>> ObterPorDepartamento(int idDepartamento)
@@ -44,7 +46,8 @@ namespace DespesaViagem.Infra.Repositories
                 .Include(f => f.Funcionario)
                 .Include(f => f.Funcionario.Departamento)
                 .Include(d => d.Despesas)
-                .OrderByDescending(viagem => viagem.IdFuncionario)
+                //.OrderByDescending(viagem => viagem.IdFuncionario)
+                .OrderByDescending(viagem => viagem.Id)
                 .ToListAsync();
         }
 
@@ -77,6 +80,7 @@ namespace DespesaViagem.Infra.Repositories
             return await _context.Viagens
                 .Include(f => f.Funcionario)
                 .Where(viagem => viagem.StatusViagem == statusViagem)
+                .OrderByDescending(viagem => viagem.Id)
                 .ToListAsync();
         }
 
@@ -85,6 +89,7 @@ namespace DespesaViagem.Infra.Repositories
             return await _context.Viagens
                 .Include(f => f.Funcionario)
                 .Where(viagem => viagem.StatusViagem == statusViagem && viagem.IdFuncionario == idFuncionario)
+                .OrderByDescending(viagem => viagem.Id)
                 .ToListAsync();
         }
 
@@ -93,6 +98,7 @@ namespace DespesaViagem.Infra.Repositories
             _ = int.TryParse(filtro, out int id);
             return await _context.Viagens
                 .Where(viagem => viagem.Id == id || viagem.NomeViagem.Contains(filtro) || viagem.DescricaoViagem.Contains(filtro))
+                .OrderByDescending(viagem => viagem.Id)
                 .ToListAsync();
         }
 

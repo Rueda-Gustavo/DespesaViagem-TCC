@@ -13,7 +13,7 @@
 <PageTitle>Viagens</PageTitle>
 
 
-<h3>Viagens</h3>
+<h3>Lista de Viagens</h3>
 <br />
 <AuthorizeView Roles="Funcionario">
     @if (!PossuiViagemAbertaOuEmAndamento)
@@ -294,6 +294,7 @@
     private async Task FecharFormulario()
     {
         FormularioAberto = false;
-        await ViagemService.GetViagens();
+        //await ViagemService.GetViagens();
+        await ViagemService.GetViagens(1);
     }
 }

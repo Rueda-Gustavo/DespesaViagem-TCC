@@ -122,7 +122,17 @@
         if (usuario.TipoDeUsuario == RolesUsuario.Gestor)
             confirma = await JSRuntime.InvokeAsync<bool>("confirm", "Deseja se cadastrar como gestor?\nVocê não conseguirá criar viagens e precisará entrar em contato com o administrador para liberar seus acessos.");
         else
+        {
+            if (usuario.Departamento is null || usuario.Departamento.Id == 0)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Por favor escolha o seu departamento.");
+                carregando = false;
+                return;
+            }
+            
             confirma = await JSRuntime.InvokeAsync<bool>("confirm", "Deseja prosseguir com o cadastro?");
+        }
+        
 
         if (usuario.TipoDeUsuario == RolesUsuario.Gestor)
         {
@@ -155,13 +165,13 @@
         {
             mensagemErro = string.Empty;
             //Console.WriteLine($"Cadastrar usuario com {usuario.Username}.");
-            //await JSRuntime.InvokeVoidAsync("alert", "Dados salvos com sucesso!");
+            await JSRuntime.InvokeVoidAsync("alert", "Dados salvos com sucesso!");
             NavigationManager.NavigateTo("/login");
         }
         else
         {
-            mensagemErro = result.Mensagem;
-            //await JSRuntime.InvokeVoidAsync("alert", $"Erro! {result.Message}");
+            //mensagemErro = result.Mensagem;
+            await JSRuntime.InvokeVoidAsync("alert", $"Erro! {mensagemErro}");
         }
     }
 }

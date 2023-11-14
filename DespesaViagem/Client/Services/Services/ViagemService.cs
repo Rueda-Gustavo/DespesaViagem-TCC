@@ -134,6 +134,7 @@ namespace DespesaViagem.Client.Services.Services
             {
                 Console.WriteLine("Falha - ViagemService - Client");
                 Mensagem = "Nenhuma viagem encontrada!";
+                Viagens = new();
                 ViagensChanged.Invoke();
             }
         }
@@ -162,6 +163,7 @@ namespace DespesaViagem.Client.Services.Services
             {
                 Console.WriteLine("Falha - ViagemService - Client");
                 Mensagem = "Nenhuma viagem encontrada!";
+                Viagens = new();
                 ViagensChanged.Invoke();
             }
         }
@@ -194,6 +196,7 @@ namespace DespesaViagem.Client.Services.Services
             {
                 Console.WriteLine("Falha - ViagemService - Client");
                 Mensagem = "Nenhuma viagem encontrada!";
+                Viagens = new();
                 ViagensChanged.Invoke();
             }
         }
@@ -222,6 +225,7 @@ namespace DespesaViagem.Client.Services.Services
             {
                 Console.WriteLine("Falha - ViagemService - Client");
                 Mensagem = "Nenhuma viagem encontrada!";
+                ViagensPorPagina = new();
                 ViagensChanged.Invoke();
             }
         }
@@ -257,7 +261,6 @@ namespace DespesaViagem.Client.Services.Services
                 ViagensChanged.Invoke();
             }
         }
-
         public async Task GetViagensPorFuncionario(int idFuncionario, int pagina)
         {
             try
@@ -289,8 +292,6 @@ namespace DespesaViagem.Client.Services.Services
                 ViagensChanged.Invoke();
             }
         }
-
-
         public async Task GetViagensPorDepartamento(int idDepartamento)
         {
             try
@@ -321,7 +322,6 @@ namespace DespesaViagem.Client.Services.Services
                 ViagensChanged.Invoke();
             }
         }
-
         public async Task GetViagensPorDepartamento(int idDepartamento, int pagina)
         {
             try
@@ -354,7 +354,6 @@ namespace DespesaViagem.Client.Services.Services
                 ViagensChanged.Invoke();
             }
         }
-
         public async Task<ViagemDTO> GetViagem(int idViagem)
         {
             try
@@ -383,7 +382,6 @@ namespace DespesaViagem.Client.Services.Services
                 return new ViagemDTO();
             }
         }
-
         public async Task<ViagemDTO> ObterViagemAbertaOuEmAndamento()
         {
             try

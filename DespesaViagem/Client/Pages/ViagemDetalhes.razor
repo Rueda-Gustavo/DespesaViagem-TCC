@@ -103,12 +103,9 @@
                     <div class="col">
                         <div class="row">
                             <div class="card-viagem m-2">
-                                @if (Viagem.StatusViagem == StatusViagem.Aberta || Viagem.StatusViagem == StatusViagem.EmAndamento)
-                                {
-                                    <button class="btn pt-0 btn-edit-viagem" @onclick="AbrirFormularioViagem"><FeatherEdit Size="24" Color="#000" StrokeWidth="1.9f" /></button>
-                                }
-                                <div class="card-header-viagem">
+                                <div class="card-header-viagem px-3">
                                     <h5 class="card-title-viagem">@Viagem.NomeViagem</h5>
+                                    <button class="btn btn-edit-viagem" @onclick="AbrirFormularioViagem"><FeatherEdit Size="24" Color="#000" StrokeWidth="1.9f" /></button>
                                 </div>
                                 <div class="card-body p-3">
                                     <span class="status-viagem">Viagem: @Status</span>

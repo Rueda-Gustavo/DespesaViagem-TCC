@@ -41,7 +41,7 @@
             </div>
             <div class="col">
                 <label for="Adiantamento">Adiantamento</label>
-                <input id="Adiantamento" class="form-control" onkeypress="$(this).inputmask('currency')" @bind-value="Viagem.Adiantamento" />
+                <input id="Adiantamento" class="form-control" @bind-value="Viagem.Adiantamento" />
             </div>
         </div>
 
@@ -71,9 +71,12 @@
                 <span>Cancelar</span>
             </button>
             <AuthorizeView Roles="Funcionario">
-                <button type="submit" class="btn btn-primary">
-                    <span>@AdicionarOuEditar</span>
-                </button>
+                @if (Viagem.StatusViagem == StatusViagem.Aberta || Viagem.StatusViagem == StatusViagem.EmAndamento)
+                {
+                    <button type="submit" class="btn btn-primary">
+                        <span>@AdicionarOuEditar</span>
+                    </button>
+                }
             </AuthorizeView>
         </div>
     </form>
@@ -97,7 +100,7 @@
         var claimNameIdentifier = usuarioLogado.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
         _ = int.TryParse(claimNameIdentifier, out int idFuncionario);
-        Console.WriteLine("Id do usuário logado: {0}", idFuncionario);
+        //Console.WriteLine("Id do usuário logado: {0}", idFuncionario);
 
         Viagem.IdFuncionario = idFuncionario;
         Viagem.Funcionario = await FuncionarioService.GetFuncionario(idFuncionario);

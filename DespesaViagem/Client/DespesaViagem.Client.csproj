@@ -9,13 +9,11 @@
   <ItemGroup>
     <None Remove="Pages\Admin\Manutencao.razor.css" />
     <None Remove="Shared\Admin\MenuDepartamentos.razor.css" />
-    <None Remove="Shared\DespesasForm\DespesaHospedagemForm.razor.css" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Pages\Admin\Manutencao.razor.css" />
     <Content Include="Shared\Admin\MenuDepartamentos.razor.css" />
-    <Content Include="Shared\DespesasForm\DespesaHospedagemForm.razor.css" />
   </ItemGroup>
 
   <ItemGroup>
