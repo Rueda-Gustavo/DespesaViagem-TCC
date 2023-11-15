@@ -16,40 +16,32 @@
 
 <h3>Lista de Viagens</h3>
 <br />
+
 <AuthorizeView Roles="Funcionario">
-    @if (!PossuiViagemAbertaOuEmAndamento)
-    {
-        <button class="btn btn-add-viagem" @onclick="AbrirFormulario">
-            Adicionar <i class="bi bi-suitcase-lg"></i>
-        </button>
-    }
+        @if (!PossuiViagemAbertaOuEmAndamento)
+        {
+            <button class="btn btn-add-viagem mb-3" @onclick="AbrirFormulario">
+                Adicionar <i class="bi bi-suitcase-lg"></i>
+            </button>
+            <br/>
+        }
+
 </AuthorizeView>
 
-<AuthorizeView Roles="Gestor, Administrador">
-    <!--
-        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Filtro <i class="bi bi-funnel"></i>
-        </button>
-        <ul class="dropdown-menu">
-    @foreach (var funcionario in Funcionarios)
-    {
-                <li><button @onclick="(() => ObterViagensFuncionario(funcionario.Id))" class="btn btn-outline-secondary dropdown-item">@funcionario.Username</button></li>
-    }
-            <li class="dropdown-divider"></li>
-            <li><button @onclick="(() => ObterViagensFuncionario(0))" class="btn btn-outline-secondary dropdown-item">Limpar filtro</button></li>
-        </ul>
 
-    -->
     <button class="btn btn-outline-secondary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltros" aria-expanded="false" aria-controls="collapseFiltros">
         Filtros <i class="bi bi-filter"></i>
     </button>
 
-    <a class="btn btn-outline-secondary mb-3" href="/viagens/1" type="button">
+    <button class="btn btn-outline-secondary mb-3" @onclick="LimparFiltros" type="button">
         Limpar Filtros <i class="bi bi-eraser"></i>
-    </a>
+    </button>
 
-    <div class="btn-group-horizontal collapse" id="collapseFiltros" role="group">
-        <div class="btn-group-horizontal" role="group" aria-label="Vertical button group">
+<div class="btn-group-horizontal collapse" id="collapseFiltros" role="group">
+    <div class="btn-group-horizontal" role="group" aria-label="Vertical button group">
+        <AuthorizeView Roles="Gestor, Administrador">
+
+
             <div class="btn-group" role="group">
                 @{
                     string cssClassFiltroFuncionario = IdFuncionario == 0 ? cssClassBotaoFiltro : cssClassBotaoFiltroSelecionado;
@@ -84,42 +76,43 @@
                 </ul>
             </div>
 
-            <div class="btn-group" role="group">
-                @{
-                    string cssClassFiltroStatus = (IdStatusViagem == -1 || FiltroStatus is null || FiltroStatus == string.Empty) ? cssClassBotaoFiltro : cssClassBotaoFiltroSelecionado;
-                }
-                <button type="button" class="btn @cssClassFiltroStatus dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    @StatusViagemFiltro
-                </button>
-                <ul class="dropdown-menu">
-                    @foreach (var status in EstadosViagem)
+        </AuthorizeView>
+        <div class="btn-group" role="group">
+            @{
+                string cssClassFiltroStatus = (IdStatusViagem == -1 || FiltroStatus is null || FiltroStatus == string.Empty) ? cssClassBotaoFiltro : cssClassBotaoFiltroSelecionado;
+            }
+            <button type="button" class="btn @cssClassFiltroStatus dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                @StatusViagemFiltro
+            </button>
+            <ul class="dropdown-menu">
+                @foreach (var status in EstadosViagem)
+                {
+                    string statusApresentacao = status.ToString()!;
+                    if ((StatusViagem)status == StatusViagem.EmAndamento)
                     {
-                        string statusApresentacao = status.ToString()!;
-                        if ((StatusViagem)status == StatusViagem.EmAndamento)
-                        {
-                            statusApresentacao = "Em andamento";
-                        }
-                        <li><button @onclick="(() => ObterViagensStatus((int)status, status.ToString() ?? string.Empty))" class="btn btn-outline-secondary dropdown-item">@statusApresentacao</button></li>
+                        statusApresentacao = "Em andamento";
                     }
-                    <li class="dropdown-divider"></li>
-                    <li><button @onclick="(() => ObterViagensStatus(-1, string.Empty))" class="btn btn-outline-secondary dropdown-item">Limpar filtro</button></li>
-                </ul>
-            </div>
-            <!--
-            <div class="btn-group" role="group">
-                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    Dropdown
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Dropdown link</a></li>
-                    <li><a class="dropdown-item" href="#">Dropdown link</a></li>
-                </ul>
-            </div>
-            -->
+                    <li><button @onclick="(() => ObterViagensStatus((int)status, status.ToString() ?? string.Empty))" class="btn btn-outline-secondary dropdown-item">@statusApresentacao</button></li>
+                }
+                <li class="dropdown-divider"></li>
+                <li><button @onclick="(() => ObterViagensStatus(-1, string.Empty))" class="btn btn-outline-secondary dropdown-item">Limpar filtro</button></li>
+            </ul>
         </div>
+        <!--
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Dropdown
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Dropdown link</a></li>
+                <li><a class="dropdown-item" href="#">Dropdown link</a></li>
+            </ul>
+        </div>
+        -->
     </div>
+</div>
 
-</AuthorizeView>
+
 
 <div class="d-flex card-container-viagens">
 
@@ -235,7 +228,7 @@
 
         ViagemService.ViagensPorPagina.Viagens = viagens;
         ViagemService.ViagensPorPagina.PaginaAtual = pagina;
-        */
+    */
         StateHasChanged();
     }
 
@@ -245,10 +238,20 @@
             await ViagemService.GetViagensPorFuncionario(IdFuncionario, Pagina);
         else if (IdDepartamento > 0)
             await ViagemService.GetViagensPorDepartamento(IdDepartamento, Pagina);
-        else if (IdStatusViagem > 0)
+        else if (IdStatusViagem >= 0 && FiltroStatus is not null && FiltroStatus != string.Empty)
             await ViagemService.GetViagensPorStatus((StatusViagem)IdStatusViagem, Pagina);
         else
             await ViagemService.GetViagens(Pagina);
+    }
+
+    private async Task LimparFiltros()
+    {
+        IdFuncionario = 0;
+        IdDepartamento = 0;
+        IdStatusViagem = -1;
+        FiltroStatus = string.Empty;
+        await ObterViagens();
+        NavigationManager.NavigateTo("/viagens/1");
     }
 
     private async Task ObterListaFuncionarios(string tipoDeUsuario)
