@@ -258,6 +258,36 @@ namespace DespesaViagem.Services.Services
             return Result.Success(result);
         }
 
+        public async Task<Result<ViagensPorPagina>> ObterTodasViagensPorStatus(StatusViagem statusViagem, int idUsuario, int pagina)
+        {
+            var todasViagens = await ObterTodasViagens(idUsuario);
+
+            if (todasViagens.IsFailure)
+                return Result.Failure<ViagensPorPagina>(todasViagens.Error);
+
+            List<ViagemDTO> viagens = todasViagens.Value.ToList();
+
+            viagens = viagens.Where(v => v.StatusViagem == statusViagem).ToList();
+
+            if (viagens is null || !viagens.Any())
+                return Result.Failure<ViagensPorPagina>("Não existem viagens com o status especificado!");
+
+            double quantidadeDePaginas = Math.Ceiling(viagens.Count / _viagensPorPagina);
+            viagens = viagens
+                .Skip((pagina - 1) * (int)_viagensPorPagina)
+                .Take((int)_viagensPorPagina)
+                .ToList();            
+
+            ViagensPorPagina result = new()
+            {
+                Viagens = viagens,
+                PaginaAtual = pagina,
+                QuantidadeDePaginas = (int)quantidadeDePaginas
+            };
+
+            return Result.Success(result);
+        }
+
         public async Task<Result<List<ViagemDTO>>> ObterTodasViagensStatus(StatusViagem statusViagem, int idUsuario)
         {
             Usuario? usuario = await _usuarioRepository.ObterUsuario(idUsuario);

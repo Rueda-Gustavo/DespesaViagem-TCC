@@ -17,6 +17,7 @@ namespace DespesaViagem.Client.Services.Interfaces
         Task GetViagens(int pagina);
         Task GetViagens(StatusViagem statusViagem);
         Task GetViagens(List<StatusViagem> statusViagem);
+        Task GetViagensPorStatus(StatusViagem statusViagem, int pagina);
         Task GetViagensPorFuncionario(int idFuncionario);
         Task GetViagensPorFuncionario(int idFuncionario, int pagina);
         Task GetViagensPorDepartamento(int idDepartamento);

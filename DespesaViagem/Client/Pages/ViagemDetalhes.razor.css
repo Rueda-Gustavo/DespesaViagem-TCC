@@ -64,12 +64,11 @@
 }
 
 .btn-edit-viagem {
-    padding: 8px 9px 5px 10px;
+    padding: 4px 8px 7px 8px;
     min-height: 30px;
     color: #000;
     position: relative;
-    /*margin-left: 18rem;*/
-    align-self:end;
+    /*margin-left: 18rem;*/    
     /*margin: 0.5rem 1rem -2.5rem 0;*/
 }
 
@@ -106,3 +105,7 @@
         border-color: #064b08;
         color: #064b08;
     }
+
+.status-viagem {
+
+}

@@ -141,7 +141,6 @@ a, .btn-link {
     background-color: #58b225;
 }
 
-/* Estilos para o overlay */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -152,10 +151,9 @@ a, .btn-link {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* Garante que o overlay esteja acima de outros elementos */
+    z-index: 1000; 
 }
 
-/* Estilos para o conteúdo do modal */
 .modal-content {
     background-color: white;
     padding: 20px;
@@ -164,7 +162,6 @@ a, .btn-link {
     max-width: 700px;
 }
 
-/* Estilos para o cabeçalho do modal */
 .modal-header {
     display: flex;
     justify-content: space-between;
@@ -172,21 +169,17 @@ a, .btn-link {
     margin-bottom: 10px;
 }
 
-/* Estilos para o botão de fechar o modal */
-
-
-/* Estilos para os campos do formulário */
 .form-group {
     margin-bottom: 20px;
 }
 
-/* Estilos para o botão de salvar */
+
 .btn-primary {
     background-color: #007bff;
     color: white;
 }
 
-/* Estilos para ajustar a posição dos campos do formulário */
+
 .form-control {
     width: 100%;
     padding: 8px;

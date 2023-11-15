@@ -105,7 +105,6 @@ namespace DespesaViagem.Server.Controllers
             return Ok(new ServiceResponse<ViagensPorPagina> { Conteudo = result.Value });
         }
 
-
         [HttpGet("PrestacaoDeContas/{idViagem:int}")]
         public async Task<ActionResult> ObterPrestacaoDeContas(int idViagem)
         {
@@ -246,6 +245,19 @@ namespace DespesaViagem.Server.Controllers
             return Ok(new ServiceResponse<List<ViagemDTO>> { Conteudo = result.Value });
         }
 
+        [HttpGet("status/{statusViagem}/TodasViagens/{pagina:int}")]
+        public async Task<ActionResult> ObterTodasViagensPorStatus(StatusViagem statusViagem, int pagina)
+        {
+            string idUsuario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
+
+            Result<ViagensPorPagina> result = await _viagemService.ObterTodasViagensPorStatus(statusViagem, int.Parse(idUsuario), pagina);
+
+            if (result.IsFailure)
+                return BadRequest(new ServiceResponse<ViagensPorPagina> { Sucesso = false, Mensagem = result.Error });
+
+            return Ok(new ServiceResponse<ViagensPorPagina> { Conteudo = result.Value });
+        }
+
         [HttpPost("listaStatus/TodasViagens")]
         public async Task<ActionResult> ObterTodasViagensPorStatus([FromBody] List<StatusViagem> statusViagem)
         {
@@ -263,9 +275,9 @@ namespace DespesaViagem.Server.Controllers
         [HttpGet("status/{statusViagem}/{pagina:int}")]
         public async Task<ActionResult> ObterViagensPorStatus(StatusViagem statusViagem, int pagina)
         {
-            string idFuncionario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
+            string idUsuario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
 
-            Result<ViagensPorPagina> result = await _viagemService.ObterViagemPorStatus(statusViagem, int.Parse(idFuncionario), pagina);
+            Result<ViagensPorPagina> result = await _viagemService.ObterViagemPorStatus(statusViagem, int.Parse(idUsuario), pagina);
 
             if (result.IsFailure) return BadRequest(new ServiceResponse<ViagensPorPagina> { Sucesso = false, Mensagem = result.Error });
 

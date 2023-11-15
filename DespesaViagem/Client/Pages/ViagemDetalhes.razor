@@ -10,8 +10,11 @@
 
 <PageTitle>Detalhes</PageTitle>
 
-<h3>Detalhes da viagem</h3>
-<a href="/viagens/1" class="btn btn-outline-primary">Voltar</a>
+<strong><span class="fs-4">Viagem: @Status</span></strong> 
+<br/>
+
+<a href="/viagens/1" class="btn btn-outline-primary mt-3">Voltar</a>
+
 <button class="btn btn-primary d-xl-none m-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasResponsive" aria-controls="offcanvasResponsive">Detalhes da viagem</button>
 <div class="container" style="margin: 0 0;">
     <div class="d-flex">
@@ -34,8 +37,12 @@
             }
             <div class="dropdown">
                 <button class="btn btn-outline-secondary dropdown-toggle mx-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Filtro <i class="bi bi-funnel"></i>
+                    Filtros <i class="bi bi-filter"></i>
                 </button>
+
+                <a class="btn btn-outline-secondary" href="/viagens/@IdViagem/1" type="button">
+                    Limpar Filtros <i class="bi bi-eraser"></i>
+                </a>
                 <ul class="dropdown-menu">
                     <li><a class="btn btn-outline-secondary dropdown-item" href="/viagens/@IdViagem/1/Alimentação">Alimentação</a></li>
                     <li><a class="btn btn-outline-secondary dropdown-item" href="/viagens/@IdViagem/1/Deslocamento">Deslocamento</a></li>
@@ -86,8 +93,7 @@
                 {
                     <a class="btn
                     @(i == DespesasPorPagina.PaginaAtual ? "btn-secondary" : "btn-outline-secondary")
-                    page-selection"
-                       href="/viagens/@IdViagem/@i/@TipoDespesa">@i</a>
+                    page-selection" style="margin-right:5px;" href="/viagens/@IdViagem/@i/@TipoDespesa">@i</a>
                 }
             }
         </div>
@@ -108,7 +114,6 @@
                                     <button class="btn btn-edit-viagem" @onclick="AbrirFormularioViagem"><FeatherEdit Size="24" Color="#000" StrokeWidth="1.9f" /></button>
                                 </div>
                                 <div class="card-body p-3">
-                                    <span class="status-viagem">Viagem: @Status</span>
                                     <p class="card-text">Descrição: @Viagem.DescricaoViagem</p>
                                     <ul>
                                         <li class="card-text">Funcionário: @Viagem.Funcionario.NomeCompleto</li>

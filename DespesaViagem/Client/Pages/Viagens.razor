@@ -1,6 +1,7 @@
 ﻿@page "/viagens/{Pagina:int}"
 @page "/viagens/PorFuncionario/{IdFuncionario:int}/{Pagina:int}"
 @page "/viagens/PorDepartamento/{IdDepartamento:int}/{Pagina:int}"
+@page "/viagens/PorStatus/{FiltroStatus}/{IdStatusViagem:int}/{Pagina:int}"
 @inject NavigationManager NavigationManager
 @inject IViagemService ViagemService
 @inject IGestorService GestorService
@@ -40,14 +41,20 @@
 
     -->
     <button class="btn btn-outline-secondary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltros" aria-expanded="false" aria-controls="collapseFiltros">
-        Filtro <i class="bi bi-funnel"></i>
+        Filtros <i class="bi bi-filter"></i>
     </button>
+
+    <a class="btn btn-outline-secondary mb-3" href="/viagens/1" type="button">
+        Limpar Filtros <i class="bi bi-eraser"></i>
+    </a>
 
     <div class="btn-group-horizontal collapse" id="collapseFiltros" role="group">
         <div class="btn-group-horizontal" role="group" aria-label="Vertical button group">
             <div class="btn-group" role="group">
-
-                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                @{
+                    string cssClassFiltroFuncionario = IdFuncionario == 0 ? cssClassBotaoFiltro : cssClassBotaoFiltroSelecionado;
+                }
+                <button type="button" class="btn @cssClassFiltroFuncionario dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                     @UsernameFiltro
                 </button>
                 <ul class="dropdown-menu">
@@ -61,7 +68,10 @@
             </div>
 
             <div class="btn-group" role="group">
-                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                @{
+                    string cssClassFiltroDepartamento = IdDepartamento == 0 ? cssClassBotaoFiltro : cssClassBotaoFiltroSelecionado;
+                }
+                <button type="button" class="btn @cssClassFiltroDepartamento dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                     @DepartamentoFiltro
                 </button>
                 <ul class="dropdown-menu">
@@ -71,6 +81,28 @@
                     }
                     <li class="dropdown-divider"></li>
                     <li><button @onclick="(() => ObterViagensDepartamento(0, string.Empty))" class="btn btn-outline-secondary dropdown-item">Limpar filtro</button></li>
+                </ul>
+            </div>
+
+            <div class="btn-group" role="group">
+                @{
+                    string cssClassFiltroStatus = (IdStatusViagem == -1 || FiltroStatus is null || FiltroStatus == string.Empty) ? cssClassBotaoFiltro : cssClassBotaoFiltroSelecionado;
+                }
+                <button type="button" class="btn @cssClassFiltroStatus dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    @StatusViagemFiltro
+                </button>
+                <ul class="dropdown-menu">
+                    @foreach (var status in EstadosViagem)
+                    {
+                        string statusApresentacao = status.ToString()!;
+                        if ((StatusViagem)status == StatusViagem.EmAndamento)
+                        {
+                            statusApresentacao = "Em andamento";
+                        }
+                        <li><button @onclick="(() => ObterViagensStatus((int)status, status.ToString() ?? string.Empty))" class="btn btn-outline-secondary dropdown-item">@statusApresentacao</button></li>
+                    }
+                    <li class="dropdown-divider"></li>
+                    <li><button @onclick="(() => ObterViagensStatus(-1, string.Empty))" class="btn btn-outline-secondary dropdown-item">Limpar filtro</button></li>
                 </ul>
             </div>
             <!--
@@ -105,7 +137,6 @@
     }
 </div>
 
-
 @if (ViagemService.ViagensPorPagina.QuantidadeDePaginas > 1)
 {
     <div class="mt-2">
@@ -113,13 +144,12 @@
         {
             int pagina = i;
             <button class="btn
-                    @(pagina == ViagemService.ViagensPorPagina.PaginaAtual ? "btn-secondary" : "btn-outline-secondary") page-selection" @onclick="(() => MudarPagina(pagina))">
+                    @(pagina == ViagemService.ViagensPorPagina.PaginaAtual ? "btn-secondary" : "btn-outline-secondary") page-selection" style="margin-right:5px;" @onclick="(() => MudarPagina(pagina))">
                 @pagina
             </button>
         }
     </div>
 }
-
 
 @code {
     [Parameter]
@@ -131,9 +161,20 @@
     [Parameter]
     public int IdDepartamento { get; set; } = 0;
 
+    [Parameter]
+    public int IdStatusViagem { get; set; } = -1;
+    [Parameter]
+    public string FiltroStatus { get; set; } = string.Empty;
+
     private string DepartamentoFiltro { get; set; } = "Departamentos";
     private string UsernameFiltro { get; set; } = "Funcionários";
+    private string StatusViagemFiltro { get; set; } = "Viagens";
+
     public string filtro = string.Empty;
+
+    private string cssClassBotaoFiltroSelecionado = "btn-primary";
+    private string cssClassBotaoFiltro = "btn-secondary";
+
 
     //private IEnumerable<Viagem> TodasViagens { get; set; } = new List<Viagem>();
     private bool FormularioAberto = false;
@@ -141,6 +182,7 @@
 
     private List<FuncionarioDTO> Funcionarios = new();
     private List<Departamento> Departamentos = new();
+    private Array EstadosViagem = Enum.GetValues(typeof(StatusViagem));
 
     protected override async Task OnInitializedAsync()
     {
@@ -200,11 +242,13 @@
     private async Task ObterViagens()
     {
         if (IdFuncionario > 0)
-            await ViagemService.GetViagensPorFuncionario(IdFuncionario, Pagina);        
+            await ViagemService.GetViagensPorFuncionario(IdFuncionario, Pagina);
         else if (IdDepartamento > 0)
             await ViagemService.GetViagensPorDepartamento(IdDepartamento, Pagina);
+        else if (IdStatusViagem > 0)
+            await ViagemService.GetViagensPorStatus((StatusViagem)IdStatusViagem, Pagina);
         else
-            await ViagemService.GetViagens(Pagina);        
+            await ViagemService.GetViagens(Pagina);
     }
 
     private async Task ObterListaFuncionarios(string tipoDeUsuario)
@@ -225,9 +269,14 @@
             else
             await ViagemService.GetViagensPorFuncionario(idFuncionario);
         */
+        //IdDepartamento = 0;
+        //IdStatusViagem = -1;
         IdFuncionario = idFuncionario;
         UsernameFiltro = username == string.Empty ? "Funcionários" : username;
         DepartamentoFiltro = "Departamentos";
+        StatusViagemFiltro = "Viagens";
+
+        Pagina = 1;
         if (idFuncionario == 0)
         {
             filtro = string.Empty;
@@ -235,12 +284,10 @@
         }
         else
         {
-            Pagina = 1;
             filtro = $"/PorFuncionario/{IdFuncionario}";
-            await ViagemService.GetViagensPorFuncionario(idFuncionario, Pagina);            
+            await ViagemService.GetViagensPorFuncionario(idFuncionario, Pagina);
         }
         MudarPagina(Pagina);
-
     }
 
     private async Task ObterDepartamentos()
@@ -258,9 +305,14 @@
             else
             await ViagemService.GetViagensPorDepartamento(idDepartamento);
         */
+        //IdFuncionario = 0;
+        //IdStatusViagem = -1;
         IdDepartamento = idDepartamento;
         DepartamentoFiltro = departamento == string.Empty ? "Departamentos" : departamento;
         UsernameFiltro = "Funcionários";
+        StatusViagemFiltro = "Viagens";
+
+        Pagina = 1;
         if (idDepartamento == 0)
         {
             filtro = string.Empty;
@@ -268,9 +320,31 @@
         }
         else
         {
-            Pagina = 1;
             filtro = $"/PorDepartamento/{IdDepartamento}";
             await ViagemService.GetViagensPorDepartamento(idDepartamento, Pagina);
+        }
+        MudarPagina(Pagina);
+    }
+
+    private async Task ObterViagensStatus(int indiceStatusViagem, string textoStatusViagem)
+    {
+        //IdDepartamento = 0;
+        //IdFuncionario = 0;
+        IdStatusViagem = indiceStatusViagem;
+        StatusViagemFiltro = (indiceStatusViagem < 0 || textoStatusViagem == string.Empty) ? "Viagens" : textoStatusViagem;
+        UsernameFiltro = "Funcionários";
+        DepartamentoFiltro = "Departamentos";
+
+        Pagina = 1;
+        if (indiceStatusViagem < 0 || textoStatusViagem == string.Empty)
+        {
+            filtro = string.Empty;
+            await ViagemService.GetViagens(Pagina);
+        }
+        else
+        {
+            filtro = $"/PorStatus/{textoStatusViagem}/{indiceStatusViagem}";
+            await ViagemService.GetViagensPorStatus((StatusViagem)indiceStatusViagem, Pagina);
         }
         MudarPagina(Pagina);
     }
