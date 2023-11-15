@@ -18,7 +18,7 @@ namespace DespesaViagem.Infra.Repositories
         {
             return await _context.Funcionarios
                 .Include(f => f.Gestor)
-                .Include(f => f.Departamento)                
+                .Include(f => f.Departamento)
                 .ToListAsync();
         }
 
@@ -26,7 +26,7 @@ namespace DespesaViagem.Infra.Repositories
         {
             return await _context.Funcionarios
                 .Include(f => f.Gestor)
-                .Include(f => f.Departamento)                
+                .Include(f => f.Departamento)
                 .FirstOrDefaultAsync(f => f.Id == id);
         }
 
@@ -34,7 +34,7 @@ namespace DespesaViagem.Infra.Repositories
         {
             return await _context.Funcionarios
                 .Include(f => f.Gestor)
-                .Include(f => f.Departamento)                
+                .Include(f => f.Departamento)
                 .Where(f => f.Gestor.Id == gestorId).ToListAsync();
         }
 
@@ -42,7 +42,7 @@ namespace DespesaViagem.Infra.Repositories
         {
             return await _context.Funcionarios
                 .Include(f => f.Gestor)
-                .Include(f => f.Departamento)                
+                .Include(f => f.Departamento)
                 .FirstOrDefaultAsync(f => f.CPF == CPF);
         }
 
@@ -50,9 +50,9 @@ namespace DespesaViagem.Infra.Repositories
         {
             return await _context.Funcionarios
             .Include(f => f.Gestor)
-            .Include(f => f.Departamento)                
-            .Where(funcionario => funcionario.CPF.ToLower().Contains(filtro.ToLower()) || 
-                                  funcionario.NomeCompleto.ToLower().Contains(filtro.ToLower()) || 
+            .Include(f => f.Departamento)
+            .Where(funcionario => funcionario.CPF.ToLower().Contains(filtro.ToLower()) ||
+                                  funcionario.NomeCompleto.ToLower().Contains(filtro.ToLower()) ||
                                   funcionario.Matricula.ToLower().Contains(filtro.ToLower()) ||
                                   funcionario.Username.ToLower().Contains(filtro.ToLower()))
             .ToListAsync();
@@ -75,8 +75,20 @@ namespace DespesaViagem.Infra.Repositories
             //Como é feita uma verificação antes, o Entity acaba rastreando a entidade, por isso é necessário faze-lo esse comando para desanexa-lo e realizar o update do novo objeto.
             var funcionarioNaMemoria = _context.Set<Funcionario>().Find(funcionario.Id);
 
-            if (funcionarioNaMemoria != null)
+            var a = _context.ChangeTracker;
+
+            if (funcionarioNaMemoria is not null)
+            {
+                if (funcionarioNaMemoria.Departamento is not null)
+                {
+                    var departamentoNaMemoria = _context.Set<Departamento>().Find(funcionarioNaMemoria.Departamento.Id);
+
+                    if (departamentoNaMemoria is not null)
+                        _context.Entry(departamentoNaMemoria).State = EntityState.Detached;
+                }
                 _context.Entry(funcionarioNaMemoria).State = EntityState.Detached;
+            }
+
 
             _context.Update(funcionario);
             await _context.SaveChangesAsync();
@@ -85,7 +97,7 @@ namespace DespesaViagem.Infra.Repositories
         public async Task DesvincularGestor(int idFuncionario)
         {
             //string sql = "UPDATE Usuarios SET GestorId = NULL WHERE Id = {0}";
-            string sql = "USE [DespesaViagem] " +                         
+            string sql = "USE [DespesaViagem] " +
                          "UPDATE [dbo].[Usuarios] " +
                          "SET [GestorId] = NULL " +
                          "WHERE Id = {0}";

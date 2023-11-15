@@ -49,13 +49,16 @@ namespace DespesaViagem.Client.Services.Services
                 var response = await result.Content.ReadFromJsonAsync<ServiceResponse<FuncionarioDTO>>() ?? new() { Sucesso = false };
 
                 if (response.Conteudo is null || !response.Sucesso)
+                {
+                    Mensagem = response.Mensagem;
                     return Result.Failure<FuncionarioDTO>("Erro para atualizar as informações.");
-
-                Mensagem = "Informações atualizadas com sucesso.";
+                }
+                else
+                    Mensagem = "Informações atualizadas com sucesso.";
 
                 Console.WriteLine("Sucesso - FuncionarioService - Client");
-                //FuncionariosChanged.Invoke();
-                return Result.Success(response.Conteudo); 
+                FuncionariosChanged.Invoke();
+                return Result.Success(response.Conteudo);
             }
             catch (Exception ex)
             {

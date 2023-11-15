@@ -53,26 +53,40 @@ namespace DespesaViagem.Services.Services
         }
         public async Task<Result<Departamento>> AdicionarDepartamento(string descricao)
         {
-            Departamento departamento = await _departamentoRepository.ObterDepartamento(descricao);
-            if (departamento is not null)
-                return Result.Failure<Departamento>("Já existe um departamento com essa descrição.");
+            try
+            {
+                Departamento departamento = await _departamentoRepository.ObterDepartamento(descricao);
+                if (departamento is not null)
+                    return Result.Failure<Departamento>("Já existe um departamento com essa descrição.");
 
-            departamento = new Departamento { Id = 0, Descricao = descricao };
+                departamento = new Departamento { Id = 0, Descricao = descricao };
 
-            await _departamentoRepository.Insert(departamento);
-            return Result.Success(departamento);
+                await _departamentoRepository.Insert(departamento);
+                return Result.Success(departamento);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<Departamento>(ex.Message);
+            }
         }
 
         public async Task<Result<Departamento>> AlterarDepartamento(Departamento departamento)
         {
-            Departamento departamentoExistente = await _departamentoRepository.ObterDepartamento(departamento.Id);
-            if (departamentoExistente is null)
-                return Result.Failure<Departamento>("Departamento não encontrado.");
+            try
+            {
+                Departamento departamentoExistente = await _departamentoRepository.ObterDepartamento(departamento.Id);
+                if (departamentoExistente is null)
+                    return Result.Failure<Departamento>("Departamento não encontrado.");
 
-            departamento.Id = departamentoExistente.Id;
-            
-            await _departamentoRepository.Update(departamento);
-            return Result.Success(departamento);
+                departamento.Id = departamentoExistente.Id;
+
+                await _departamentoRepository.Update(departamento);
+                return Result.Success(departamento);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<Departamento>(ex.Message);
+            }
         }
 
         public async Task<Result<Departamento>> DesativarDepartamento(int id)

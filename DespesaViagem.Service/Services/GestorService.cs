@@ -86,51 +86,55 @@ namespace DespesaViagem.Services.Services
 
         public async Task<Result<GestorDTO>> Adicionar(Gestor gestor, string password)
         {
-            if (await GestorJaExiste(gestor))
-                return Result.Failure<GestorDTO>("Usuário já cadastrado.");
+            try
+            {
+                if (await GestorJaExiste(gestor))
+                    return Result.Failure<GestorDTO>("Usuário já cadastrado.");
 
-            UsuarioService.CriarPasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+                UsuarioService.CriarPasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
 
-            gestor.PasswordHash = passwordHash;
-            gestor.PasswordSalt = passwordSalt;
+                gestor.PasswordHash = passwordHash;
+                gestor.PasswordSalt = passwordSalt;
 
-            await _gestorRepository.Insert(gestor);
+                await _gestorRepository.Insert(gestor);
 
-            GestorDTO gestorDTO = MappingDTOs.ConverterDTO(gestor);
+                GestorDTO gestorDTO = MappingDTOs.ConverterDTO(gestor);
 
-            return Result.Success(gestorDTO);
+                return Result.Success(gestorDTO);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<GestorDTO>(ex.Message);
+            }
+
         }
-
-        /*
-                     if (!await FuncionarioJaExiste(funcionarioDTO))
-                return Result.Failure<Funcionario>("Funcionario não encontrado!");
-
-            Funcionario funcionario = await _funcionarioRepository.ObterPorId(funcionarioDTO.Id);
-
-            funcionario.NomeCompleto = funcionarioDTO.NomeCompleto;
-            funcionario.Username = funcionarioDTO.Username;
-            funcionario.CPF = funcionarioDTO.CPF;
-            funcionario.Matricula = funcionarioDTO.Matricula;
-         */
 
         public async Task<Result<GestorDTO>> Alterar(GestorDTO gestorDTO)
         {
-            if (!await GestorJaExiste(gestorDTO))
-                return Result.Failure<GestorDTO>("Gestor não encontrado!");
+            try
+            {
+                if (!await GestorJaExiste(gestorDTO))
+                    return Result.Failure<GestorDTO>("Gestor não encontrado!");
 
-            Gestor gestor = await _gestorRepository.ObterPorId(gestorDTO.Id);
+                Gestor gestor = await _gestorRepository.ObterPorId(gestorDTO.Id);
 
-            gestor.NomeCompleto = gestorDTO.NomeCompleto;
-            gestor.Username = gestorDTO.Username;
-            gestor.CPF = gestorDTO.CPF;
+                gestor.NomeCompleto = gestorDTO.NomeCompleto;
+                gestor.Username = gestorDTO.Username;
+                gestor.CPF = gestorDTO.CPF;
 
-            var duplicidadesGestor = await VerificaDuplicidades(gestor);
+                var duplicidadesGestor = await VerificaDuplicidades(gestor);
 
-            if (duplicidadesGestor.IsFailure)
-                return Result.Failure<GestorDTO>(duplicidadesGestor.Error);
+                if (duplicidadesGestor.IsFailure)
+                    return Result.Failure<GestorDTO>(duplicidadesGestor.Error);
 
-            await _gestorRepository.Update(gestor);
-            return Result.Success(gestorDTO);
+                await _gestorRepository.Update(gestor);
+                return Result.Success(gestorDTO);
+
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<GestorDTO>(ex.Message);
+            }
         }
 
         public async Task<Result<GestorDTO>> Remover(int id)
@@ -192,7 +196,7 @@ namespace DespesaViagem.Services.Services
             if ((await _gestorRepository.ObterPorFiltro(gestor.Username)).Count() > 1)
             {
                 return Result.Failure<string>("Username já está em uso!");
-            }            
+            }
 
             return Result.Success("Sem duplicidades");
         }

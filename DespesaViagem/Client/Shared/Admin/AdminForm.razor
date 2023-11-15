@@ -80,20 +80,13 @@
                     <td><button class="btn btn-primary @CssClassBotaoAdicionar" @onclick="Vincular">Vincular <i class="bi bi-plus-circle"></i></button></td>
                 </tr>
 
-                <tr>
-                    <td>@Usuario.Username</td>
-                    @if (gestor.Funcionarios.Count > 0)
-                    {
-                        <td><span>@gestor.Funcionarios[0].Username</span></td>
-                        <td><button class="btn btn-danger" @onclick="(() => Desvincular(gestor.Funcionarios[0].Id))">Desvincular <i class="fa fa-unlink"></i></button></td>
-                    }
-                </tr>
-                @for (int i = 1; i < gestor.Funcionarios.Count; i++)
-                {
+
+                @foreach(var funcionario in gestor.Funcionarios)
+                {                    
                     <tr>
-                        <td></td>
-                        <td><span>@gestor.Funcionarios[i].Username</span></td>
-                        <td><button class="btn btn-danger" @onclick="(() => Desvincular(gestor.Funcionarios[0].Id))">Desvincular <i class="fa fa-unlink"></i></button></td>
+                        <td>@Usuario.Username</td>
+                        <td><span>@funcionario.Username</span></td>
+                        <td><button class="btn btn-danger" @onclick="(() => Desvincular(funcionario.Id))">Desvincular <i class="fa fa-unlink"></i></button></td>
                     </tr>
                 }
             </tbody>
@@ -102,12 +95,12 @@
 </div>
 
 @code {
-    [Parameter]
-    public UsuarioDTO Usuario { get; set; } = new();
-    [Parameter]
-    public EventCallback FormularioFechado { get; set; }
-    [Parameter]
-    public AdminManutencaoDTO Manutencao { get; set; } = new();
+        [Parameter]
+        public UsuarioDTO Usuario { get; set; } = new();
+        [Parameter]
+        public EventCallback FormularioFechado { get; set; }
+        [Parameter]
+        public AdminManutencaoDTO Manutencao { get; set; } = new();
 
     private GestorDTO gestor = new();
     private FuncionarioDTO funcionario = new();
@@ -122,9 +115,9 @@
         AdminService.AdminChanged += StateHasChanged;
 
         if (Usuario.TipoDeUsuario == RolesUsuario.Funcionario)
-            funcionario = await FuncionarioService.GetFuncionario(Usuario.Id);
+            funcionarioSelecionado = funcionario = await FuncionarioService.GetFuncionario(Usuario.Id);
         else
-            gestor = await GestorService.GetGestor(Usuario.Id);
+            gestorSelecionado = gestor = await GestorService.GetGestor(Usuario.Id);
     }
 
     public void Dispose()
@@ -186,24 +179,25 @@
 
     private async Task Desvincular(int IdFuncionario)
     {
-        Console.WriteLine(IdFuncionario + " " + Usuario.Id);
-
+        /*
+        Console.WriteLine(IdFuncionario + " " + Usuario.Id);        
         string usernameGestor = string.Empty;
 
         if (Usuario.TipoDeUsuario == RolesUsuario.Funcionario)
             //usernameGestor = gestorSelecionado.Username;
             usernameGestor = (await GestorService.GetGestor(funcionario.GestorId)).Username;
-        else
+            else
             usernameGestor = Usuario.Username;
+        */
 
-        bool confirma = await JSRuntime.InvokeAsync<bool>("confirm", $"Desvincular o funcionário \"{Usuario.Username}\" do gestor \"{usernameGestor}\"?");
+        bool confirma = await JSRuntime.InvokeAsync<bool>("confirm", $"Confirmar desvinculação?");// o funcionário \"{Usuario.Username}\" do gestor \"{usernameGestor}\"?");
         if (!confirma)
             return;
 
         var result = await AdminService.DesvincularGestor(IdFuncionario);
         if (result.IsSuccess)
-            await JSRuntime.InvokeVoidAsync("alert", $"Sucesso, usuário desvinculado do gestor: {usernameGestor}");
-        else
+            await JSRuntime.InvokeVoidAsync("alert", $"Sucesso na desvinculação");// do gestor: {usernameGestor}");
+    else
             await JSRuntime.InvokeVoidAsync("alert", "Erro para desvincular.");
 
         if (Usuario.TipoDeUsuario != RolesUsuario.Gestor)

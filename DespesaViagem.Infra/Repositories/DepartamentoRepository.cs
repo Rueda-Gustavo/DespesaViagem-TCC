@@ -1,7 +1,6 @@
 ﻿using DespesaViagem.Infra.Database;
 using DespesaViagem.Infra.Interfaces;
 using DespesaViagem.Shared.Models.Core.Helpers;
-using DespesaViagem.Shared.Models.Viagens;
 using Microsoft.EntityFrameworkCore;
 
 namespace DespesaViagem.Infra.Repositories
