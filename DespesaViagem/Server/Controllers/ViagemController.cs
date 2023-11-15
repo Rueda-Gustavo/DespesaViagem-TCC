@@ -61,7 +61,7 @@ namespace DespesaViagem.Server.Controllers
 
             return Ok(new ServiceResponse<ViagemDTO> { Conteudo = result.Value });
         }
-        //*Trecho antigo, inutilizado------------------------------------------------------------------------------------
+        /*Trecho antigo, inutilizado------------------------------------------------------------------------------------
         [HttpGet("PorFuncionario/{idFuncionario}")]
         public async Task<ActionResult> ObterViagemPorFuncionario(int idFuncionario)
         {
@@ -83,7 +83,7 @@ namespace DespesaViagem.Server.Controllers
             return Ok(new ServiceResponse<ViagensPorPagina> { Conteudo = result.Value });
         }
 
-        //*Trecho antigo, inutilizado------------------------------------------------------------------------------------
+        /*Trecho antigo, inutilizado------------------------------------------------------------------------------------
         [HttpGet("PorDepartamento/{idDepartamento:int}")]
         public async Task<ActionResult> ObterViagemPorDepartamento(int idDepartamento)
         {
@@ -144,7 +144,7 @@ namespace DespesaViagem.Server.Controllers
             return Ok(new ServiceResponse<ViagemDTO> { Conteudo = result.Value });
         }
 
-        //*Trecho antigo, inutilizado------------------------------------------------------------------------------------
+        /*Trecho antigo, inutilizado------------------------------------------------------------------------------------
         [HttpGet("{filtro}")]
         public async Task<ActionResult> ObterViagensPorFiltro(string filtro)
         {
@@ -217,7 +217,7 @@ namespace DespesaViagem.Server.Controllers
 
             return Ok(new ServiceResponse<List<DespesaPorCategoria>> { Conteudo = result.Value });
         }
-
+        /*
         [HttpGet]
         [Route("status/{statusViagem}")]
         public async Task<ActionResult> ObterViagensPorStatus(StatusViagem statusViagem)
@@ -231,7 +231,8 @@ namespace DespesaViagem.Server.Controllers
 
             return Ok(new ServiceResponse<List<ViagemDTO>> { Conteudo = result.Value });
         }
-
+        */
+        /*
         [HttpGet("status/{statusViagem}/TodasViagens")]
         public async Task<ActionResult> ObterTodasViagensPorStatus(StatusViagem statusViagem)
         {
@@ -244,7 +245,7 @@ namespace DespesaViagem.Server.Controllers
 
             return Ok(new ServiceResponse<List<ViagemDTO>> { Conteudo = result.Value });
         }
-
+        */
         [HttpGet("status/{statusViagem}/TodasViagens/{pagina:int}")]
         public async Task<ActionResult> ObterTodasViagensPorStatus(StatusViagem statusViagem, int pagina)
         {
@@ -271,7 +272,7 @@ namespace DespesaViagem.Server.Controllers
             return Ok(new ServiceResponse<List<ViagemDTO>> { Conteudo = result.Value });
         }
 
-        //*Trecho antigo, inutilizado------------------------------------------------------------------------------------
+        /*Trecho antigo, inutilizado------------------------------------------------------------------------------------
         [HttpGet("status/{statusViagem}/{pagina:int}")]
         public async Task<ActionResult> ObterViagensPorStatus(StatusViagem statusViagem, int pagina)
         {

@@ -14,18 +14,12 @@ namespace DespesaViagem.Client.Services.Interfaces
         ViagensPorPagina ViagensPorPagina { get; set; }
         string Mensagem { get; set; }
         Task GetViagens();
-        Task GetViagens(int pagina);
-        Task GetViagens(StatusViagem statusViagem);
+        Task GetViagens(int pagina);      
         Task GetViagens(List<StatusViagem> statusViagem);
-        Task GetViagensPorStatus(StatusViagem statusViagem, int pagina);
-        Task GetViagensPorFuncionario(int idFuncionario);
+        Task GetViagensPorStatus(StatusViagem statusViagem, int pagina);        
         Task GetViagensPorFuncionario(int idFuncionario, int pagina);
-        Task GetViagensPorDepartamento(int idDepartamento);
         Task GetViagensPorDepartamento(int idDepartamento, int pagina);
-        Task<ViagemDTO> GetViagem(int idViagem);
-        //Task<FuncionarioDTO> GetFuncionario(string CPF);
-        //Task<FuncionarioDTO> GetFuncionario(int idFuncionario);
-        Task<List<DespesaDTO>> ObterDespesas(int idViagem);
+        Task<ViagemDTO> GetViagem(int idViagem);        
         Task<DespesasPorPagina> ObterDespesasPorPagina(int idViagem, int page);
         Task<DespesasPorPagina> ObterTodasDespesasPaginadasPorTipo(int idViagem, int pagina, string stringTipoDespesa);
         Task<List<DespesaPorCategoria>> ObterTotalDespesasPorCategoria(int idViagem);

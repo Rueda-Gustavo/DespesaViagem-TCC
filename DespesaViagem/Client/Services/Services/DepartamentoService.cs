@@ -86,7 +86,7 @@ namespace DespesaViagem.Client.Services.Services
                 if (response.Conteudo is null || !response.Sucesso)
                 {
                     //Mensagem = response.Mensagem;
-                    return Result.Failure<Departamento>("Erro para adicionar o departamento.");
+                    return Result.Failure<Departamento>(response.Mensagem);
                 }
 
                 //Mensagem = "Viagem adicionada com sucesso.";

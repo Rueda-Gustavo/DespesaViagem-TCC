@@ -12,13 +12,13 @@ namespace DespesaViagem.Services.Interfaces
         Task<Result<List<ViagemDTO>>> ObterTodasViagens(int idUsuario);
         Task<Result<ViagensPorPagina>> ObterViagensPaginadas(int idUsuario, int pagina);
         Task<Result<ViagemDTO>> ObterViagemPorId(int id);
-        Task<Result<List<ViagemDTO>>> ObterViagensPorFuncionario(int idFuncionario); //Antigo
+        //Task<Result<List<ViagemDTO>>> ObterViagensPorFuncionario(int idFuncionario); //Antigo
         Task<Result<ViagensPorPagina>> ObterViagensPorFuncionario(int idFuncionario, int pagina);
-        Task<Result<List<ViagemDTO>>> ObterViagensPorDepartamento(int idDepartamento); //Antigo
+        //Task<Result<List<ViagemDTO>>> ObterViagensPorDepartamento(int idDepartamento); //Antigo
         Task<Result<ViagensPorPagina>> ObterViagensPorDepartamento(int idDepartamento, int pagina);
-        Task<Result<List<ViagemDTO>>> ObterViagensPorFiltro(string filtro); //Antigo
+        //Task<Result<List<ViagemDTO>>> ObterViagensPorFiltro(string filtro); //Antigo
         Task<Result<ViagensPorPagina>> ObterViagensPorFiltro(string filtro, int pagina);
-        Task<Result<List<ViagemDTO>>> ObterViagemPorStatus(StatusViagem statusViagem, int idFuncionario); //Antigo
+        //Task<Result<List<ViagemDTO>>> ObterViagemPorStatus(StatusViagem statusViagem, int idFuncionario); //Antigo
         Task<Result<ViagensPorPagina>> ObterViagemPorStatus(StatusViagem statusViagem, int idFuncionario, int pagina);
         Task<Result<ViagensPorPagina>> ObterTodasViagensPorStatus(StatusViagem statusViagem, int idUsuario, int pagina);
         Task<Result<List<ViagemDTO>>> ObterTodasViagensStatus(StatusViagem statusViagem, int idUsuario);

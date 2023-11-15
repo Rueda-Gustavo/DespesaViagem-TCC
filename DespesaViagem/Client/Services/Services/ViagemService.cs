@@ -139,35 +139,6 @@ namespace DespesaViagem.Client.Services.Services
             }
         }
 
-        public async Task GetViagens(StatusViagem statusViagem)
-        {
-            try
-            {
-                var response = await _http
-                   .GetFromJsonAsync<ServiceResponse<List<ViagemDTO>>>($"api/viagem/status/{statusViagem}/TodasViagens") ?? new() { Sucesso = false };
-
-                if (response.Conteudo is null || !response.Conteudo.Any())
-                {
-                    //Mensagem = "Nenhuma viagem encontrada!";             
-                    Viagens = new List<ViagemDTO>();
-                    Mensagem = response.Mensagem;
-                }
-                else
-                {
-                    Viagens = response.Conteudo;
-                    Console.WriteLine("Sucesso - ViagemService - Client");
-                }
-                ViagensChanged.Invoke();
-            }
-            catch
-            {
-                Console.WriteLine("Falha - ViagemService - Client");
-                Mensagem = "Nenhuma viagem encontrada!";
-                Viagens = new();
-                ViagensChanged.Invoke();
-            }
-        }
-
         public async Task GetViagensPorStatus(StatusViagem statusViagem, int pagina)
         {
             try
@@ -204,10 +175,7 @@ namespace DespesaViagem.Client.Services.Services
                 var result = await _http.PostAsJsonAsync($"api/viagem/listaStatus/TodasViagens", statusViagem);
 
                 var response = await result.Content.ReadFromJsonAsync<ServiceResponse<List<ViagemDTO>>>() ?? new() { Sucesso = false };
-                /*
-                var response = await _http
-                   .GetFromJsonAsync<ServiceResponse<List<ViagemDTO>>>($"api/viagem/listaStatus/{statusViagem}/TodasViagens") ?? new() { Sucesso = false };
-                */
+
                 if (response.Conteudo is null || !response.Conteudo.Any())
                 {
                     //Mensagem = "Nenhuma viagem encontrada!";
@@ -259,37 +227,6 @@ namespace DespesaViagem.Client.Services.Services
             }
         }
 
-        public async Task GetViagensPorFuncionario(int idFuncionario)
-        {
-            try
-            {
-                var response = await _http
-                    .GetFromJsonAsync<ServiceResponse<List<ViagemDTO>>>($"api/viagem/PorFuncionario/{idFuncionario}") ?? new() { Sucesso = false };
-
-                if (response.Conteudo is null || !response.Conteudo.Any())
-                {
-                    //Mensagem = "Nenhuma viagem encontrada!";
-                    Mensagem = response.Mensagem;
-                    Viagens = new List<ViagemDTO>();
-                }
-                else
-                {
-                    Viagens = response.Conteudo;
-
-                    Console.WriteLine("Sucesso - ViagemService - Client");
-                }
-
-                ViagensChanged.Invoke();
-            }
-            catch (Exception ex)
-            {
-
-                Console.WriteLine("Falha - ViagemService - Client\n" + ex.Message);
-                Mensagem = "Viagens não encontradas!";
-                Viagens = new();
-                ViagensChanged.Invoke();
-            }
-        }
         public async Task GetViagensPorFuncionario(int idFuncionario, int pagina)
         {
             try
@@ -321,36 +258,7 @@ namespace DespesaViagem.Client.Services.Services
                 ViagensChanged.Invoke();
             }
         }
-        public async Task GetViagensPorDepartamento(int idDepartamento)
-        {
-            try
-            {
-                var response = await _http
-                    .GetFromJsonAsync<ServiceResponse<List<ViagemDTO>>>($"api/Viagem/PorDepartamento/{idDepartamento}") ?? new() { Sucesso = false };
-
-                if (response.Conteudo is null || !response.Conteudo.Any())
-                {
-                    //Mensagem = "Nenhuma viagem encontrada!";
-                    Mensagem = response.Mensagem;
-                    Viagens = new();
-                }
-                else
-                {
-                    Viagens = response.Conteudo
-                        .Where(v => v.Funcionario.Departamento is not null && v.Funcionario.Departamento.Id == idDepartamento).ToList();
-
-                    Console.WriteLine("Sucesso - ViagemService - Client");
-                }
-                ViagensChanged.Invoke();
-            }
-            catch
-            {
-                Console.WriteLine("Falha - ViagemService - Client");
-                Mensagem = "Viagens não encontradas!";
-                ViagensPorPagina = new();
-                ViagensChanged.Invoke();
-            }
-        }
+        
         public async Task GetViagensPorDepartamento(int idDepartamento, int pagina)
         {
             try
@@ -439,88 +347,7 @@ namespace DespesaViagem.Client.Services.Services
                 return new ViagemDTO();
             }
         }
-        /*
-        public async Task<FuncionarioDTO> GetFuncionario(string CPF)
-        {
-            try
-            {
-                var response = await _http
-                    .GetFromJsonAsync<ServiceResponse<Funcionario>>($"api/funcionario/{CPF}/obterfuncionarioporfiltro")
-                    ?? new() { Sucesso = false };
 
-                if (response.Conteudo is null || !response.Sucesso || response.Conteudo.CPF == string.Empty)
-                {
-                    Mensagem = response.Mensagem;
-                    Console.WriteLine("Funcionário não encontrado.");
-                    return new();
-                }
-
-                FuncionarioDTO funcionarioDTO = MappingDTOs.ConverterDTO(response.Conteudo);
-
-                Console.WriteLine("Sucesso - ViagemService - Client");
-                return funcionarioDTO;
-            }
-            catch
-            {
-                Console.WriteLine("Falha - ViagemService - Client");
-                Mensagem = "Funcionario não encontrado!";
-                return new();
-            }
-        }
-        */
-        /*
-        public async Task<FuncionarioDTO> GetFuncionario(int idFuncionario)
-        {
-            try
-            {
-                var response = await _http
-                    .GetFromJsonAsync<ServiceResponse<Funcionario>>($"api/funcionario/{idFuncionario}")
-                    ?? new() { Sucesso = false };
-
-                if (response.Conteudo is null || !response.Sucesso || response.Conteudo.CPF == string.Empty)
-                {
-                    Console.WriteLine("Funcionário não encontrado.");
-                    return new();
-                }
-
-                FuncionarioDTO funcionarioDTO = MappingDTOs.ConverterDTO(response.Conteudo);
-
-                Console.WriteLine("Sucesso - ViagemService - Client");
-                return funcionarioDTO;
-            }
-            catch
-            {
-                Console.WriteLine("Falha - ViagemService - Client");
-                Mensagem = "Funcionario não encontrado!";
-                return new();
-            }
-        }
-        */
-        public async Task<List<DespesaDTO>> ObterDespesas(int idViagem)
-        {
-            try
-            {
-                var response = await _http
-                    .GetFromJsonAsync<ServiceResponse<List<DespesaDTO>>>($"api/Viagem/ObterDespesas/{idViagem}")
-                    ?? new() { Sucesso = false };
-
-                if (response.Conteudo is null || !response.Conteudo.Any())
-                {
-                    Console.WriteLine("Despesas não encontradas.");
-                    return new();
-                }
-
-                Console.WriteLine("Sucesso - ViagemService - Client");
-                return response.Conteudo;
-            }
-            catch
-            {
-                Console.WriteLine("Falha - ViagemService - Client");
-                Mensagem = "Despesas não encontradas.";
-                return new();
-            }
-
-        }
 
         public async Task<DespesasPorPagina> ObterDespesasPorPagina(int idViagem, int pagina)
         {

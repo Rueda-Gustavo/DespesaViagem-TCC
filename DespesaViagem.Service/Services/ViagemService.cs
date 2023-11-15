@@ -44,7 +44,7 @@ namespace DespesaViagem.Services.Services
                 viagens = await _viagemRepository.ObterTodosGestor(idUsuario);
             }
             else if (usuario.TipoDeUsuario == RolesUsuario.Administrador)
-            {                                
+            {
                 viagens = await _viagemRepository.ObterTodos();
             }
             else
@@ -63,8 +63,7 @@ namespace DespesaViagem.Services.Services
 
 
 
-        //*Trecho antigo, inutilizado------------------------------------------------------------------------------------
-
+        /*Trecho antigo, inutilizado------------------------------------------------------------------------------------
         public async Task<Result<List<ViagemDTO>>> ObterViagensPorFuncionario(int idFuncionario)
         {
             Funcionario? funcionario = await _funcionarioRepository.ObterPorId(idFuncionario);
@@ -114,7 +113,7 @@ namespace DespesaViagem.Services.Services
         }
 
 
-        //*Trecho antigo, inutilizado------------------------------------------------------------------------------------
+        /*Trecho antigo, inutilizado------------------------------------------------------------------------------------
         public async Task<Result<List<ViagemDTO>>> ObterViagensPorDepartamento(int idDepartamento)
         {
                         
@@ -176,7 +175,7 @@ namespace DespesaViagem.Services.Services
             return Result.Failure<ViagemDTO>("Especifique um id válido!!");
         }
 
-        //*Trecho antigo, inutilizado------------------------------------------------------------------------------------
+        /*Trecho antigo, inutilizado------------------------------------------------------------------------------------
         public async Task<Result<List<ViagemDTO>>> ObterViagensPorFiltro(string filtro)
         {
             List<Viagem> viagens = await _viagemRepository.ObterPorFiltro(filtro);
@@ -198,7 +197,7 @@ namespace DespesaViagem.Services.Services
 
             if (!viagens.Any())
                 return Result.Failure<ViagensPorPagina>("Não existem viagens com o filtro especificado!");
-            
+
             double quantidadeDePaginas = Math.Ceiling(viagens.Count / _viagensPorPagina);
             viagens = viagens
                 .Skip((pagina - 1) * (int)_viagensPorPagina)
@@ -218,7 +217,7 @@ namespace DespesaViagem.Services.Services
         }
 
 
-        //*Trecho antigo, inutilizado------------------------------------------------------------------------------------
+        /*Trecho antigo, inutilizado------------------------------------------------------------------------------------
         public async Task<Result<List<ViagemDTO>>> ObterViagemPorStatus(StatusViagem statusViagem, int idFuncionario)
         {
             List<Viagem> viagens = await _viagemRepository.ObterViagemPorStatus(statusViagem, idFuncionario) ?? new();
@@ -231,7 +230,7 @@ namespace DespesaViagem.Services.Services
 
             return Result.Success(viagensDTO);
         }
-        //-------------------------------------------------------------------------------------------------------------*/ 
+        //-------------------------------------------------------------------------------------------------------------*/
 
         public async Task<Result<ViagensPorPagina>> ObterViagemPorStatus(StatusViagem statusViagem, int idFuncionario, int pagina)
         {
@@ -276,7 +275,7 @@ namespace DespesaViagem.Services.Services
             viagens = viagens
                 .Skip((pagina - 1) * (int)_viagensPorPagina)
                 .Take((int)_viagensPorPagina)
-                .ToList();            
+                .ToList();
 
             ViagensPorPagina result = new()
             {
@@ -350,7 +349,7 @@ namespace DespesaViagem.Services.Services
 
             List<ViagemDTO> viagensDTO = MappingDTOs.ConverterDTO(viagens);
 
-            viagensDTO = viagensDTO.Where(v => statusViagem.Contains(v.StatusViagem)).ToList();            
+            viagensDTO = viagensDTO.Where(v => statusViagem.Contains(v.StatusViagem)).ToList();
 
             return Result.Success(viagensDTO);
         }
@@ -386,7 +385,7 @@ namespace DespesaViagem.Services.Services
             var todasViagens = await ObterTodasViagens(idUsuario);
 
             if (todasViagens.IsFailure)
-                return Result.Failure<ViagensPorPagina> (todasViagens.Error);
+                return Result.Failure<ViagensPorPagina>(todasViagens.Error);
 
             double quantidadeDePaginas = Math.Ceiling(todasViagens.Value.Count / _viagensPorPagina);
             List<ViagemDTO> viagens = todasViagens.Value
@@ -599,7 +598,7 @@ namespace DespesaViagem.Services.Services
                 return null;
 
             return viagem.First();
-        }       
+        }
         private async Task<bool> ViagemCancelada(int idViagem)
         {
             Viagem viagem = await _viagemRepository.ObterPorId(idViagem);
@@ -611,7 +610,7 @@ namespace DespesaViagem.Services.Services
 
             return false;
         }
-
+        /*
         private async Task<List<Viagem>> AdicionarDespesasParaAViagem(List<Viagem> viagens)
         {
             foreach (var viagem in viagens)
@@ -631,17 +630,18 @@ namespace DespesaViagem.Services.Services
 
             return viagem;
         }
+        */
         /*
-                private async Task<List<Viagem>> AdicionarFuncionarioParaAViagem(List<Viagem> viagens)
-                {
-                    foreach (var viagem in viagens)
-                    {
-                        Funcionario funcionario = await _funcionarioRepository.ObterPorId(viagem.IdFuncionario);
-                        viagem.AdicionarFuncionario(funcionario);
-                    }
+        private async Task<List<Viagem>> AdicionarFuncionarioParaAViagem(List<Viagem> viagens)
+        {
+            foreach (var viagem in viagens)
+            {
+                Funcionario funcionario = await _funcionarioRepository.ObterPorId(viagem.IdFuncionario);
+                viagem.AdicionarFuncionario(funcionario);
+            }
 
-                    return viagens;
-                }
+            return viagens;
+        }
         */
         private static TiposDespesas ConverterStringParaEnumTipoDespesa(string tipoDespesa)
         {
