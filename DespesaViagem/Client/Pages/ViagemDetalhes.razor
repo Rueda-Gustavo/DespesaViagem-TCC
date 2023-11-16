@@ -209,12 +209,12 @@
 
 
 @code {
-    [Parameter]
-    public int IdViagem { get; set; }
-    [Parameter]
-    public int Pagina { get; set; }
-    [Parameter]
-    public string? TipoDespesa { get; set; } = null;
+        [Parameter]
+        public int IdViagem { get; set; }
+        [Parameter]
+        public int Pagina { get; set; }
+        [Parameter]
+        public string? TipoDespesa { get; set; } = null;
     private ViagemDTO Viagem { get; set; } = new();
     //private Funcionario Funcionario { get; set; } = new();
     //private List<DespesaDTO> Despesas { get; set; } = new();
@@ -285,16 +285,16 @@
     private async Task ObterFuncionario()
     {
 
-        AuthenticationState usuarioLogado = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var claimNameIdentifier = usuarioLogado.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+    AuthenticationState usuarioLogado = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    var claimNameIdentifier = usuarioLogado.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-        _ = int.TryParse(claimNameIdentifier, out int idFuncionario);
-        Console.WriteLine("Id do usuário logado: {0}", idFuncionario);
+    _ = int.TryParse(claimNameIdentifier, out int idFuncionario);
+    Console.WriteLine("Id do usuário logado: {0}", idFuncionario);
 
-        Viagem.IdFuncionario = idFuncionario;
-        Viagem.Funcionario = await FuncionarioService.GetFuncionario(idFuncionario);
+    Viagem.IdFuncionario = idFuncionario;
+    Viagem.Funcionario = await FuncionarioService.GetFuncionario(idFuncionario);
 
-        //Viagem.Funcionario = await ViagemService.GetFuncionario(Viagem.IdFuncionario);
+    //Viagem.Funcionario = await ViagemService.GetFuncionario(Viagem.IdFuncionario);
     }
     */
     /*private void ObterSubtotal()
@@ -320,6 +320,7 @@
             await JSRuntime.InvokeVoidAsync("alert", ViagemService.Mensagem);
         }
         Viagem = await ViagemService.GetViagem(IdViagem);
+        Status = "Em andamento";        
     }
 
     private async Task CancelarViagem()
@@ -331,6 +332,7 @@
             await JSRuntime.InvokeVoidAsync("alert", ViagemService.Mensagem);
         }
         Viagem = await ViagemService.GetViagem(IdViagem);
+        Status = "Cancelada";
     }
 
     private async Task EncerrarViagem()
@@ -342,6 +344,7 @@
             await JSRuntime.InvokeVoidAsync("alert", ViagemService.Mensagem);
         }
         Viagem = await ViagemService.GetViagem(IdViagem);
+        Status = "Encerrada";
     }
 
     private void LimparFiltro()

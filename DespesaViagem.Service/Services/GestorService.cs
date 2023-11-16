@@ -193,7 +193,8 @@ namespace DespesaViagem.Services.Services
 
         private async Task<Result<string>> VerificaDuplicidades(Gestor gestor)
         {
-            if ((await _gestorRepository.ObterPorFiltro(gestor.Username)).Count() > 1)
+            Gestor gestorExistente = await _gestorRepository.ObterPorId(gestor.Id);
+            if ((await _gestorRepository.ObterPorFiltro(gestor.Username)).Count() > 1 && gestorExistente.Username != gestor.Username)
             {
                 return Result.Failure<string>("Username já está em uso!");
             }
