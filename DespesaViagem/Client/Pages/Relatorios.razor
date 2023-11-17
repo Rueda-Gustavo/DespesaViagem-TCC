@@ -1,11 +1,6 @@
 ﻿@page "/relatorios"
-@using iText.Kernel.Colors;
-@using iText.Kernel.Geom;
-@using iText.Kernel.Pdf;
-@using iText.Kernel.Pdf.Canvas;
-@using iText.Layout;
-@using iText.Layout.Element;
-@using iText.Layout.Properties;
+
+
 @inject IJSRuntime JSRuntime
 @inject IViagemService ViagemService
 @attribute [Authorize(Roles = "Administrador, Gestor")]
@@ -150,6 +145,8 @@
         ViagemService.ViagensChanged -= StateHasChanged;
     }
 
+
+
     private async Task MostrarOpcoes(TiposRelatorios tipo)
     {
         switch (tipo)
@@ -163,28 +160,21 @@
                 mostrarOpcaoRelatorioGeral = false;
                 mostrarOpcaoRelatorioViagens = !mostrarOpcaoRelatorioViagens;
                 mostrarOpcaoRelatorioDespesas = false;
+                await ResetFiltros();
                 break;
             case TiposRelatorios.Despesas:
                 mostrarOpcaoRelatorioGeral = false;
                 mostrarOpcaoRelatorioViagens = false;
                 mostrarOpcaoRelatorioDespesas = !mostrarOpcaoRelatorioDespesas;
+                await ResetFiltros();
                 break;
         }
+    }
 
-        /*
-        FileInfo file = new FileInfo(path);
-
-        bool a = file.Directory.Exists;
-        string b = file.FullName;
-        string c = file.Directory.FullName;
-
-        if (!file.Directory.Exists) file.Directory.Create();
-        GerarPDF(path);
-        */
-
-
-        //string path = await JSRuntime.InvokeAsync<string>("obterDiretorio");
-        //Console.WriteLine(path);
+    private async Task ResetFiltros()
+    {
+        idViagemSelecionada = 0;
+        await ViagemService.GetViagens();
     }
 
     private async Task SelecionarEstadoViagem(ChangeEventArgs e, int indice)
@@ -220,6 +210,12 @@
 
     private async Task GerarRelatorioGeral()
     {
+        RelatoriosService relatorio = new();
+        await JSRuntime.InvokeAsync<ViagemDTO>(
+            "salvarRelatorio",
+            "RelatorioGeral.pdf",
+            Convert.ToBase64String(relatorio.GerarRelatorio(ViagemService.Viagens))
+        );
         //await JSRuntime.InvokeAsync<object>("salvarArquivo", "RelatorioGeral.pdf", string.Empty);
     }
 
@@ -237,46 +233,5 @@
 
         //await JSRuntime.InvokeAsync<object>("salvarArquivo", "RelatorioDespesas.pdf", string.Empty);
     }
-        /*
-    private void GerarPDF(string path)
-    {
-    PdfWriter writer = new(path);
-    PdfDocument pdf = new(writer);
-    Document document = new(pdf, PageSize.A4.Rotate());
-
-
-    PdfPage page = pdf.AddNewPage();
-    Rectangle pageSize = page.GetPageSize();
-
-    // Espessura das bordas duplas
-    float espessuraBordas = 1;
-
-    // Espaçamento entre as duas linhas de borda
-    float espacamentoBordas = 2;
-
-    // Desenhe a primeira linha da borda superior
-    PdfCanvas canvas = new PdfCanvas(page.NewContentStreamBefore(), page.GetResources(), pdf);
-    canvas.SetLineWidth(espessuraBordas);
-    canvas.SetStrokeColor(DeviceGray.BLACK); // Cor da borda (preto)
-
-    float bordaSuperior = pageSize.GetTop() - 20;
-    canvas.MoveTo(20, bordaSuperior);
-    canvas.LineTo(pageSize.GetWidth() - 20, bordaSuperior);
-            canvas.Stroke();
-
-    // Desenhe a segunda linha da borda superior com espaçamento
-    canvas.MoveTo(20, bordaSuperior - espessuraBordas - espacamentoBordas);
-    canvas.LineTo(pageSize.GetWidth() - 20, bordaSuperior - espessuraBordas - espacamentoBordas);
-            canvas.Stroke();
-
-    // Adicione conteúdo ao relatório
-    Paragraph paragrafo = new Paragraph("Este é um exemplo de relatório com bordas duplas e espaçamento na página.")
-    .SetTextAlignment(TextAlignment.CENTER)
-    .SetFontSize(12);
-    document.Add(paragrafo);
-
-    // Feche o documento
-    document.Close();
-    }
-    */
+       
 }

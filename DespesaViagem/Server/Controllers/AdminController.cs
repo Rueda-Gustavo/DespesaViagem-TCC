@@ -1,7 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Services.Interfaces;
 using DespesaViagem.Shared.DTOs.Helpers;
-using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -30,7 +29,7 @@ namespace DespesaViagem.Server.Controllers
         {
             string idAdmin = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "1";
 
-            Result<AdminManutencaoDTO> response = await _adminService.ObterListaUsuarios(int.Parse(idAdmin));            
+            Result<AdminManutencaoDTO> response = await _adminService.ObterListaUsuarios(int.Parse(idAdmin));
 
             if (!response.IsSuccess)
             {
@@ -50,6 +49,8 @@ namespace DespesaViagem.Server.Controllers
                 return BadRequest(new ServiceResponse<List<FuncionarioDTO>> { Sucesso = false, Mensagem = result.Error });
 
             return Ok(new ServiceResponse<List<FuncionarioDTO>> { Conteudo = result.Value.ToList() });
-        }                       
+        }
+
+
     }
 }
