@@ -12,7 +12,7 @@ namespace DespesaViagem.Client.Services.Services
     {
         #region Métodos principais 
         //Relatório geral
-        public void GerarRelatorioExcel(IJSRuntime jsRuntime, List<ViagemDTO> viagens, List<DespesaDTO> despesas, string nomeRelatorio)
+        public void GerarRelatorioGeralExcel(IJSRuntime jsRuntime, List<ViagemDTO> viagens, List<DespesaDTO> despesas, string nomeRelatorio)
         {
             byte[] conteudoArquivo;
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -35,7 +35,7 @@ namespace DespesaViagem.Client.Services.Services
         }
 
         //Relatório das viagens
-        public void GerarRelatorioExcel(IJSRuntime jsRuntime, List<ViagemDTO> viagens, string nomeRelatorio)
+        public void GerarRelatorioViagensExcel(IJSRuntime jsRuntime, List<ViagemDTO> viagens, List<DespesaDTO> despesas, string nomeRelatorio)
         {
             byte[] conteudoArquivo;
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -43,9 +43,10 @@ namespace DespesaViagem.Client.Services.Services
             using (ExcelPackage excelPackage = new ExcelPackage())
             {
                 ExcelWorksheet workSheetViagens = excelPackage.Workbook.Worksheets.Add("Viagens");
-                //ExcelWorksheet workSheetDespesas = excelPackage.Workbook.Worksheets.Add("Despesas");
+                ExcelWorksheet workSheetDespesas = excelPackage.Workbook.Worksheets.Add("Despesas");
 
                 GerarWorkSheetViagens(ref workSheetViagens, viagens);
+                GerarWorkSheetDespesasGenerico(ref workSheetDespesas, despesas, viagens);
 
                 conteudoArquivo = excelPackage.GetAsByteArray();
             }
@@ -57,7 +58,7 @@ namespace DespesaViagem.Client.Services.Services
         }
 
         //Relatório das despesas
-        public void GerarRelatorioExcel(IJSRuntime jsRuntime, List<ViagemDTO> viagens, DespesasDTO despesasDTO, bool todosTiposDespesaSelecionado, string nomeRelatorio)
+        public void GerarRelatorioDespesasExcel(IJSRuntime jsRuntime, List<ViagemDTO> viagens, DespesasDTO despesasDTO, bool todosTiposDespesaSelecionado, string nomeRelatorio)
         {
             byte[] conteudoArquivo;
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -309,7 +310,9 @@ namespace DespesaViagem.Client.Services.Services
                     linha++;
                 }
             }
-            #endregion 
+            #endregion
+            
+
 
             workSheetDespesas.Cells["F:Z"].AutoFitColumns();
         }

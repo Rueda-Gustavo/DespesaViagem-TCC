@@ -39,8 +39,7 @@ namespace DespesaViagem.Services.Services
             else if (usuario.TipoDeUsuario == RolesUsuario.Administrador)
             {
                 viagens = await _viagemRepository.ObterTodos();
-            }
- 
+            } 
 
             if (!viagens.Any())
                 return Result.Failure<IEnumerable<DespesaDTO>>("Não existem viagens cadastradas.");

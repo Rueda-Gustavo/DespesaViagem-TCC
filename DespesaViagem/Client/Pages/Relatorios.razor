@@ -14,18 +14,7 @@
 <div class="header">
     <h3>Relatórios</h3>
 </div>
-<!--
-<div class="filters">
-    <div class="filter">
-        <label for="dataInicio">Data de Início:</label>
-        <input type="date" id="dataInicio">
-    </div>
-    <div class="filter">
-        <label for="dataFim">Data de Fim:</label>
-        <input type="date" id="dataFim">
-    </div>
-</div>
--->
+
 <div class="container-relatorio">
     <div class="relatorio">
         <button class="btn-relatorio" @onclick="(() => MostrarOpcoes(TiposRelatorios.Geral))">Relatório geral</button>
@@ -95,12 +84,11 @@
         <div class="mt-2">
             <label for="viagensRelatorio">Viagens</label>
             <InputSelect id="viagens" class="form-select" @bind-Value="idViagemSelecionada">
-                <option value="-1">Selecione</option>
+                <option value="0">Todas as viagens</option>
                 @foreach (var viagem in ViagemService.Viagens)
                 {
                     <option value="@viagem.Id"> @viagem.NomeViagem </option>
-                }
-                <option value="0">Todas as viagens</option>
+                }                
             </InputSelect>
         </div>
 
@@ -157,8 +145,6 @@
         //DespesaAlimentacaoService.DespesasChanged -= StateHasChanged;
     }
 
-
-
     private async Task MostrarOpcoes(TiposRelatorios tipo)
     {
         switch (tipo)
@@ -185,6 +171,8 @@
 
     private async Task ResetFiltros()
     {
+        todosEstadosViagemSelecionado = false;
+        todosTiposDespesaSelecionado = false;
         idViagemSelecionada = 0;
         await ViagemService.GetViagens();
     }
@@ -195,8 +183,8 @@
 
         if (indice >= 0 && indice < EstadosViagemSelecionados.Length)
         {
-            EstadosViagemSelecionados[indice] = (bool)e.Value!;
-
+            EstadosViagemSelecionados[indice] = (bool)e.Value!;   
+            
             List<StatusViagem> listaStatus = new();
 
             for (int i = 0; i < EstadosViagemSelecionados.Length; i++)
@@ -209,7 +197,6 @@
                     listaStatus.Remove(estado);
             }
             await ViagemService.GetViagens(listaStatus);
-
         }
         else if (indice < 0)
         {
@@ -231,26 +218,44 @@
         {
             todosTiposDespesaSelecionado = !todosTiposDespesaSelecionado;
             await JSRuntime.InvokeVoidAsync("mudarVisibilidadeCheckboxTiposDespesas");
-            await ViagemService.GetViagens();
         }
     }
 
-
+    //Relatório Geral
     private async Task GerarRelatorioGeral()
     {
         await ViagemService.GetViagens();
         List<DespesaDTO> despesas = await DespesaService.GetDespesas();
 
-        RelatoriosService.GerarRelatorioExcel(JSRuntime, ViagemService.Viagens, despesas, "RelatorioGeral");
+        RelatoriosService.GerarRelatorioGeralExcel(JSRuntime, ViagemService.Viagens, despesas, "RelatorioGeral");
     }
 
+    //Relatório de viagens
     private async Task GerarRelatorioViagens()
     {
-        List<ViagemDTO> viagens = idViagemSelecionada != 0 ? ViagemService.Viagens.Where(v => v.Id == idViagemSelecionada).ToList() : ViagemService.Viagens;
+        if (EstadosViagemSelecionados is null) return;
 
-        RelatoriosService.GerarRelatorioExcel(JSRuntime, viagens, "RelatorioViagens");
+        List<ViagemDTO> viagens = new();
+
+        if (todosEstadosViagemSelecionado)
+        {
+            viagens = ViagemService.Viagens;
+        }
+        else
+        {            
+            viagens = idViagemSelecionada != 0 ? ViagemService.Viagens.Where(v => v.Id == idViagemSelecionada).ToList() : ViagemService.Viagens;
+        }
+
+        List<DespesaDTO> despesas = await DespesaService.GetDespesas();
+
+        List<int> idsViagem = viagens.Select(v => v.Id).ToList();
+
+        despesas = despesas.Where(d => idsViagem.Contains(d.IdViagem)).ToList();
+
+        RelatoriosService.GerarRelatorioViagensExcel(JSRuntime, viagens, despesas, "RelatorioViagens");
     }
 
+    //Relatório das despesas
     private async Task GerarRelatorioDespesas()
     {
         if (TiposDespesasSelecionados is null) return;
@@ -296,9 +301,12 @@
             }
         }
 
-        RelatoriosService.GerarRelatorioExcel(JSRuntime, ViagemService.Viagens, despesas, todosTiposDespesaSelecionado, "RelatorioDespesas");
+        List<ViagemDTO> viagens = idViagemSelecionada != 0 ? ViagemService.Viagens.Where(v => v.Id == idViagemSelecionada).ToList() : (ViagemService.Viagens ?? new()); 
+
+        RelatoriosService.GerarRelatorioDespesasExcel(JSRuntime, viagens, despesas, todosTiposDespesaSelecionado, "RelatorioDespesas");
     }
 
+    #region Métodos para obter todos os tipos de despesas
     private async Task<DespesasDTO> ObterTodosTiposDespesas()
     {
         DespesasDTO despesas = new();
@@ -309,7 +317,6 @@
 
         return despesas;
     }
-
     private async Task<List<DespesaAlimentacaoDTO>> ObterDespesasAlimentacao()
     {
         List<DespesaAlimentacaoDTO> despesas = new();
@@ -350,4 +357,5 @@
 
         return despesas;
     }
+    #endregion
 }

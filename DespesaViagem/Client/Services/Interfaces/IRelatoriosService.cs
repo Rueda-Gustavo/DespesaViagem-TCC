@@ -7,10 +7,10 @@ namespace DespesaViagem.Client.Services.Interfaces
     public interface IRelatoriosService
     {
         //Relatorio geral
-        void GerarRelatorioExcel(IJSRuntime jsRuntime, List<ViagemDTO> viagens, List<DespesaDTO> despesas, string nomeRelatorio); 
+        void GerarRelatorioGeralExcel(IJSRuntime jsRuntime, List<ViagemDTO> viagens, List<DespesaDTO> despesas, string nomeRelatorio); 
         //Relatorio viagens
-        void GerarRelatorioExcel(IJSRuntime jsRuntime, List<ViagemDTO> viagens, string nomeRelatorio);
+        void GerarRelatorioViagensExcel(IJSRuntime jsRuntime, List<ViagemDTO> viagens, List<DespesaDTO> despesas, string nomeRelatorio);
         //Relatorio despesas        
-        void GerarRelatorioExcel(IJSRuntime jsRuntime, List<ViagemDTO> viagens, DespesasDTO despesasDTO, bool todosTiposDespesaSelecionado, string nomeRelatorio);
+        void GerarRelatorioDespesasExcel(IJSRuntime jsRuntime, List<ViagemDTO> viagens, DespesasDTO despesasDTO, bool todosTiposDespesaSelecionado, string nomeRelatorio);
     }
 }
