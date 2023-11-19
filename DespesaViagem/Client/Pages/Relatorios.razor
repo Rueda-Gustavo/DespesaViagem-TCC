@@ -1,8 +1,12 @@
 ﻿@page "/relatorios"
-
-
 @inject IJSRuntime JSRuntime
+@inject IRelatoriosService RelatoriosService
 @inject IViagemService ViagemService
+@inject IDespesaService DespesaService
+@inject IDespesasService<DespesaAlimentacaoDTO> DespesaAlimentacaoService
+@inject IDespesasService<DespesaDeslocamentoDTO> DespesaDeslocamentoService
+@inject IDespesasService<DespesaHospedagemDTO> DespesaHospedagemService
+@inject IDespesasService<DespesaPassagemDTO> DespesaPassagemService
 @attribute [Authorize(Roles = "Administrador, Gestor")]
 @implements IDisposable
 
@@ -51,7 +55,7 @@
             @foreach (var estado in EstadosViagem)
             {
                 string apresentacao = estado.ToString() ?? string.Empty;
-                @if((StatusViagem) estado == StatusViagem.EmAndamento)
+                @if ((StatusViagem)estado == StatusViagem.EmAndamento)
                 {
                     apresentacao = "Em andamento";
                 }
@@ -71,12 +75,11 @@
             <div class="mt-2">
                 <label for="viagensRelatorio">Viagens</label>
                 <InputSelect id="viagens" class="form-select" @bind-Value="idViagemSelecionada">
-                    <option value="0">Selecione</option>
+                    <option value="0">Todas as viagens</option>
                     @foreach (var viagem in ViagemService.Viagens)
                     {
-                        <option value="@viagem.Id"> @viagem.NomeViagem </option>
+                        <option value="@viagem.Id">@viagem.NomeViagem</option>
                     }
-                    <option value="0">Todas as viagens</option>
                 </InputSelect>
             </div>
         }
@@ -101,17 +104,21 @@
             </InputSelect>
         </div>
 
-        @if (mostrarOpcaoRelatorioDespesas && idViagemSelecionada > 0)
+        @if (mostrarOpcaoRelatorioDespesas && idViagemSelecionada >= 0)
         {
             <div class="mt-2">
-                <label for="despesasRelatorio">Despesas</label>
-                <InputSelect id="despesas" class="form-select" @bind-Value="tipoDespesaSelecionada">
-                    <option value="-1" selected>Todos as despesas</option>
-                    @foreach (var tipo in TiposDespesas)
-                    {
-                        <option value="@((int)tipo)"> @tipo </option>
-                    }
-                </InputSelect>
+                <label for="despesasRelatorio">Tipos de Despesas</label> <br />
+                @foreach (var tipoDespesa in TiposDasDespesas)
+                {
+                    <div class="form-check">
+                        <input id="despesa@(tipoDespesa)" type="checkbox" class="form-check-input" @onchange="((e) => SelecionarTipoDespesa(e, (int)tipoDespesa))">
+                        <label class="form-check-label">@tipoDespesa</label>
+                    </div>
+                }
+                <div class="form-check">
+                    <input id="todosTiposDespesa" type="checkbox" class="form-check-input" @onchange="((e) => SelecionarTipoDespesa(e,-1))">
+                    <label class="form-check-label">Todos os tipos</label>
+                </div>
             </div>
         }
         <button class="btn btn-outline-secondary mt-3" style="float:right" @onclick="GerarRelatorioDespesas">Gerar relatório</button>
@@ -125,17 +132,21 @@
 
     private int idViagemSelecionada = 0;
     private bool todosEstadosViagemSelecionado = false;
-    private int tipoDespesaSelecionada;
+    private bool todosTiposDespesaSelecionado = false;
 
     private Array EstadosViagem = Enum.GetValues(typeof(StatusViagem));
-    private Array TiposDespesas = Enum.GetValues(typeof(TiposDespesas));
+    private Array TiposDasDespesas = Enum.GetValues(typeof(TiposDespesas));
     private bool[]? EstadosViagemSelecionados;
+    private bool[]? TiposDespesasSelecionados;
+
 
     protected override async Task OnInitializedAsync()
     {
         ViagemService.ViagensChanged += StateHasChanged;
+        //DespesaAlimentacaoService.DespesasChanged += StateHasChanged;
 
         EstadosViagemSelecionados = new bool[EstadosViagem.Length];
+        TiposDespesasSelecionados = new bool[TiposDasDespesas.Length];
 
         await ViagemService.GetViagens();
     }
@@ -143,6 +154,7 @@
     public void Dispose()
     {
         ViagemService.ViagensChanged -= StateHasChanged;
+        //DespesaAlimentacaoService.DespesasChanged -= StateHasChanged;
     }
 
 
@@ -183,7 +195,7 @@
 
         if (indice >= 0 && indice < EstadosViagemSelecionados.Length)
         {
-            EstadosViagemSelecionados[indice] = (bool)e.Value!;    
+            EstadosViagemSelecionados[indice] = (bool)e.Value!;
 
             List<StatusViagem> listaStatus = new();
 
@@ -207,31 +219,135 @@
         }
     }
 
+    private async Task SelecionarTipoDespesa(ChangeEventArgs e, int indice)
+    {
+        if (TiposDespesasSelecionados is null) return;
+
+        if (indice >= 0 && indice < TiposDespesasSelecionados.Length)
+        {
+            TiposDespesasSelecionados[indice] = (bool)e.Value!;
+        }
+        else if (indice < 0)
+        {
+            todosTiposDespesaSelecionado = !todosTiposDespesaSelecionado;
+            await JSRuntime.InvokeVoidAsync("mudarVisibilidadeCheckboxTiposDespesas");
+            await ViagemService.GetViagens();
+        }
+    }
+
 
     private async Task GerarRelatorioGeral()
     {
-        RelatoriosService relatorio = new();
-        await JSRuntime.InvokeAsync<ViagemDTO>(
-            "salvarRelatorio",
-            "RelatorioGeral.pdf",
-            Convert.ToBase64String(relatorio.GerarRelatorio(ViagemService.Viagens))
-        );
-        //await JSRuntime.InvokeAsync<object>("salvarArquivo", "RelatorioGeral.pdf", string.Empty);
+        await ViagemService.GetViagens();
+        List<DespesaDTO> despesas = await DespesaService.GetDespesas();
+
+        RelatoriosService.GerarRelatorioExcel(JSRuntime, ViagemService.Viagens, despesas, "RelatorioGeral");
     }
 
     private async Task GerarRelatorioViagens()
     {
-        //await JSRuntime.InvokeAsync<object>("salvarArquivo", "RelatorioViagens.pdf", string.Empty);
+        List<ViagemDTO> viagens = idViagemSelecionada != 0 ? ViagemService.Viagens.Where(v => v.Id == idViagemSelecionada).ToList() : ViagemService.Viagens;
 
+        RelatoriosService.GerarRelatorioExcel(JSRuntime, viagens, "RelatorioViagens");
     }
 
     private async Task GerarRelatorioDespesas()
     {
+        if (TiposDespesasSelecionados is null) return;
 
-        if (tipoDespesaSelecionada >= 0)
-            TiposDespesas.GetValue(tipoDespesaSelecionada);
+        DespesasDTO despesas = new();
 
-        //await JSRuntime.InvokeAsync<object>("salvarArquivo", "RelatorioDespesas.pdf", string.Empty);
+        if (todosTiposDespesaSelecionado)
+            despesas = await ObterTodosTiposDespesas();
+        else
+        {
+            List<TiposDespesas> tiposDespesas = new();
+
+            for (int i = 0; i < TiposDespesasSelecionados.Length; i++)
+            {
+                TiposDespesas tipoDespesas = (TiposDespesas)TiposDasDespesas.GetValue(i)!;
+
+                if (TiposDespesasSelecionados[i])
+                    tiposDespesas.Add(tipoDespesas);
+                else
+                    tiposDespesas.Remove(tipoDespesas);
+            }
+
+            foreach (var tipo in tiposDespesas)
+            {
+                switch (tipo)
+                {
+                    case TiposDespesas.Alimentação:
+                        despesas.DespesasAlimentacaoDTO = await ObterDespesasAlimentacao();
+                        break;
+
+                    case TiposDespesas.Deslocamento:
+                        despesas.DespesasDeslocamentoDTO = await ObterDespesasDeslocamento();
+                        break;
+
+                    case TiposDespesas.Hospedagem:
+                        despesas.DespesasHospedagemDTO = await ObterDespesasHospedagem();
+                        break;
+
+                    case TiposDespesas.Passagem:
+                        despesas.DespesasPassagemDTO = await ObterDespesasPassagem();
+                        break;
+                }
+            }
+        }
+
+        RelatoriosService.GerarRelatorioExcel(JSRuntime, ViagemService.Viagens, despesas, todosTiposDespesaSelecionado, "RelatorioDespesas");
     }
-       
+
+    private async Task<DespesasDTO> ObterTodosTiposDespesas()
+    {
+        DespesasDTO despesas = new();
+        despesas.DespesasAlimentacaoDTO = await ObterDespesasAlimentacao();
+        despesas.DespesasDeslocamentoDTO = await ObterDespesasDeslocamento();
+        despesas.DespesasHospedagemDTO = await ObterDespesasHospedagem();
+        despesas.DespesasPassagemDTO = await ObterDespesasPassagem();
+
+        return despesas;
+    }
+
+    private async Task<List<DespesaAlimentacaoDTO>> ObterDespesasAlimentacao()
+    {
+        List<DespesaAlimentacaoDTO> despesas = new();
+        Result<List<DespesaAlimentacaoDTO>> responseAlimentacaoService = await DespesaAlimentacaoService.GetDespesas();
+        if (responseAlimentacaoService.IsFailure) await JSRuntime.InvokeVoidAsync("alert", responseAlimentacaoService.Error);
+        despesas = idViagemSelecionada != 0 ? responseAlimentacaoService.Value.Where(d => d.IdViagem == idViagemSelecionada).ToList() : (responseAlimentacaoService.Value ?? new());
+        if (despesas.Count == 0) await JSRuntime.InvokeVoidAsync("alert", "Nenhuma despesa com alimentação nessa viagem");
+
+        return despesas;
+    }
+    private async Task<List<DespesaDeslocamentoDTO>> ObterDespesasDeslocamento()
+    {
+        List<DespesaDeslocamentoDTO> despesas = new();
+        Result<List<DespesaDeslocamentoDTO>> responseDeslocamentoService = await DespesaDeslocamentoService.GetDespesas();
+        if (responseDeslocamentoService.IsFailure) await JSRuntime.InvokeVoidAsync("alert", responseDeslocamentoService.Error);
+        despesas = idViagemSelecionada != 0 ? responseDeslocamentoService.Value.Where(d => d.IdViagem == idViagemSelecionada).ToList() : (responseDeslocamentoService.Value ?? new());
+        if (despesas.Count == 0) await JSRuntime.InvokeVoidAsync("alert", "Nenhuma despesa com deslocamento nessa viagem");
+
+        return despesas;
+    }
+    private async Task<List<DespesaHospedagemDTO>> ObterDespesasHospedagem()
+    {
+        List<DespesaHospedagemDTO> despesas = new();
+        Result<List<DespesaHospedagemDTO>> responseHospedagemService = await DespesaHospedagemService.GetDespesas();
+        if (responseHospedagemService.IsFailure) await JSRuntime.InvokeVoidAsync("alert", responseHospedagemService.Error);
+        despesas = idViagemSelecionada != 0 ? responseHospedagemService.Value.Where(d => d.IdViagem == idViagemSelecionada).ToList() : (responseHospedagemService.Value ?? new());
+        if (despesas.Count == 0) await JSRuntime.InvokeVoidAsync("alert", "Nenhuma despesa com hospedagem nessa viagem");
+
+        return despesas;
+    }
+    private async Task<List<DespesaPassagemDTO>> ObterDespesasPassagem()
+    {
+        List<DespesaPassagemDTO> despesas = new();
+        Result<List<DespesaPassagemDTO>> responsePassagemService = await DespesaPassagemService.GetDespesas();
+        if (responsePassagemService.IsFailure) await JSRuntime.InvokeVoidAsync("alert", responsePassagemService.Error);
+        despesas = idViagemSelecionada != 0 ? responsePassagemService.Value.Where(d => d.IdViagem == idViagemSelecionada).ToList() : (responsePassagemService.Value ?? new());
+        if (despesas.Count == 0) await JSRuntime.InvokeVoidAsync("alert", "Nenhuma despesa com passagem nessa viagem");
+
+        return despesas;
+    }
 }

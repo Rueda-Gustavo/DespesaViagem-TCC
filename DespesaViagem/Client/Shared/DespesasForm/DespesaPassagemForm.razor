@@ -15,46 +15,55 @@
 </div>
 
 <div class="modal-body">
-    <form @onsubmit="HandleDespesa">
+    <EditForm Model="Despesa" OnValidSubmit="HandleDespesa">
+        <DataAnnotationsValidator />
         <div class="form-group row">
             <div class="col">
                 <label for="NomeDespesa">Nome da Despesa</label>
-                <input id="NomeDespesa" class="form-control" @bind="Despesa.NomeDespesa" />
+                <InputText id="NomeDespesa" class="form-control" @bind-Value="Despesa.NomeDespesa" />
+                <ValidationMessage For="@(() => Despesa.NomeDespesa)" />
             </div>
             <div class="col-auto">
                 <label for="DataDespesa">Data da Despesa</label>
-                <input id="DataDespesa" type="datetime-local" style="max-width:12rem" class="form-control" @bind="Despesa.DataDespesa" />
+                <InputDate id="DataDespesa" style="max-width:12rem" class="form-control" @bind-Value="Despesa.DataDespesa" />
+                <ValidationMessage For="@(() => Despesa.DataDespesa)" />
             </div>
         </div>
         <div class="form-group row">
             <div class="col">
                 <label for="DescricaoDespesa">Descrição da Despesa</label>
-                <textarea id="DescricaoDespesa" class="form-control" @bind="Despesa.DescricaoDespesa" />
+                <InputTextArea id="DescricaoDespesa" class="form-control" @bind-Value="Despesa.DescricaoDespesa" />
+                <ValidationMessage For="@(() => Despesa.DescricaoDespesa)" />
             </div>
         </div>
 
         <div class="form-group row">
             <div class="col">
                 <label for="Companhia">Companhia</label>
-                <input id="Companhia" class="form-control" @bind="Despesa.Companhia" />
+                <InputText id="Companhia" class="form-control" @bind-Value="Despesa.Companhia" />
+                <ValidationMessage For="@(() => Despesa.Companhia)" />
             </div>
             <div class="col-auto">
-                <label for="Preco">Passagem</label>
-                <input id="Preco" class="form-control" type="number" min="0.00" max="10000.00" step="0.01" style="max-width:7rem" @bind="Despesa.Preco" />
+                <label for="Preco">Passagem (R$)</label>
+                <InputNumber id="Preco" class="form-control" min="0.00" max="10000.00" step="0.01" style="max-width:7rem" @bind-Value="Despesa.Preco" />
+                <ValidationMessage For="@(() => Despesa.Preco)" />
             </div>
         </div>
         <div class="form-group row">
             <div class="col">
                 <label for="Origem">Origem</label>
-                <input id="Origem" class="form-control" @bind="Despesa.Origem" />
+                <InputText id="Origem" class="form-control" @bind-Value="Despesa.Origem" />
+                <ValidationMessage For="@(() => Despesa.Origem)" />
             </div>
             <div class="col">
                 <label for="Destino">Destino</label>
-                <input id="Destino" class="form-control" @bind="Despesa.Destino" />
+                <InputText id="Destino" class="form-control" @bind-Value="Despesa.Destino" />
+                <ValidationMessage For="@(() => Despesa.Destino)" />
             </div>
             <div class="col-auto">
                 <label for="DataHoraEmbarque">Embarque</label>
-                <input id="DataHoraEmbarque" class="form-control" type="datetime-local" style="max-width:12rem" @bind="Despesa.DataHoraEmbarque" />
+                <InputDate id="DataHoraEmbarque" class="form-control" style="max-width:12rem" @bind-Value="Despesa.DataHoraEmbarque" />
+                <ValidationMessage For="@(() => Despesa.DataHoraEmbarque)" />
             </div>
         </div>
 
@@ -70,7 +79,7 @@
                 <span>Cancelar</span>
             </button>
 
-            <AuthorizeView Roles="Funcionario">
+            <AuthorizeView Context="authorizeViewContext" Roles="Funcionario">
                 @if (viagem.StatusViagem == StatusViagem.EmAndamento)
                 {
                     <button type="submit" class="btn btn-primary">
@@ -80,7 +89,7 @@
             </AuthorizeView>
 
         </div>
-    </form>
+    </EditForm>
 </div>
 @code {
     [Parameter]
@@ -107,7 +116,7 @@
             await GetDespesaHospedagem();
         }
 
-        if (!Adicionar) AdicionarOuEditar = "Editar";        
+        if (!Adicionar) AdicionarOuEditar = "Editar";
     }
 
     public void Dispose()

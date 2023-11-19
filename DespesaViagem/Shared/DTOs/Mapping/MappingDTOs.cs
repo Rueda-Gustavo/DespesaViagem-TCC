@@ -16,7 +16,7 @@ namespace DespesaViagem.Server.Mapping
         {
             MapperConfiguration config = new(cfg =>
             {
-                cfg.CreateMap<Despesa, DespesaDTO>();                
+                cfg.CreateMap<Despesa, DespesaDTO>();
             });
 
             Mapper mapper = new(config);
@@ -30,10 +30,26 @@ namespace DespesaViagem.Server.Mapping
 
             return despesasDTO;
         }
+
+        public static DespesaDTO ConverterDTO(Despesa despesa)
+        {
+            MapperConfiguration config = new(cfg =>
+            {
+                cfg.CreateMap<Despesa, DespesaDTO>();
+            });
+
+            Mapper mapper = new(config);
+
+            DespesaDTO despesaDTO = mapper.Map<DespesaDTO>(despesa);
+
+            return despesaDTO;
+        }
+
+
         public static DespesaHospedagem ConverterDTO(DespesaHospedagemDTO despesaHospedagemDTO)
         {
             despesaHospedagemDTO.TipoDespesa = TiposDespesas.Hospedagem;
-            
+
             MapperConfiguration config = new(cfg =>
             {
                 cfg.CreateMap<DespesaHospedagemDTO, DespesaHospedagem>()
@@ -47,7 +63,7 @@ namespace DespesaViagem.Server.Mapping
             Mapper mapper = new(config);
 
             DespesaHospedagem despesa = mapper.Map<DespesaHospedagem>(despesaHospedagemDTO);
-            
+
             despesa.CalcularTotalDespesa();
 
             return despesa;
@@ -65,7 +81,7 @@ namespace DespesaViagem.Server.Mapping
 
             Mapper mapper = new(config);
 
-            DespesaHospedagemDTO despesa = mapper.Map<DespesaHospedagemDTO>(despesaHospedagem);            
+            DespesaHospedagemDTO despesa = mapper.Map<DespesaHospedagemDTO>(despesaHospedagem);
 
             return despesa;
         }
@@ -98,7 +114,7 @@ namespace DespesaViagem.Server.Mapping
             {
                 cfg.CreateMap<DespesaPassagemDTO, DespesaPassagem>()
                 //.ForMember(dst => dst.NomeDespesa, opt => opt.Ignore())
-                .ForMember(dst => dst.Viagem, opt => opt.Ignore())                 
+                .ForMember(dst => dst.Viagem, opt => opt.Ignore())
                 .ForMember(dst => dst.TotalDespesa, opt => opt.Ignore());
                 ;
             });
@@ -325,12 +341,12 @@ namespace DespesaViagem.Server.Mapping
         }
 
         public static Funcionario ConverterDTO(FuncionarioDTO funcionarioDTO)
-        {            
+        {
             MapperConfiguration config = new(cfg =>
             {
                 cfg.CreateMap<FuncionarioDTO, Funcionario>()
                 .ForMember(dst => dst.PasswordHash, opt => opt.Ignore())
-                .ForMember(dst => dst.PasswordSalt, opt => opt.Ignore())                
+                .ForMember(dst => dst.PasswordSalt, opt => opt.Ignore())
                 //.ForMember(dst => dst.Endereco, opt => opt.Ignore())
                 //.ForMember(dst => dst.TotalDespesa, opt => opt.Ignore());
                 ;
@@ -448,7 +464,7 @@ namespace DespesaViagem.Server.Mapping
         {
             MapperConfiguration config = new(cfg =>
             {
-                cfg.CreateMap<Usuario, UsuarioDTO>();                
+                cfg.CreateMap<Usuario, UsuarioDTO>();
             });
 
             Mapper mapper = new(config);
@@ -477,7 +493,7 @@ namespace DespesaViagem.Server.Mapping
                 cfg.CreateMap<Funcionario, FuncionarioDTO>()
                 //.ForMember(dst => dst.GestorId, opt => opt.MapFrom(src => src.Gestor!.Id))
                 //.ForMember(dst => dst.GestorUsername, opt => opt.MapFrom(src => src.Gestor!.Username))
-                ; 
+                ;
             });
 
             Mapper mapper = new(config);

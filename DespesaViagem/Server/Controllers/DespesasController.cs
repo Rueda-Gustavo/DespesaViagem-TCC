@@ -20,7 +20,7 @@ namespace DespesaViagem.Server.Controllers
         [HttpGet]
         public async Task<ActionResult> ObterTodasDespesas(int idViagem)
         {
-            Result<IEnumerable<T>> result = await _despesasService.ObterTodasDespesas(idViagem);
+            Result<IEnumerable<T>> result = await _despesasService.ObterTodasDespesasViagem(idViagem);
 
             if (result.IsFailure)
                 return BadRequest(result.Error);

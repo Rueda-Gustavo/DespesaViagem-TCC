@@ -19,6 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.4.0" />
     <PackageReference Include="CSharpFunctionalExtensions" Version="2.40.3" />
+    <PackageReference Include="EPPlus" Version="7.0.1" />
     <PackageReference Include="Feather.Blazor" Version="1.0.1" />
     <PackageReference Include="iTextSharp.LGPLv2.Core" Version="3.4.12" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.13" />

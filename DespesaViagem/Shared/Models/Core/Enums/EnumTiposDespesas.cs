@@ -2,6 +2,6 @@
 {
     public enum TiposDespesas
     {
-        Deslocamento, Hospedagem, Passagem, Alimentação
+        Alimentação, Deslocamento, Hospedagem, Passagem
     }
 }

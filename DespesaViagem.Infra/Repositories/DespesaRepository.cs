@@ -14,12 +14,20 @@ namespace DespesaViagem.Infra.Repositories
             _context = context;
         }
 
+        public async Task<IEnumerable<Despesa>> ObterTodos(List<int> idsViagens)
+        {
+            return await _context.Despesas
+                .Where(d => idsViagens.Contains(d.IdViagem)) 
+                .OrderBy(d => d.IdViagem)
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<Despesa>> ObterTodos(int idViagem)
         {
             return await _context.Despesas
                 .Where(despesa => despesa.IdViagem == idViagem)
                 .ToListAsync();
-        }
+        }        
 
         public async Task<Despesa> ObterPorId(int id)
         {

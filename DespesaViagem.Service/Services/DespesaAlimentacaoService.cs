@@ -1,8 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
 using DespesaViagem.Infra.Interfaces;
 using DespesaViagem.Services.Interfaces;
-using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Core.Enums;
+using DespesaViagem.Shared.Models.Core.Helpers;
 using DespesaViagem.Shared.Models.Despesas;
 using DespesaViagem.Shared.Models.Viagens;
 
@@ -11,16 +11,51 @@ namespace DespesaViagem.Services.Services
     public class DespesaAlimentacaoService : IDespesasService<DespesaAlimentacao>
     {
         private readonly IViagemRepository _viagemRepository;
+        private readonly IUsuarioRepository _usuarioRepository;
         private readonly IDespesasRepository<DespesaAlimentacao> _despesaRepository;
 
         public DespesaAlimentacaoService(IDespesasRepository<DespesaAlimentacao> despesaRepository,
-            IViagemRepository viagemRepository)
+            IViagemRepository viagemRepository, IUsuarioRepository usuarioRepository)
         {
             _viagemRepository = viagemRepository;
+            _usuarioRepository = usuarioRepository;
             _despesaRepository = despesaRepository;
         }
 
-        public async Task<Result<IEnumerable<DespesaAlimentacao>>> ObterTodasDespesas(int idViagem)
+        public async Task<Result<IEnumerable<DespesaAlimentacao>>> ObterTodasDespesas(int idUsuario)
+        {
+            Usuario usuario = await _usuarioRepository.ObterUsuario(idUsuario) ?? new();
+
+            if (usuario.TipoDeUsuario == RolesUsuario.Funcionario)
+                return Result.Failure<IEnumerable<DespesaAlimentacao>>("Usuário não autorizado.");
+
+            List<Viagem> viagens = new();
+
+            if (usuario.TipoDeUsuario == RolesUsuario.Gestor)
+            {
+                viagens = await _viagemRepository.ObterTodosGestor(idUsuario);
+            }
+            else if (usuario.TipoDeUsuario == RolesUsuario.Administrador)
+            {
+                viagens = await _viagemRepository.ObterTodos();
+            }
+
+            if (!viagens.Any())
+                return Result.Failure<IEnumerable<DespesaAlimentacao>>("Não existem viagens cadastradas.");
+
+            List<int> idsViagens = viagens.Select(v => v.Id).ToList();
+
+            IEnumerable<DespesaAlimentacao> despesas = await _despesaRepository.ObterTodos(idsViagens);
+
+
+            if (despesas is null || !despesas.Any())
+                return Result.Failure<IEnumerable<DespesaAlimentacao>>("Não existem despesas cadastradas!");
+
+            return Result.Success(despesas);
+        }
+
+
+        public async Task<Result<IEnumerable<DespesaAlimentacao>>> ObterTodasDespesasViagem(int idViagem)
         {            
             Viagem viagem = await _viagemRepository.ObterPorId(idViagem);
 

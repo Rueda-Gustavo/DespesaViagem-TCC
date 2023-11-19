@@ -23,6 +23,8 @@ builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IGestorService, GestorService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IDepartamentoService, DepartamentoService>();
+builder.Services.AddScoped<IRelatoriosService, RelatoriosService>();
+builder.Services.AddScoped<IDespesaService, DespesaService>();
 
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddOptions();

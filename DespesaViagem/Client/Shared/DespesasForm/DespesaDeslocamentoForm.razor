@@ -15,43 +15,52 @@
 </div>
 
 <div class="modal-body">
-    <form @onsubmit="HandleDespesa">
+    <EditForm Model="Despesa" OnValidSubmit="HandleDespesa">
+        <DataAnnotationsValidator />
         <div class="form-group row">
             <div class="col">
                 <label for="NomeDespesa">Nome da Despesa</label>
-                <input id="NomeDespesa" class="form-control" @bind="Despesa.NomeDespesa" />
+                <InputText id="NomeDespesa" class="form-control" @bind-Value="Despesa.NomeDespesa" />
+                <ValidationMessage For="@(() => Despesa.NomeDespesa)" />
             </div>
             <div class="col-auto">
                 <label for="DataDespesa">Data da Despesa</label>
-                <input id="DataDespesa" type="datetime-local" style="max-width:12rem" class="form-control" @bind="Despesa.DataDespesa" />
+                <InputDate id="DataDespesa" style="max-width:12rem" class="form-control" @bind-Value="Despesa.DataDespesa" />
+                <ValidationMessage For="@(() => Despesa.DataDespesa)" />
             </div>
         </div>
         <div class="form-group row">
             <div class="col">
                 <label for="DescricaoDespesa">Descrição da Despesa</label>
-                <textarea id="DescricaoDespesa" class="form-control" @bind="Despesa.DescricaoDespesa" />
+                <InputTextArea id="DescricaoDespesa" class="form-control" @bind-Value="Despesa.DescricaoDespesa" />
+                <ValidationMessage For="@(() => Despesa.DescricaoDespesa)" />
             </div>
         </div>
 
         <div class="form-group row">
             <div class="col-auto">
                 <label for="Placa">Placa</label>
-                <input id="Placa" class="form-control" style="max-width:6rem" @bind="Despesa.Placa" />
+                <InputText id="Placa" class="form-control" style="max-width:6rem" @bind-Value="Despesa.Placa" />
+                <ValidationMessage For="@(() => Despesa.Placa)" />
+
             </div>
             <div class="col">
                 <label for="Modelo">Modelo</label>
-                <input id="Modelo" class="form-control" @bind="Despesa.Modelo" />
+                <InputText id="Modelo" class="form-control" @bind-Value="Despesa.Modelo" />
+                <ValidationMessage For="@(() => Despesa.Modelo)" />
             </div>
         </div>
 
         <div class="form-group row">
             <div class="col-auto">
                 <label for="Quilometragem">Distância (Km)</label>
-                <input id="Quilometragem" class="form-control" style="max-width:5rem" @bind="Despesa.Quilometragem" />
+                <InputNumber id="Quilometragem" class="form-control" style="max-width:5rem" @bind-Value="Despesa.Quilometragem" />
+                <ValidationMessage For="@(() => Despesa.Quilometragem)" />
             </div>
             <div class="col-auto">
                 <label for="ValorPorQuilometro">Valor por Km</label>
-                <input id="ValorPorQuilometro" class="form-control" type="number" min="0.00" max="10000.00" step="0.01" style="max-width:5rem" @bind="Despesa.ValorPorQuilometro" />
+                <InputNumber id="ValorPorQuilometro" class="form-control" min="0.00" max="10000.00" step="0.01" style="max-width:5rem" @bind-Value="Despesa.ValorPorQuilometro" />
+                <ValidationMessage For="@(() => Despesa.ValorPorQuilometro)" />
             </div>
         </div>
 
@@ -67,7 +76,7 @@
                 <span>Cancelar</span>
             </button>
 
-            <AuthorizeView Roles="Funcionario">
+            <AuthorizeView Context="authorizeViewContext" Roles="Funcionario">
                 @if (viagem.StatusViagem == StatusViagem.EmAndamento)
                 {
                     <button type="submit" class="btn btn-primary">
@@ -77,7 +86,7 @@
             </AuthorizeView>
 
         </div>
-    </form>
+    </EditForm>
 </div>
 @code {
     [Parameter]

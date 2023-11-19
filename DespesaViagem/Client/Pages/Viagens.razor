@@ -163,7 +163,7 @@
     private string UsernameFiltro { get; set; } = "Funcionários";
     private string StatusViagemFiltro { get; set; } = "Viagens";
 
-    public string filtro = string.Empty;
+    public string Filtro = string.Empty;
 
     private string cssClassBotaoFiltroSelecionado = "btn-primary";
     private string cssClassBotaoFiltro = "btn-secondary";
@@ -214,7 +214,7 @@
 
     private void MudarPagina(int pagina)
     {
-        NavigationManager.NavigateTo($"/viagens{filtro}/{pagina}");
+        NavigationManager.NavigateTo($"/viagens{Filtro}/{pagina}");
         /*
         List<ViagemDTO> viagens = ViagemService.ViagensPorPagina.Viagens;
 
@@ -228,7 +228,7 @@
 
         ViagemService.ViagensPorPagina.Viagens = viagens;
         ViagemService.ViagensPorPagina.PaginaAtual = pagina;
-    */
+        */
         StateHasChanged();
     }
 
@@ -250,8 +250,10 @@
         IdDepartamento = 0;
         IdStatusViagem = -1;
         FiltroStatus = string.Empty;
+        Pagina = 1;        
+        Filtro = string.Empty;
         await ObterViagens();
-        NavigationManager.NavigateTo("/viagens/1");
+        MudarPagina(1);
     }
 
     private async Task ObterListaFuncionarios(string tipoDeUsuario)
@@ -282,12 +284,12 @@
         Pagina = 1;
         if (idFuncionario == 0)
         {
-            filtro = string.Empty;
+            Filtro = string.Empty;
             await ViagemService.GetViagens(Pagina);
         }
         else
         {
-            filtro = $"/PorFuncionario/{IdFuncionario}";
+            Filtro = $"/PorFuncionario/{IdFuncionario}";
             await ViagemService.GetViagensPorFuncionario(idFuncionario, Pagina);
         }
         MudarPagina(Pagina);
@@ -318,12 +320,12 @@
         Pagina = 1;
         if (idDepartamento == 0)
         {
-            filtro = string.Empty;
+            Filtro = string.Empty;
             await ViagemService.GetViagens(Pagina);
         }
         else
         {
-            filtro = $"/PorDepartamento/{IdDepartamento}";
+            Filtro = $"/PorDepartamento/{IdDepartamento}";
             await ViagemService.GetViagensPorDepartamento(idDepartamento, Pagina);
         }
         MudarPagina(Pagina);
@@ -341,12 +343,12 @@
         Pagina = 1;
         if (indiceStatusViagem < 0 || textoStatusViagem == string.Empty)
         {
-            filtro = string.Empty;
+            Filtro = string.Empty;
             await ViagemService.GetViagens(Pagina);
         }
         else
         {
-            filtro = $"/PorStatus/{textoStatusViagem}/{indiceStatusViagem}";
+            Filtro = $"/PorStatus/{textoStatusViagem}/{indiceStatusViagem}";
             await ViagemService.GetViagensPorStatus((StatusViagem)indiceStatusViagem, Pagina);
         }
         MudarPagina(Pagina);

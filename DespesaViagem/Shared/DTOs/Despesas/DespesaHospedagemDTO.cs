@@ -1,28 +1,22 @@
-﻿using DespesaViagem.Shared.Models.Core.Enums;
-using DespesaViagem.Shared.Models.Core.Helpers;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace DespesaViagem.Shared.DTOs.Despesas
 {
     public class DespesaHospedagemDTO : DespesaDTO
     {
-        //public int Id { get; set; } = 0;
-        //public string DescricaoDespesa { get; set; } = string.Empty;
-        //public decimal TotalDespesa { get; set; }
-        //public DateTime DataDespesa { get; set; }
-        //public DateTime DataDeCadastro { get; } = DateTime.Now;
-        //[JsonIgnore]
-        //public TiposDespesas TipoDespesa { get; set; } = TiposDespesas.Hospedagem;
-        //public int IdViagem { get; set; }
+        [Required(ErrorMessage = "Obrigatório!"), RegularExpression(@"^[1-9]\d+$", ErrorMessage = "Preenchimento incorreto!")]
         public int QuantidadeDias { get; set; }
         public decimal ValorDiaria { get; set; }
-        //public Endereco Endereco { get; set; } = new();
+        [Required(ErrorMessage = "Obrigatório!"), StringLength(1000, MinimumLength = 6, ErrorMessage = "Obrigatório de 6 a 1000 caracteres")]
         public string Logradouro { get; set; } = string.Empty;
-        public int NumeroCasa { get; set; }        
-        public string CEP { get; set; } = string.Empty;        
-        public string Cidade { get; set; } = string.Empty;        
+        [Required(ErrorMessage = "Obrigatório!"), RegularExpression(@"^[1-9]\d+$", ErrorMessage= "Preenchimento incorreto!")]
+        public int NumeroCasa { get; set; }
+        [Required(ErrorMessage = "Obrigatório!"), StringLength(20, MinimumLength = 6, ErrorMessage = "Obrigatório de 6 a 20 caracteres")]
+        public string CEP { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Obrigatório!"), StringLength(100, MinimumLength = 6, ErrorMessage = "Obrigatório de 6 a 100 caracteres")]
+        public string Cidade { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Obrigatório!"), StringLength(100, MinimumLength = 6, ErrorMessage = "Obrigatório de 6 a 100 caracteres")]
         public string Estado { get; set; } = string.Empty;
-        public int IdEndereco { get; set; }
+        //public int IdEndereco { get; set; }
     }
 }

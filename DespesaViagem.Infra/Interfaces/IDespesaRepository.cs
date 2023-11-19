@@ -6,6 +6,7 @@ namespace DespesaViagem.Infra.Interfaces
     //classes que herdam da classe abstrata.
     public interface IDespesaRepository
     {
+        Task<IEnumerable<Despesa>> ObterTodos(List<int> idsViagens);
         Task<IEnumerable<Despesa>> ObterTodos(int idViagem);
         Task<Despesa> ObterPorId(int id);
         Task<IEnumerable<Despesa>> ObterPorFiltro(string filtro, int idViagem);

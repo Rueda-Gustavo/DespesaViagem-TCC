@@ -2,11 +2,6 @@
 using DespesaViagem.Infra.Interfaces;
 using DespesaViagem.Shared.Models.Despesas;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DespesaViagem.Infra.Repositories
 {
@@ -16,6 +11,13 @@ namespace DespesaViagem.Infra.Repositories
         public DespesaPassagemRepository(DespesaViagemContext context)
         {
             _context = context;
+        }
+
+        public async Task<IEnumerable<DespesaPassagem>> ObterTodos(List<int> idsViagens)
+        {
+            return await _context.DespesasPassagem
+                .Where(despesa => idsViagens.Contains(despesa.IdViagem))
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<DespesaPassagem>> ObterTodos(int idViagem)

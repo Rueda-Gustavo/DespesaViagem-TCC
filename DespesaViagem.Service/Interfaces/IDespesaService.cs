@@ -1,12 +1,13 @@
 ﻿using CSharpFunctionalExtensions;
-using DespesaViagem.Shared.Models.Despesas;
+using DespesaViagem.Shared.DTOs.Despesas;
 
 namespace DespesaViagem.Services.Interfaces
 {
     public interface IDespesaService
     {
-        Task<Result<IEnumerable<Despesa>>> ObterTodasDespesas(int idViagem);
-        Task<Result<IEnumerable<Despesa>>> ObterDespesasPorFiltro(string filtro, int idViagem);
-        Task<Result<Despesa>> ObterDespesaPorId(string id);
+        Task<Result<IEnumerable<DespesaDTO>>> ObterTodasDespesas(int idUsuario);
+        Task<Result<IEnumerable<DespesaDTO>>> ObterTodasDespesasDaViagem(int idViagem);
+        Task<Result<IEnumerable<DespesaDTO>>> ObterDespesasPorFiltro(string filtro, int idViagem);
+        Task<Result<DespesaDTO>> ObterDespesaPorId(string id);
     }
 }

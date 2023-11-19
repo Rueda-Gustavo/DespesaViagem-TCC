@@ -100,5 +100,30 @@ namespace DespesaViagem.Client.Services.Services
                 return new();
             }
         }
+
+        public async Task<Result<List<DespesaAlimentacaoDTO>>> GetDespesas()
+        {
+            try
+            {
+                var response = await _httpClient
+                    .GetFromJsonAsync<ServiceResponse<List<DespesaAlimentacaoDTO>>>($"api/DespesaAlimentacao") ?? new();
+
+                if (response.Conteudo is null || !response.Conteudo.Any())
+                    return Result.Failure<List<DespesaAlimentacaoDTO>>("Despesas com alimentação não encontradas!");
+
+
+                Console.WriteLine("Sucesso - DespesaAlimentacaoService - Client");
+                //DespesasChanged.Invoke();
+
+                return Result.Success(response.Conteudo);
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Falha - DespesaAlimentacaoService - Client");                
+                Mensagem = "Despesas com alimentação não encontradas!";
+                return new();
+            }
+        }
     }
 }

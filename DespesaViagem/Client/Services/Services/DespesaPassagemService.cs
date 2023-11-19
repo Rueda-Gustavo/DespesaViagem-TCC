@@ -99,7 +99,31 @@ namespace DespesaViagem.Client.Services.Services
                 Console.WriteLine("Falha - DespesaPassagemService - Client");
                 return new();
             }
+        }
 
+        public async Task<Result<List<DespesaPassagemDTO>>> GetDespesas()
+        {
+            try
+            {
+                var response = await _httpClient
+                    .GetFromJsonAsync<ServiceResponse<List<DespesaPassagemDTO>>>($"api/DespesaPassagem") ?? new();
+
+                if (response.Conteudo is null || !response.Conteudo.Any())
+                    return Result.Failure<List<DespesaPassagemDTO>>("Despesas com passagem não encontradas!");
+
+
+                Console.WriteLine("Sucesso - DespesaPassagemService - Client");
+                //DespesasChanged.Invoke();
+
+                return Result.Success(response.Conteudo);
+
+            }
+            catch
+            {
+                Console.WriteLine("Falha - DespesaPassagemService - Client");
+                Mensagem = "Despesas com passagem não encontradas!";
+                return new();
+            }
         }
     }
 }

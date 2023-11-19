@@ -16,55 +16,68 @@
 </div>
 
 <div class="modal-body">
-    <form @onsubmit="HandleDespesa">
+    <EditForm Model="Despesa" OnValidSubmit="HandleDespesa">
+        <DataAnnotationsValidator />
         <div class="form-group row">
             <div class="col">
                 <label for="NomeDespesa">Nome da Despesa</label>
-                <input id="NomeDespesa" class="form-control" @bind="Despesa.NomeDespesa" />
+                <InputText id="NomeDespesa" class="form-control" @bind-Value="Despesa.NomeDespesa" />
+                <ValidationMessage For="@(() => Despesa.NomeDespesa)" />
             </div>
             <div class="col-auto">
                 <label for="DataDespesa">Data da Despesa</label>
-                <input id="DataDespesa" type="datetime-local" style="max-width:12rem" class="form-control" @bind="Despesa.DataDespesa" />
+                <InputDate id="DataDespesa" style="max-width:12rem" class="form-control" @bind-Value="Despesa.DataDespesa" />
+                <ValidationMessage For="@(() => Despesa.DataDespesa)" />
             </div>
         </div>
         <div class="form-group row">
             <div class="col">
                 <label for="DescricaoDespesa">Descrição da Despesa</label>
-                <textarea id="DescricaoDespesa" class="form-control" @bind="Despesa.DescricaoDespesa" />
+                <InputTextArea id="DescricaoDespesa" class="form-control" @bind-Value="Despesa.DescricaoDespesa" />
+                <ValidationMessage For="@(() => Despesa.DescricaoDespesa)" />
             </div>
         </div>
         <div class="form-group row">
             <div class="col">
                 <label for="Logradouro">Logradouro</label>
-                <input id="Logradouro" class="form-control" @bind="Despesa.Logradouro" />
+                <InputText id="Logradouro" class="form-control" @bind-Value="Despesa.Logradouro" />
+                <ValidationMessage For="@(() => Despesa.Logradouro)" />
             </div>
             <div class="col-auto" style="max-width: 5rem">
                 <label for="NumeroCasa">Nº</label>
-                <input id="NumeroCasa" class="form-control" @bind="Despesa.NumeroCasa" />
+                <InputNumber id="NumeroCasa" class="form-control" @bind-Value="Despesa.NumeroCasa" />
+                <ValidationMessage For="@(() => Despesa.NumeroCasa)" />
             </div>
         </div>
         <div class="form-group row">
             <div class="col">
                 <label for="Cidade">Cidade</label>
-                <input id="Cidade" class="form-control" @bind="Despesa.Cidade" />
+                <InputText id="Cidade" class="form-control" @bind-Value="Despesa.Cidade" />
+                <ValidationMessage For="@(() => Despesa.Cidade)" />
             </div>
             <div class="col">
                 <label for="Estado">Estado</label>
-                <input id="Estado" class="form-control" @bind="Despesa.Estado" />
+                <InputText id="Estado" class="form-control" @bind-Value="Despesa.Estado" />
+                <ValidationMessage For="@(() => Despesa.Estado)" />
+
             </div>
             <div class="col">
                 <label for="CEP">CEP</label>
-                <input id="CEP" class="form-control" onkeypress="$(this).mask('00000-000')" @bind-value="Despesa.CEP" />
+                <InputText id="CEP" class="form-control" onkeypress="$(this).mask('00000-000')" @bind-Value="Despesa.CEP" />
+                <ValidationMessage For="@(() => Despesa.CEP)" />
+
             </div>
         </div>
         <div class="form-group row">
             <div class="col-auto">
-                <label for="ValorDiaria">Diária</label>
+                <label for="ValorDiaria">Diária (R$)</label>
                 <input id="ValorDiaria" class="form-control" type="number" min="0.00" max="10000.00" step="0.01" style="max-width:6rem" @bind="Despesa.ValorDiaria" />
             </div>
             <div class="col-auto">
                 <label for="QuantidadeDias">Quantidade de dias</label>
-                <input id="QuantidadeDias" class="form-control" type="number" style="max-width:5rem" @bind="Despesa.QuantidadeDias" />
+                <InputNumber id="QuantidadeDias" class="form-control" style="max-width:5rem" @bind-Value="Despesa.QuantidadeDias" />
+                <ValidationMessage For="@(() => Despesa.QuantidadeDias)" />
+
             </div>
         </div>
 
@@ -80,7 +93,7 @@
                 <span>Cancelar</span>
             </button>
 
-            <AuthorizeView Roles="Funcionario">
+            <AuthorizeView Context="authorizeViewContext" Roles="Funcionario">
                 @if (viagem.StatusViagem == StatusViagem.EmAndamento)
                 {
                     <button type="submit" class="btn btn-primary">
@@ -90,7 +103,7 @@
             </AuthorizeView>
 
         </div>
-    </form>
+    </EditForm>
 </div>
 
 
@@ -148,15 +161,15 @@
 
     private async Task HandleDespesa()
     {   /*
-        Despesa.IdViagem = IdViagem;
-        if (IdDespesa > 0)
-            await DespesaHospedagemService.AtualizarDespesa(Despesa);
-        else
-            await DespesaHospedagemService.AdicionarDespesa(Despesa);
+    Despesa.IdViagem = IdViagem;
+    if (IdDespesa > 0)
+    await DespesaHospedagemService.AtualizarDespesa(Despesa);
+    else
+    await DespesaHospedagemService.AdicionarDespesa(Despesa);
 
-        await JSRuntime.InvokeVoidAsync("alert", $"Dados salvos com sucesso!");
-        await FecharFormulario();
-        */
+    await JSRuntime.InvokeVoidAsync("alert", $"Dados salvos com sucesso!");
+    await FecharFormulario();
+    */
 
         try
         {

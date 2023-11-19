@@ -45,7 +45,7 @@ namespace DespesaViagem.Client.Services.Services
             catch (Exception ex)
             {
                 Console.WriteLine("Falha - DespesaDeslocamentoService - Client");
-                Mensagem = ex.Message;
+                Mensagem = ex.Message;                
                 return new();
             }
         }
@@ -96,6 +96,31 @@ namespace DespesaViagem.Client.Services.Services
             {
                 Console.WriteLine("Falha - DespesaDeslocamentoService - Client");
                 Mensagem = "Despesa com deslocamento não encontrada!";
+                return new();
+            }
+        }
+
+        public async Task<Result<List<DespesaDeslocamentoDTO>>> GetDespesas()
+        {
+            try
+            {
+                var response = await _httpClient
+                    .GetFromJsonAsync<ServiceResponse<List<DespesaDeslocamentoDTO>>>($"api/DespesaDeslocamento") ?? new();
+
+                if (response.Conteudo is null || !response.Conteudo.Any())
+                    return Result.Failure<List<DespesaDeslocamentoDTO>>("Despesas com deslocamento não encontradas!");
+
+
+                Console.WriteLine("Sucesso - DespesaDeslocamentoService - Client");
+                //DespesasChanged.Invoke();
+
+                return Result.Success(response.Conteudo);
+
+            }
+            catch
+            {
+                Console.WriteLine("Falha - DespesaDeslocamentoService - Client");
+                Mensagem = "Despesas com deslocamento não encontradas!";
                 return new();
             }
         }

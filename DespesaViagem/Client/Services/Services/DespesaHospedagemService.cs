@@ -100,5 +100,30 @@ namespace DespesaViagem.Client.Services.Services
                 return new();
             }
         }
+
+        public async Task<Result<List<DespesaHospedagemDTO>>> GetDespesas()
+        {
+            try
+            {
+                var response = await _httpClient
+                    .GetFromJsonAsync<ServiceResponse<List<DespesaHospedagemDTO>>>($"api/DespesaHospedagem") ?? new();
+
+                if (response.Conteudo is null || !response.Conteudo.Any())
+                    return Result.Failure<List<DespesaHospedagemDTO>>("Despesas com hospedagem não encontradas!");
+
+
+                Console.WriteLine("Sucesso - DespesaHospedagemService - Client");
+                //DespesasChanged.Invoke();
+
+                return Result.Success(response.Conteudo);
+
+            }
+            catch
+            {
+                Console.WriteLine("Falha - DespesaHospedagemService - Client");
+                Mensagem = "Despesas com hospedagem não encontradas!";
+                return new();
+            }
+        }
     }
 }

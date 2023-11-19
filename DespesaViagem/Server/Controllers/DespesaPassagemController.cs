@@ -5,6 +5,7 @@ using DespesaViagem.Shared.DTOs.Despesas;
 using DespesaViagem.Shared.Models.Core.Helpers;
 using DespesaViagem.Shared.Models.Despesas;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace DespesaViagem.Server.Controllers
 {
@@ -20,9 +21,26 @@ namespace DespesaViagem.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> ObterTodasDespesas(int idViagem)
+        public async Task<ActionResult> ObterTodasDespesas()
         {
-            Result<IEnumerable<DespesaPassagem>> result = await _despesasService.ObterTodasDespesas(idViagem);
+            string idUsuario = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
+
+            Result<IEnumerable<DespesaPassagem>> result = await _despesasService.ObterTodasDespesas(int.Parse(idUsuario));
+
+            //Result<List<ViagemDTO>> viagens = await _viagemService.ObterTodasViagens();
+
+            if (result.IsFailure)
+                return BadRequest(new ServiceResponse<IEnumerable<DespesaPassagemDTO>> { Sucesso = false, Mensagem = result.Error });
+
+            List<DespesaPassagemDTO> despesas = MappingDTOs.ConverterDTO(result.Value.ToList());
+
+            return Ok(new ServiceResponse<IEnumerable<DespesaPassagemDTO>> { Conteudo = despesas });
+        }
+
+        [HttpGet("viagem/{id:int}")]
+        public async Task<ActionResult> ObterTodasDespesasViagem(int idViagem)
+        {
+            Result<IEnumerable<DespesaPassagem>> result = await _despesasService.ObterTodasDespesasViagem(idViagem);
 
             if (result.IsFailure)
                 return BadRequest(new ServiceResponse<List<DespesaPassagemDTO>> { Sucesso = false, Mensagem = result.Error });

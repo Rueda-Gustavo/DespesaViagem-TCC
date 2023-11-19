@@ -13,6 +13,13 @@ namespace DespesaViagem.Infra.Repositories
             _context = context;
         }
 
+        public async Task<IEnumerable<DespesaDeslocamento>> ObterTodos(List<int> idsViagens)
+        {
+            return await _context.DespesasDeslocamento
+                .Where(despesa => idsViagens.Contains(despesa.IdViagem))
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<DespesaDeslocamento>> ObterTodos(int idViagem)
         {
             return await _context.DespesasDeslocamento
