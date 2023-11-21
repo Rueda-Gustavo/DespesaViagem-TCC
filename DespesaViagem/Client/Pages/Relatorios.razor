@@ -193,8 +193,8 @@
 
                 if (EstadosViagemSelecionados[i])
                     listaStatus.Add(estado);
-                else
-                    listaStatus.Remove(estado);
+                //else
+                    //listaStatus.Remove(estado);
             }
             await ViagemService.GetViagens(listaStatus);
         }
@@ -274,8 +274,8 @@
 
                 if (TiposDespesasSelecionados[i])
                     tiposDespesas.Add(tipoDespesas);
-                else
-                    tiposDespesas.Remove(tipoDespesas);
+                //else
+                    //tiposDespesas.Remove(tipoDespesas);
             }
 
             foreach (var tipo in tiposDespesas)

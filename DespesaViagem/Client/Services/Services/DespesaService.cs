@@ -38,5 +38,53 @@ namespace DespesaViagem.Client.Services.Services
             }
         }
 
+        public async Task<List<DespesaDTO>> GetDespesasDaViagem(int idViagem)
+        {
+            try
+            {
+                var response = await _http
+                   .GetFromJsonAsync<ServiceResponse<IEnumerable<DespesaDTO>>>($"api/despesa/viagem/{idViagem}") ?? new() { Sucesso = false };
+
+                if (response.Conteudo is null || !response.Conteudo.Any())
+                {
+                    return new();
+                }
+                else
+                {
+                    Console.WriteLine("Sucesso - DespesaService - Client");
+                    return response.Conteudo.ToList();
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Falha - DespesaService - Client");
+                return new();
+            }
+        }
+
+        public async Task<DespesaDTO> GetDespesa(int idDespesa)
+        {
+            try
+            {
+                var response = await _http
+                   .GetFromJsonAsync<ServiceResponse<DespesaDTO>>($"api/despesa/{idDespesa}") ?? new() { Sucesso = false };
+
+                if (response.Conteudo is null)
+                {
+                    return new();
+                }
+                else
+                {
+                    Console.WriteLine("Sucesso - DespesaService - Client");
+                    return response.Conteudo;
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Falha - DespesaService - Client");
+                return new();
+            }
+        }
+
     }
 }

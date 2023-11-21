@@ -2,6 +2,8 @@
 @page "/viagens/{idViagem:int}/{pagina:int}/{tipoDespesa}"
 @inject IViagemService ViagemService
 @inject IFuncionarioService FuncionarioService
+@inject IRelatoriosService RelatoriosService
+@inject IDespesaService DespesaService
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJSRuntime JSRuntime
@@ -10,8 +12,8 @@
 
 <PageTitle>Detalhes</PageTitle>
 
-<strong><span class="fs-4">Viagem: @Status</span></strong> 
-<br/>
+<strong><span class="fs-4">Viagem: @Status</span></strong>
+<br />
 
 <a href="/viagens/1" class="btn btn-outline-primary mt-3">Voltar</a>
 
@@ -148,6 +150,15 @@
                                         </AuthorizeView>
                                     </div>
                                 }
+                                else if (Viagem.StatusViagem == StatusViagem.Encerrada)
+                                {
+                                    <div class="mx-2 d-flex justify-content-end">
+                                        <AuthorizeView>
+                                            <button class="btn btn-outline-primary mx-1" style="top: 3px;" @onclick="GerarRelatorioViagem">Gerar relatório <i class="bi bi-download"></i></button>
+                                        </AuthorizeView>
+
+                                    </div>
+                                }
                             </div>
                         </div>
                         <div class="row">
@@ -209,12 +220,12 @@
 
 
 @code {
-        [Parameter]
-        public int IdViagem { get; set; }
-        [Parameter]
-        public int Pagina { get; set; }
-        [Parameter]
-        public string? TipoDespesa { get; set; } = null;
+    [Parameter]
+    public int IdViagem { get; set; }
+    [Parameter]
+    public int Pagina { get; set; }
+    [Parameter]
+    public string? TipoDespesa { get; set; } = null;
     private ViagemDTO Viagem { get; set; } = new();
     //private Funcionario Funcionario { get; set; } = new();
     //private List<DespesaDTO> Despesas { get; set; } = new();
@@ -320,7 +331,7 @@
             await JSRuntime.InvokeVoidAsync("alert", ViagemService.Mensagem);
         }
         Viagem = await ViagemService.GetViagem(IdViagem);
-        Status = "Em andamento";        
+        Status = "Em andamento";
     }
 
     private async Task CancelarViagem()
@@ -344,7 +355,20 @@
             await JSRuntime.InvokeVoidAsync("alert", ViagemService.Mensagem);
         }
         Viagem = await ViagemService.GetViagem(IdViagem);
+        await GerarRelatorioViagem();
         Status = "Encerrada";
+    }
+
+    private async Task GerarRelatorioViagem()
+    {
+        ViagemDTO viagem = await ViagemService.GetViagem(IdViagem);
+
+        List<ViagemDTO> viagens = new();
+        viagens.Add(viagem);
+
+        List<DespesaDTO> despesas = await DespesaService.GetDespesasDaViagem(IdViagem);
+
+        RelatoriosService.GerarRelatorioViagensExcel(JSRuntime, viagens, despesas, "RelatorioViagem");
     }
 
     private void LimparFiltro()

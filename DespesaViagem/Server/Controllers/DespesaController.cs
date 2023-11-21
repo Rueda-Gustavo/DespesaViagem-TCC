@@ -33,5 +33,35 @@ namespace DespesaViagem.Server.Controllers
 
             return Ok(new ServiceResponse<IEnumerable<DespesaDTO>> { Conteudo = result.Value });
         }
+
+        [HttpGet("{idDespesa:int}")]
+        public async Task<ActionResult> ObterTodasDespesas(int idDespesa)
+        {          
+
+            Result<DespesaDTO> result = await _despesaService.ObterDespesaPorId(idDespesa);
+
+            //Result<List<ViagemDTO>> viagens = await _viagemService.ObterTodasViagens();
+
+            if (result.IsFailure)
+                return BadRequest(new ServiceResponse<DespesaDTO> { Sucesso = false, Mensagem = result.Error });
+
+
+            return Ok(new ServiceResponse<DespesaDTO> { Conteudo = result.Value });
+        }
+
+        [HttpGet("viagem/{idViagem:int}")]
+        public async Task<ActionResult> ObterTodasDespesasDaViagem(int idViagem)
+        {
+
+            Result<IEnumerable<DespesaDTO>> result = await _despesaService.ObterTodasDespesasDaViagem(idViagem);
+
+            //Result<List<ViagemDTO>> viagens = await _viagemService.ObterTodasViagens();
+
+            if (result.IsFailure)
+                return BadRequest(new ServiceResponse<IEnumerable<DespesaDTO>> { Sucesso = false, Mensagem = result.Error });
+
+
+            return Ok(new ServiceResponse<IEnumerable<DespesaDTO>> { Conteudo = result.Value });
+        }
     }
 }

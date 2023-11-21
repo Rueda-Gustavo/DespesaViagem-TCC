@@ -8,6 +8,6 @@ namespace DespesaViagem.Services.Interfaces
         Task<Result<IEnumerable<DespesaDTO>>> ObterTodasDespesas(int idUsuario);
         Task<Result<IEnumerable<DespesaDTO>>> ObterTodasDespesasDaViagem(int idViagem);
         Task<Result<IEnumerable<DespesaDTO>>> ObterDespesasPorFiltro(string filtro, int idViagem);
-        Task<Result<DespesaDTO>> ObterDespesaPorId(string id);
+        Task<Result<DespesaDTO>> ObterDespesaPorId(int idDespesa);
     }
 }

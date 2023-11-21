@@ -27,8 +27,8 @@ namespace DespesaViagem.Services.Services
         {
             Usuario usuario = await _usuarioRepository.ObterUsuario(idUsuario) ?? new();
 
-            if (usuario.TipoDeUsuario == RolesUsuario.Funcionario)
-                return Result.Failure<IEnumerable<DespesaDTO>>("Usuário não autorizado.");
+            if (usuario is null)
+                return Result.Failure<IEnumerable<DespesaDTO>>("Usuário não encontrado.");
 
             List<Viagem> viagens = new();
 
@@ -39,7 +39,11 @@ namespace DespesaViagem.Services.Services
             else if (usuario.TipoDeUsuario == RolesUsuario.Administrador)
             {
                 viagens = await _viagemRepository.ObterTodos();
-            } 
+            }
+            else 
+            {
+                viagens = await _viagemRepository.ObterTodos(idUsuario);
+            }
 
             if (!viagens.Any())
                 return Result.Failure<IEnumerable<DespesaDTO>>("Não existem viagens cadastradas.");
@@ -72,10 +76,8 @@ namespace DespesaViagem.Services.Services
             return Result.Success(despesasDTO);
         }
 
-        public async Task<Result<DespesaDTO>> ObterDespesaPorId(string id)
+        public async Task<Result<DespesaDTO>> ObterDespesaPorId(int idDespesa)
         {
-            _ = int.TryParse(id, out int idDespesa);
-
             if (idDespesa > 0)
             {
                 Despesa despesa = await _despesaRepository.ObterPorId(idDespesa);
