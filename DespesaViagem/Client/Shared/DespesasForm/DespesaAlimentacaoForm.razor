@@ -138,9 +138,12 @@
             Result<DespesaAlimentacaoDTO> despesa = new();
             Despesa.IdViagem = IdViagem;
 
-            if (Adicionar && await JSRuntime.InvokeAsync<bool>("confirm", "Deseja prosseguir com o cadastro?"))
+            bool confirma = await JSRuntime.InvokeAsync<bool>("confirm", "Deseja prosseguir?");
+            if (!confirma) return;
+
+            if (Adicionar)
                 despesa = await DespesaAlimentacaoService.AdicionarDespesa(Despesa);
-            else if (await JSRuntime.InvokeAsync<bool>("confirm", "Deseja salvar as alterações?"))
+            else
                 despesa = await DespesaAlimentacaoService.AtualizarDespesa(Despesa);
 
             if (despesa.IsSuccess) await FecharFormulario();

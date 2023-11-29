@@ -11,6 +11,8 @@ builder.Services
     .AddDespesaViagemInfra(builder.Configuration)
     .AddDespesaViagemService();
 
+builder.Services.AddServerSideBlazor();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {

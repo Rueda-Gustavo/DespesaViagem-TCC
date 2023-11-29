@@ -349,11 +349,12 @@
     private async Task EncerrarViagem()
     {
         bool confirma = await JSRuntime.InvokeAsync<bool>("confirm", "Tem certeza de que deseja encerrar a viagem?");
-        if (confirma)
-        {
-            await ViagemService.EncerrarViagem();
-            await JSRuntime.InvokeVoidAsync("alert", ViagemService.Mensagem);
-        }
+
+        if (!confirma) return;
+
+        await ViagemService.EncerrarViagem();
+        await JSRuntime.InvokeVoidAsync("alert", ViagemService.Mensagem);
+
         Viagem = await ViagemService.GetViagem(IdViagem);
         await GerarRelatorioViagem();
         Status = "Encerrada";

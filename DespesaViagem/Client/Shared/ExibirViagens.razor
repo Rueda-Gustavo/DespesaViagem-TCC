@@ -129,10 +129,10 @@ else
         float viagensPorPagina = 6f;
 
         double quantidadeDePaginas = Math.Ceiling(viagens.Count / viagensPorPagina);
-        viagens = viagens
+            viagens = viagens
             .Skip((pagina - 1) * (int)viagensPorPagina)
             .Take((int)viagensPorPagina)
-            .ToList();
+        .ToList();
 
         ViagemService.ViagensPorPagina.Viagens = viagens;
         ViagemService.ViagensPorPagina.PaginaAtual = pagina;
@@ -184,6 +184,7 @@ else
             await ViagemService.IniciarViagem();
             await JSRuntime.InvokeVoidAsync("alert", ViagemService.Mensagem);
         }
+        StateHasChanged();
     }
 
     private async Task CancelarViagem()
@@ -194,6 +195,7 @@ else
             await ViagemService.CancelarViagem();
             await JSRuntime.InvokeVoidAsync("alert", ViagemService.Mensagem);
         }
+        StateHasChanged();
     }
 
     public RenderFragment ObterDespesaForm(Type tipoDespesa, int idViagem, int idDespesa)

@@ -160,16 +160,12 @@
     }
 
     private async Task HandleDespesa()
-    {   /*
-    Despesa.IdViagem = IdViagem;
-    if (IdDespesa > 0)
-    await DespesaHospedagemService.AtualizarDespesa(Despesa);
-    else
-    await DespesaHospedagemService.AdicionarDespesa(Despesa);
-
-    await JSRuntime.InvokeVoidAsync("alert", $"Dados salvos com sucesso!");
-    await FecharFormulario();
-    */
+    {
+        if (Despesa.NumeroCasa <= 0)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Insira um valor válido para o número da casa!!");
+            return;
+        }
 
         try
         {

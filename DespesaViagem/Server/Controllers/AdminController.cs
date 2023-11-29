@@ -27,7 +27,7 @@ namespace DespesaViagem.Server.Controllers
         [HttpGet("ObterUsuarios")]
         public async Task<ActionResult<AdminManutencaoDTO>> ObterUsuarios()
         {
-            string idAdmin = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "1";
+            string idAdmin = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
 
             Result<AdminManutencaoDTO> response = await _adminService.ObterListaUsuarios(int.Parse(idAdmin));
 
@@ -41,7 +41,7 @@ namespace DespesaViagem.Server.Controllers
         [HttpGet("lista-funcionarios")]
         public async Task<ActionResult> ObterListaFuncionario()
         {
-            string idAdmin = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "1";
+            string idAdmin = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
 
             Result<IEnumerable<FuncionarioDTO>> result = await _adminService.ObterListaFuncionarios(int.Parse(idAdmin));
 

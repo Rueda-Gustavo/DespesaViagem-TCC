@@ -11,7 +11,7 @@ namespace DespesaViagem.Shared.Models.Despesas
         public int Id { get; protected set; }
         [Column(TypeName = "varchar(1000)")]
         public virtual string NomeDespesa { get; protected set; } = string.Empty;
-        [Column(TypeName = "varchar(max)")]
+        [Column(TypeName = "varchar(3000)")]
         public virtual string DescricaoDespesa { get; protected set; } = string.Empty;
         [Column(TypeName = "decimal(10,2)")]
         public virtual decimal TotalDespesa { get; protected set; }        

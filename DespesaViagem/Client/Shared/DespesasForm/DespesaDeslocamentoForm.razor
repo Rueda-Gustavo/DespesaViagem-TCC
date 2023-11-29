@@ -140,16 +140,22 @@
 
     private async Task HandleDespesa()
     {
+        if (Despesa.Quilometragem <= 0)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Insira um valor válido para a distância!!");
+            return;
+        }
         try
         {
             Result<DespesaDeslocamentoDTO> despesa = new();
             Despesa.IdViagem = IdViagem;
 
-            //if (Adicionar)
-            if (Adicionar && await JSRuntime.InvokeAsync<bool>("confirm", "Deseja prosseguir com o cadastro?"))
-                despesa = await DespesaDeslocamentoService.AdicionarDespesa(Despesa);
-            //else
-            else if (await JSRuntime.InvokeAsync<bool>("confirm", "Deseja salvar as alterações?"))
+            bool confirma = await JSRuntime.InvokeAsync<bool>("confirm", "Deseja prosseguir?");
+            if (!confirma) return;
+            
+            if (Adicionar)
+                despesa = await DespesaDeslocamentoService.AdicionarDespesa(Despesa);            
+            else
                 despesa = await DespesaDeslocamentoService.AtualizarDespesa(Despesa);
 
             if (despesa.IsSuccess) await FecharFormulario();

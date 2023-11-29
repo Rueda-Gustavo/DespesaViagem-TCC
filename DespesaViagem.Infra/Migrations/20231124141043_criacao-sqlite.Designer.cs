@@ -3,7 +3,6 @@ using System;
 using DespesaViagem.Infra.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -12,29 +11,23 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DespesaViagem.Infra.Migrations
 {
     [DbContext(typeof(DespesaViagemContext))]
-    [Migration("20231021152618_Adicionando-Coluna-Departamento")]
-    partial class AdicionandoColunaDepartamento
+    [Migration("20231124141043_criacao-sqlite")]
+    partial class criacaosqlite
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.9")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
-
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.14");
 
             modelBuilder.Entity("DespesaViagem.Shared.Models.Core.Helpers.Departamento", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("Ativo")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Descricao")
                         .IsRequired()
@@ -51,7 +44,7 @@ namespace DespesaViagem.Infra.Migrations
             modelBuilder.Entity("DespesaViagem.Shared.Models.Core.Helpers.Endereco", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("CEP")
                         .IsRequired()
@@ -70,7 +63,7 @@ namespace DespesaViagem.Infra.Migrations
                         .HasColumnType("varchar(1000)");
 
                     b.Property<int>("NumeroCasa")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -81,15 +74,13 @@ namespace DespesaViagem.Infra.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("CPF")
                         .HasColumnType("varchar(15)");
 
                     b.Property<DateTime>("DataCriacao")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("NomeCompleto")
                         .IsRequired()
@@ -97,14 +88,13 @@ namespace DespesaViagem.Infra.Migrations
 
                     b.Property<byte[]>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("BLOB");
 
                     b.Property<byte[]>("PasswordSalt")
                         .IsRequired()
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("BLOB");
 
-                    b.Property<string>("TipoDeUsuario")
-                        .IsRequired()
+                    b.Property<int>("TipoDeUsuario")
                         .HasColumnType("varchar(20)");
 
                     b.Property<string>("Username")
@@ -118,7 +108,7 @@ namespace DespesaViagem.Infra.Migrations
 
                     b.ToTable("Usuarios", (string)null);
 
-                    b.HasDiscriminator<string>("TipoDeUsuario").HasValue("Administrador");
+                    b.HasDiscriminator<int>("TipoDeUsuario").HasValue(2);
 
                     b.UseTphMappingStrategy();
                 });
@@ -127,29 +117,26 @@ namespace DespesaViagem.Infra.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("DataDeCadastro")
                         .HasColumnType("datetime");
 
                     b.Property<DateTime>("DataDespesa")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("DescricaoDespesa")
                         .IsRequired()
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("varchar(3000)");
 
                     b.Property<int>("IdViagem")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("NomeDespesa")
                         .IsRequired()
                         .HasColumnType("varchar(1000)");
 
-                    b.Property<string>("TipoDespesa")
-                        .IsRequired()
+                    b.Property<int>("TipoDespesa")
                         .HasMaxLength(20)
                         .IsUnicode(false)
                         .HasColumnType("varchar(20)");
@@ -170,19 +157,17 @@ namespace DespesaViagem.Infra.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("Adiantamento")
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal");
 
                     b.Property<DateTime>("DataFinal")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DataInicial")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("DescricaoViagem")
                         .IsRequired()
@@ -190,7 +175,7 @@ namespace DespesaViagem.Infra.Migrations
                         .HasColumnType("varchar(3000)");
 
                     b.Property<int>("IdFuncionario")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("NomeViagem")
                         .IsRequired()
@@ -198,8 +183,7 @@ namespace DespesaViagem.Infra.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(200)");
 
-                    b.Property<string>("StatusViagem")
-                        .IsRequired()
+                    b.Property<int>("StatusViagem")
                         .HasMaxLength(15)
                         .IsUnicode(false)
                         .HasColumnType("varchar");
@@ -219,11 +203,11 @@ namespace DespesaViagem.Infra.Migrations
                 {
                     b.HasBaseType("DespesaViagem.Shared.Models.Core.Helpers.Usuario");
 
-                    b.Property<int>("DepartamentoId")
-                        .HasColumnType("int");
+                    b.Property<int?>("DepartamentoId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int?>("GestorId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Matricula")
                         .HasColumnType("varchar(30)");
@@ -232,14 +216,14 @@ namespace DespesaViagem.Infra.Migrations
 
                     b.HasIndex("GestorId");
 
-                    b.HasDiscriminator().HasValue("Funcionario");
+                    b.HasDiscriminator().HasValue(0);
                 });
 
             modelBuilder.Entity("DespesaViagem.Shared.Models.Core.Helpers.Gestor", b =>
                 {
                     b.HasBaseType("DespesaViagem.Shared.Models.Core.Helpers.Usuario");
 
-                    b.HasDiscriminator().HasValue("Gestor");
+                    b.HasDiscriminator().HasValue(1);
                 });
 
             modelBuilder.Entity("DespesaViagem.Shared.Models.Despesas.DespesaAlimentacao", b =>
@@ -250,13 +234,13 @@ namespace DespesaViagem.Infra.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("NomeEstabelecimento")
                         .IsRequired()
                         .HasMaxLength(30)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(30)");
+                        .HasColumnType("TEXT");
 
                     b.Property<decimal>("ValorRefeicao")
                         .HasColumnType("decimal(10,2)");
@@ -272,13 +256,13 @@ namespace DespesaViagem.Infra.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Placa")
                         .IsRequired()
                         .HasMaxLength(20)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("TEXT");
 
                     b.Property<long>("Quilometragem")
                         .HasColumnType("bigint");
@@ -310,7 +294,7 @@ namespace DespesaViagem.Infra.Migrations
                         .HasColumnType("varchar(1000)");
 
                     b.Property<int>("NumeroCasa")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("QuantidadeDias")
                         .HasColumnType("integer");
@@ -329,7 +313,7 @@ namespace DespesaViagem.Infra.Migrations
                         .IsRequired()
                         .HasMaxLength(40)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(40)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DataHoraEmbarque")
                         .HasColumnType("datetime");
@@ -338,13 +322,13 @@ namespace DespesaViagem.Infra.Migrations
                         .IsRequired()
                         .HasMaxLength(40)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(40)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Origem")
                         .IsRequired()
                         .HasMaxLength(40)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(40)");
+                        .HasColumnType("TEXT");
 
                     b.Property<decimal>("Preco")
                         .HasColumnType("decimal(10,2)");
@@ -389,9 +373,7 @@ namespace DespesaViagem.Infra.Migrations
                 {
                     b.HasOne("DespesaViagem.Shared.Models.Core.Helpers.Departamento", "Departamento")
                         .WithMany()
-                        .HasForeignKey("DepartamentoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DepartamentoId");
 
                     b.HasOne("DespesaViagem.Shared.Models.Core.Helpers.Gestor", "Gestor")
                         .WithMany("Funcionarios")

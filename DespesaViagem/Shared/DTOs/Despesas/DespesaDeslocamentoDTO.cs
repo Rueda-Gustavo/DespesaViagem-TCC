@@ -4,7 +4,7 @@ namespace DespesaViagem.Shared.DTOs.Despesas
 {
     public class DespesaDeslocamentoDTO : DespesaDTO
     {
-        [Required(ErrorMessage = "Obrigatório!"), RegularExpression(@"^[1-9]\d+$", ErrorMessage = "Preenchimento incorreto!")]
+        [Required(ErrorMessage = "Obrigatório!")]
         public int Quilometragem { get; set; }
         public decimal ValorPorQuilometro { get; set; }
         [Required(ErrorMessage = "Obrigatório!"), StringLength(20, MinimumLength = 5, ErrorMessage = "Obrigatório de 5 a 20 caracteres")]

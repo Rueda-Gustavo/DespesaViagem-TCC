@@ -81,35 +81,6 @@ namespace DespesaViagem.Client.Services.Services
             }
         }
 
-        public async Task<Result<ViagemDTO>> IniciarViagem()
-        {
-            try
-            {
-                var result = await _http.PatchAsync("api/viagem/Iniciar", null);
-
-                var response = await result.Content.ReadFromJsonAsync<ServiceResponse<ViagemDTO>>() ?? new() { Sucesso = false };
-
-                if (response.Conteudo is null || !response.Sucesso)
-                    return Result.Failure<ViagemDTO>("Erro para iniciar a viagem.");
-
-                Mensagem = "Viagem iniciada com sucesso.";
-
-                ViagemDTO viagemAntiga = Viagens.FirstOrDefault(v => v.Id == response.Conteudo.Id) ?? new();
-                Viagens.Remove(viagemAntiga);
-                Viagens.Add(response.Conteudo);
-
-                Console.WriteLine("Sucesso - ViagemService - Client");
-                //ViagensChanged.Invoke();
-                return Result.Success(response.Conteudo); //await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Falha - ViagemService - Client");
-                Mensagem = ex.Message;
-                return Result.Failure<ViagemDTO>(ex.Message);
-            }
-        }
-
         public async Task GetViagens()
         {
             try
@@ -432,6 +403,39 @@ namespace DespesaViagem.Client.Services.Services
 
         }
 
+        public async Task<Result<ViagemDTO>> IniciarViagem()
+        {
+            try
+            {
+                var result = await _http.PatchAsync("api/viagem/Iniciar", null);
+
+                var response = await result.Content.ReadFromJsonAsync<ServiceResponse<ViagemDTO>>() ?? new() { Sucesso = false };
+
+                if (response.Conteudo is null || !response.Sucesso)
+                    return Result.Failure<ViagemDTO>("Erro para iniciar a viagem.");
+
+                Mensagem = "Viagem iniciada com sucesso.";
+
+                //ViagemDTO viagemAntiga = Viagens.FirstOrDefault(v => v.Id == response.Conteudo.Id) ?? new();
+                //Viagens.Remove(viagemAntiga);
+                //Viagens.Add(response.Conteudo);
+
+                ViagemDTO viagemAntiga = ViagensPorPagina.Viagens.FirstOrDefault(v => v.Id == response.Conteudo.Id) ?? new();
+                ViagensPorPagina.Viagens.Remove(viagemAntiga);
+                ViagensPorPagina.Viagens.Add(response.Conteudo);
+
+                Console.WriteLine("Sucesso - ViagemService - Client");
+                //ViagensChanged.Invoke();
+                return Result.Success(response.Conteudo); //await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Falha - ViagemService - Client");
+                Mensagem = ex.Message;
+                return Result.Failure<ViagemDTO>(ex.Message);
+            }
+        }
+
         public async Task<Result<ViagemDTO>> CancelarViagem()
         {
             try
@@ -445,9 +449,13 @@ namespace DespesaViagem.Client.Services.Services
 
                 Mensagem = "Viagem cancelada com sucesso.";
 
-                ViagemDTO viagemAntiga = Viagens.FirstOrDefault(v => v.Id == response.Conteudo.Id) ?? new();
-                Viagens.Remove(viagemAntiga);
-                Viagens.Add(response.Conteudo);
+                //ViagemDTO viagemAntiga = Viagens.FirstOrDefault(v => v.Id == response.Conteudo.Id) ?? new();
+                //Viagens.Remove(viagemAntiga);
+                //Viagens.Add(response.Conteudo);
+
+                ViagemDTO viagemAntiga = ViagensPorPagina.Viagens.FirstOrDefault(v => v.Id == response.Conteudo.Id) ?? new();
+                ViagensPorPagina.Viagens.Remove(viagemAntiga);
+                ViagensPorPagina.Viagens.Add(response.Conteudo);
 
                 Console.WriteLine("Sucesso - ViagemService - Client");
                 //ViagensChanged.Invoke();
@@ -474,9 +482,13 @@ namespace DespesaViagem.Client.Services.Services
 
                 Mensagem = "Viagem encerrada com sucesso.";
 
-                ViagemDTO viagemAntiga = Viagens.FirstOrDefault(v => v.Id == response.Conteudo.Id) ?? new();
-                Viagens.Remove(viagemAntiga);
-                Viagens.Add(response.Conteudo);
+                //ViagemDTO viagemAntiga = Viagens.FirstOrDefault(v => v.Id == response.Conteudo.Id) ?? new();
+                //Viagens.Remove(viagemAntiga);
+                //Viagens.Add(response.Conteudo);
+
+                ViagemDTO viagemAntiga = ViagensPorPagina.Viagens.FirstOrDefault(v => v.Id == response.Conteudo.Id) ?? new();
+                ViagensPorPagina.Viagens.Remove(viagemAntiga);
+                ViagensPorPagina.Viagens.Add(response.Conteudo);
 
                 Console.WriteLine("Sucesso - ViagemService - Client");
                 //ViagensChanged.Invoke();
