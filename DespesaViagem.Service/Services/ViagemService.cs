@@ -422,9 +422,25 @@ namespace DespesaViagem.Services.Services
 
         public async Task<Result<List<DespesaPorCategoria>>> ObterTotalDasDespesasPorCategoria(int viagemId)
         {
+            /*
+            // Método para usar com o SQL Server
             List<DespesaPorCategoria> despesas = await _viagemRepository.ObterTotalDasDespesasPorCategoria(viagemId);
-
+            
             return despesas;
+            */
+
+            //Método para usar com o SQLite
+            List<Despesa> despesas = await _viagemRepository.ObterTodasDepesas(viagemId);
+
+            var result = despesas            
+            .GroupBy(despesa => despesa.TipoDespesa)
+            .Select(agrupamento => new DespesaPorCategoria
+            {
+                TipoDespesa = agrupamento.Key,
+                TotalDespesa = agrupamento.Sum(despesa => despesa.TotalDespesa)
+            }).ToList();
+
+            return result;            
         }
 
 
@@ -631,19 +647,19 @@ namespace DespesaViagem.Services.Services
             return viagem;
         }
         */
-        /*
-        private async Task<List<Viagem>> AdicionarFuncionarioParaAViagem(List<Viagem> viagens)
-        {
-            foreach (var viagem in viagens)
+            /*
+            private async Task<List<Viagem>> AdicionarFuncionarioParaAViagem(List<Viagem> viagens)
             {
-                Funcionario funcionario = await _funcionarioRepository.ObterPorId(viagem.IdFuncionario);
-                viagem.AdicionarFuncionario(funcionario);
-            }
+                foreach (var viagem in viagens)
+                {
+                    Funcionario funcionario = await _funcionarioRepository.ObterPorId(viagem.IdFuncionario);
+                    viagem.AdicionarFuncionario(funcionario);
+                }
 
-            return viagens;
-        }
-        */
-        private static TiposDespesas ConverterStringParaEnumTipoDespesa(string tipoDespesa)
+                return viagens;
+            }
+            */
+            private static TiposDespesas ConverterStringParaEnumTipoDespesa(string tipoDespesa)
         {
             return tipoDespesa switch
             {

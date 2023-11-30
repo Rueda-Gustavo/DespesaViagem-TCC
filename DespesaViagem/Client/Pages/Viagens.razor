@@ -258,7 +258,7 @@
     private async Task ObterViagensFuncionario(int idFuncionario, string username)
     {
         /*
-        if (idFuncionario == 0)
+            if (idFuncionario == 0)
             await ViagemService.GetViagens();
             else
             await ViagemService.GetViagensPorFuncionario(idFuncionario);
@@ -294,7 +294,7 @@
     private async Task ObterViagensDepartamento(int idDepartamento, string departamento)
     {
         /*
-        if (idDepartamento == 0)
+            if (idDepartamento == 0)
             await ViagemService.GetViagens();
             else
             await ViagemService.GetViagensPorDepartamento(idDepartamento);
@@ -322,6 +322,7 @@
 
     private async Task ObterViagensStatus(int indiceStatusViagem, string textoStatusViagem)
     {
+        textoStatusViagem = textoStatusViagem == "EmAndamento" ? "Em andamento" : textoStatusViagem; 
         //IdDepartamento = 0;
         //IdFuncionario = 0;
         IdStatusViagem = indiceStatusViagem;

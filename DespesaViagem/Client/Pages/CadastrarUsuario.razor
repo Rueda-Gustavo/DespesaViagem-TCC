@@ -103,7 +103,7 @@
         usuario.Departamento = new Departamento() { Id = 0 };
         var result = await DepartamentoService.ObterDepartamentos();
         if (result.IsSuccess)
-            departamentos = result.Value.ToList();
+            departamentos = result.Value.Where(d => d.Ativo).ToList();
     }
 
     public void Dispose()
