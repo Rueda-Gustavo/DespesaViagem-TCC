@@ -288,7 +288,7 @@
     {
         var result = await DepartamentoService.ObterDepartamentos();
         if (result.IsSuccess)
-            Departamentos = result.Value.ToList();
+            Departamentos = result.Value.Where(d => d.Ativo).ToList();
     }
 
     private async Task ObterViagensDepartamento(int idDepartamento, string departamento)

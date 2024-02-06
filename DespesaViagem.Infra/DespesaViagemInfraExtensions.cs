@@ -13,8 +13,8 @@ namespace DespesaViagem.Infra
         public static IServiceCollection AddDespesaViagemInfra(this IServiceCollection service, IConfiguration configuration)
         {
             //var a = configuration.GetConnectionString("SqlServer");
-            //service.AddDbContext<DespesaViagemContext>(options => options.UseSqlServer(configuration.GetConnectionString("SqlServer")));
-            service.AddDbContext<DespesaViagemContext>(options => options.UseSqlite(configuration.GetConnectionString("Sqlite")));
+            service.AddDbContext<DespesaViagemContext>(options => options.UseSqlServer(configuration.GetConnectionString("SqlServer")));
+            //service.AddDbContext<DespesaViagemContext>(options => options.UseSqlite(configuration.GetConnectionString("Sqlite")));
             service.AddScoped<IEnderecoRepository, EnderecoRepository>();
             service.AddScoped<IFuncionarioRepository, FuncionarioRepository>();
             service.AddScoped<IGestorRepository, GestorRepository>();

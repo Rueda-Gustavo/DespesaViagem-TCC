@@ -240,7 +240,7 @@ namespace DespesaViagem.Services.Services
 
             if (await _usuarioRepository.UsuarioJaExiste(funcionario.CPF) ||
                 await _usuarioRepository.UsuarioJaExiste(funcionario.Username) ||
-                (funcionario.Matricula is not null && await _funcionarioRepository.FuncionarioJaExiste(funcionario.Matricula)))
+                (funcionario.Matricula is not null && funcionario.Matricula != string.Empty && await _funcionarioRepository.FuncionarioJaExiste(funcionario.Matricula)))
             {
                 return true;
             }
