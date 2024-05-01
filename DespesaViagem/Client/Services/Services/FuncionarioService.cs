@@ -15,10 +15,7 @@ namespace DespesaViagem.Client.Services.Services
 
         public string Mensagem { get; set; } = "Carregando funcionário...";
 
-        public FuncionarioService(HttpClient http)
-        {
-            _http = http;
-        }
+        public FuncionarioService(HttpClient http) => _http = http;
 
         public async Task<ServiceResponse<int>> Cadastrar(CadastroUsuario request)
         {

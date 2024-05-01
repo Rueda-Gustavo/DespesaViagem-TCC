@@ -7,18 +7,18 @@
 
 <div class="btn-group dropdown">
     <button @onclick="ToggleMenuUsuario"
-    @onfocusout="EsconderMenuUsuario"
+            @onfocusout="EsconderMenuUsuario"
             class="btn btn-secondary dropdown-toggle botao-usuario mx-3">
         <i class="oi oi-person"></i>
     </button>
     <div class="dropdown-menu dropdown-menu-right @CssClassBotaoUsuario">
         <span class="username font-monospace mb-1" id="username" style="margin-left: 0;width: 100%;">@username</span>
         <AuthorizeView>
-            <Authorized>                
+            <Authorized>
                 <a href="/perfil" class="dropdown-item mb-1 btn-usuario" style="margin-left: 0;max-width: 7.5rem;">Perfil</a>
-                <BotaoAdmin /> 
+                <BotaoAdmin />
                 <BotaoRelatorio />
-                <button class="dropdown-item btn-usuario" @onclick="Logout" style="margin-left: 0;max-width: 7.5rem;">Logout</button>                
+                <button class="dropdown-item btn-usuario" @onclick="Logout" style="margin-left: 0;max-width: 7.5rem;">Logout</button>
             </Authorized>
             <NotAuthorized>
                 <a href="/login?returnUrl=@NavigationManager.ToBaseRelativePath(NavigationManager.Uri)" class="dropdown-item btn-usuario mb-1" style="margin-left: 0; max-width: 7.5rem;">Login</a>

@@ -3,6 +3,7 @@ using DespesaViagem.Infra.Interfaces;
 using DespesaViagem.Server.Mapping;
 using DespesaViagem.Services.Interfaces;
 using DespesaViagem.Shared.DTOs.Despesas;
+using DespesaViagem.Shared.DTOs.Viagens;
 using DespesaViagem.Shared.Models.Core.Enums;
 using DespesaViagem.Shared.Models.Core.Helpers;
 using DespesaViagem.Shared.Models.Despesas;
@@ -25,6 +26,9 @@ namespace DespesaViagem.Services.Services
 
         public async Task<Result<IEnumerable<DespesaDTO>>> ObterTodasDespesas(int idUsuario)
         {
+            if (idUsuario == 0)
+                return Result.Failure<IEnumerable<DespesaDTO>>("Usuário não autorizado.");
+
             Usuario usuario = await _usuarioRepository.ObterUsuario(idUsuario) ?? new();
 
             if (usuario is null)

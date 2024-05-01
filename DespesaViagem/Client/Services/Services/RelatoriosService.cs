@@ -206,7 +206,7 @@ namespace DespesaViagem.Client.Services.Services
             int lenViagens = viagens.Count;
 
             #region Cabeçalho da primeira linha despesas
-            workSheetDespesas.Cells[1, 1].Value = "Identificador da viagem";
+            /*workSheetDespesas.Cells[1, 1].Value = "Identificador da viagem";
             workSheetDespesas.Cells[1, 1].Style.Font.Size = 12;
             workSheetDespesas.Cells[1, 1].Style.Font.Bold = true;
             workSheetDespesas.Cells[1, 1].Style.Border.Top.Style = ExcelBorderStyle.Hair;
@@ -249,8 +249,18 @@ namespace DespesaViagem.Client.Services.Services
             workSheetDespesas.Cells[1, 9].Value = "Total da despesa";
             workSheetDespesas.Cells[1, 9].Style.Font.Size = 12;
             workSheetDespesas.Cells[1, 9].Style.Font.Bold = true;
-            workSheetDespesas.Cells[1, 9].Style.Border.Top.Style = ExcelBorderStyle.Hair;
+            workSheetDespesas.Cells[1, 9].Style.Border.Top.Style = ExcelBorderStyle.Hair;*/
             #endregion
+
+            var propriedadesDespesa = typeof(DespesaDTO).GetProperties();
+
+            for (int i = 0; i < propriedadesDespesa.Length; i++)
+            {
+                workSheetDespesas.Cells[1, i + 1].Value = propriedadesDespesa[i].Name;
+                workSheetDespesas.Cells[1, i + 1].Style.Font.Size = 12;
+                workSheetDespesas.Cells[1, i + 1].Style.Font.Bold = true;
+                workSheetDespesas.Cells[1, i + 1].Style.Border.Top.Style = ExcelBorderStyle.Hair;
+            }
 
 
             #region Corpo do relatório despesas
@@ -311,7 +321,7 @@ namespace DespesaViagem.Client.Services.Services
                 }
             }
             #endregion
-            
+
 
 
             workSheetDespesas.Cells["F:Z"].AutoFitColumns();

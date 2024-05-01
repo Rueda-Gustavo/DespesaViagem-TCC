@@ -24,13 +24,13 @@ else
             <div class="form-group row">
                 <div class="col">
                     <label for="Nome">Nome</label>
-                    <input id="Nome" class="form-control" @bind-value="usuario.NomeCompleto" />
+                    <input id="Nome" class="form-control" disabled="@cssDisableField" @bind-value="usuario.NomeCompleto" />
                 </div>
                 <div class="form-group row">
 
                     <div class="col-auto">
                         <label for="Username">Username</label>
-                        <input id="Username" class="form-control" @bind-value="usuario.Username" />
+                        <input id="Username" class="form-control" disabled="@cssDisableField" @bind-value="usuario.Username" />
                     </div>
                     @if (TipoDeUsuario != RolesUsuario.Administrador.ToString())
                     {
@@ -48,21 +48,25 @@ else
 
                         <div class="col">
                             <label for="Departamento">Departamento</label>
-                            <input id="Departamento" class="form-control" disabled @bind-value="funcionario.Departamento.Descricao" />
+                            <input id="Departamento" class="form-control" disabled @bind-value="funcionario.Departamento!.Descricao" />
                         </div>
                     }
                 </div>
             </div>
             <span>@mensagem</span>
 
-            <div style="float:right;">
-                <button type="button" class="btn btn-info" @onclick="AbrirTrocarSenha">
-                    <span>Trocar senha</span>
-                </button>
-                <button type="submit" class="btn btn-primary">
-                    <span>Salvar</span>
-                </button>
-            </div>
+            @if(TipoDeUsuario!= RolesUsuario.Administrador.ToString())
+                {
+                    <div style="float:right;">
+                        <button type="button" class="btn btn-info" @onclick="AbrirTrocarSenha">
+                            <span>Trocar senha</span>
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <span>Salvar</span>
+                        </button>
+                    </div>
+                }
+            }            
         </form>
     </div>
 }
@@ -81,6 +85,10 @@ else
                 </button>
             </div>
 
+            <div class="mb-3">
+                <label for="Username">Username</label>
+                <input id="Username" class="form-control" disabled @bind-value="usuario.Username" />
+            </div>
             <EditForm Model="novaSenhaUsuario" OnValidSubmit="TrocarSenha" class="mb-2">
                 <DataAnnotationsValidator></DataAnnotationsValidator>
                 <div class="mb-3">
@@ -99,11 +107,11 @@ else
             </EditForm>
         </div>
     </div>
-
 }
 @code {
     private TrocarSenhaUsuario novaSenhaUsuario = new();
     private string mensagem = string.Empty;
+    private bool cssDisableField = false;
 
     private UsuarioDTO usuario = new();
 
@@ -156,9 +164,11 @@ else
         }
         else if (tipoUsuario == RolesUsuario.Gestor)
             usuario = await GestorService.GetGestor(idUsuario);
-        else
+        else{
             //await JSRuntime.InvokeVoidAsync("alert", "Página de perfil do Administrador ainda não implementada");
             usuario = await UsuarioService.GetUsuario(idUsuario);
+            cssDisableField = true;
+        }
 
         /*
         string a = Usuario.NomeCompleto;

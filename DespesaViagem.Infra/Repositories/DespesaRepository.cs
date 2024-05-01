@@ -23,7 +23,7 @@ namespace DespesaViagem.Infra.Repositories
         }
 
         public async Task<IEnumerable<Despesa>> ObterTodos(int idViagem)
-        {
+        {            
             return await _context.Despesas
                 .Where(despesa => despesa.IdViagem == idViagem)
                 .ToListAsync();

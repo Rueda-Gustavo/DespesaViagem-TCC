@@ -32,6 +32,9 @@ namespace DespesaViagem.Services.Services
 
         public async Task<Result<List<ViagemDTO>>> ObterTodasViagens(int idUsuario)
         {
+            if (idUsuario == 0)
+                return Result.Failure<List<ViagemDTO>>("Usuário não autorizado.");
+
             Usuario? usuario = await _usuarioRepository.ObterUsuario(idUsuario);
 
             if (usuario is null)
